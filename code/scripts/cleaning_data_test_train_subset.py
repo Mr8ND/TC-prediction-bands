@@ -1,5 +1,4 @@
-# SCA diffusion maps
-
+# initial data cleaning and processing
 
 #################
 # Data Read in: #
@@ -75,81 +74,97 @@ pickle.dump(data_dict,open("../../data/"+"hurricane_dict.pkl","wb"))
 
 ####
 # Thought, we'll do a randomly selection per year with 2/1 ratio for test/train
-count_dict=dict()
-
-for key in data_dict.keys():
-	a = key[-4:]
-	if not a in count_dict.keys():
-		count_dict[a] = 1
-	else:
-		count_dict[a] += 1
-
-xx = np.array(sorted(count_dict.keys()))
-count_vec=np.array([count_dict[name] for name in sorted(count_dict.keys())])
 
 
-np.random.seed(2)
+#####
+# Only run on Ben's Computer so as not to allow python to mess with setting seed 
+# 	(line 97)
+run_initial_time =False #only done on Ben's computer
 
-storage = np.zeros(xx.shape[0],dtype = np.int)
-for i in np.arange(storage.shape[0]):
-	n = count_vec[i]
-	storage[i] = n//3
-	if n%3 != 0:
-		storage[i] +=np.random.binomial(n=1,p=(n%3)/3)
+if run_initial_time ==True:
+	count_dict=dict()
 
-test_selection = dict()
-for i in np.arange(storage.shape[0]):
-	amount = storage[i] 
-	n      = count_vec[i]
-	test_selection[xx[i]] = np.random.choice(a = np.arange(n),
-							 size = amount,replace=False)
+	for key in data_dict.keys():
+		a = key[-4:]
+		if not a in count_dict.keys():
+			count_dict[a] = 1
+		else:
+			count_dict[a] += 1
 
-names_dict_sorted = dict()
-for key in data_dict.keys():
-	a = key[-4:]
-	if not a in names_dict_sorted.keys():
-		names_dict_sorted[a] = [key]
-	else:
-		names_dict_sorted[a] += [key]
-names_dict = names_dict_sorted.copy()
+	xx = np.array(sorted(count_dict.keys()))
+	count_vec=np.array([count_dict[name] for name in sorted(count_dict.keys())])
 
-for key in names_dict.keys():
-	names_dict_sorted[key] = np.array(sorted(names_dict[key]))
+	np.random.seed(2)
+
+	storage = np.zeros(xx.shape[0],dtype = np.int)
+	for i in np.arange(storage.shape[0]):
+		n = count_vec[i]
+		storage[i] = n//3
+		if n%3 != 0:
+			storage[i] +=np.random.binomial(n=1,p=(n%3)/3)
+
+	test_selection = dict()
+	for i in np.arange(storage.shape[0]):
+		amount = storage[i] 
+		n      = count_vec[i]
+		test_selection[xx[i]] = np.random.choice(a = np.arange(n),
+								 size = amount,replace=False)
+
+	names_dict_sorted = dict()
+	for key in data_dict.keys():
+		a = key[-4:]
+		if not a in names_dict_sorted.keys():
+			names_dict_sorted[a] = [key]
+		else:
+			names_dict_sorted[a] += [key]
+	names_dict = names_dict_sorted.copy()
+
+	for key in names_dict.keys():
+		names_dict_sorted[key] = np.array(sorted(names_dict[key]))
 
 
 
-######
-# now we need to use the selected numbers and the ordered names to get the 
-# test/train hurricanes
+	######
+	# now we need to use the selected numbers and the ordered names to get the 
+	# test/train hurricanes
 
-test_list = list()
-for year in names_dict_sorted.keys():
-	selection = test_selection[year]
-	test_list += list(names_dict_sorted[year][selection])
+	test_list = list()
+	for year in names_dict_sorted.keys():
+		selection = test_selection[year]
+		test_list += list(names_dict_sorted[year][selection])
 
 
-test_list = np.array(test_list)
+	test_list = np.array(test_list)
 
-np.save("../../data/test/"+"test_names.npy",test_list)
-# to load in: np.load("../../data/test/training_names.npy")
+	np.save("../../data/test/"+"test_names.npy",test_list)
+	# to load in: np.load("../../data/test/training_names.npy")
+
+	training_names = list()
+
+	for name in data_dict:
+		if name not in test_list:
+			training_names += [name]
+
+
+if run_initial_time == False:
+	training_list = np.load("../../data/training/"+"training_names.npy")
+	test_list = np.load("../../data/test/"+"test_names.npy")
+
 
 
 data_dict_training = dict()
 data_dict_test = dict()
 
-training_names = list()
 
 for name in data_dict:
 	if name in test_list:
 		data_dict_test[name] = data_dict[name] 
 	else:
 		data_dict_training[name] = data_dict[name] 
-		training_names += [name]
 
-#training_names
 
-np.save("../../data/training/"+"training_names.npy",training_names)
-len(data_dict_training)/len(data_dict_test) # 2.034 (almost 2)
+	#training_names
+
 
 
 ##############################################################
