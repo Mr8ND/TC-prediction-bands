@@ -1,5 +1,7 @@
 # initial data cleaning and processing
 
+# run from code/scripts/
+
 #################
 # Data Read in: #
 #################
@@ -44,9 +46,17 @@ for line in data_line:
 	else:
 		data_dict[hurricane_name][str(clean_line[0])+":"+str(clean_line[1])]= clean_line[1:]
 
+
+# small corrections to some errors in the code:
+data_dict["AL051952"]["19520914:0600"][3] = str(360-359.1)+"E"
+data_dict["AL051952"]["19520914:1200"][3] = str(360-358.4)+"E"
+
+
 #############
 # Data Save #
 #############
+
+
 
 
 pickle.dump(data_dict,open("../../data/"+"hurricane_dict_full.pkl","wb"))

@@ -1,10 +1,12 @@
 ##### Libraries
 library(geosphere)
 
-#### Loading functions
+#### Loading inner functions
 source(file = "code/functions/Path_functions.R")
 
-# making 13 point function
+############
+# Function #
+############
 
 thirteen_points = function(df2,lonlat = TRUE){
   # Coverts list of point locations to 13 points equally spaced apart
@@ -52,6 +54,9 @@ thirteen_points = function(df2,lonlat = TRUE){
   
 }
 
+####################
+# Function Testing #
+####################
 
 ### visual testing of function
 ## should be able to make df2 any lat long matrix from the training data:
