@@ -24,7 +24,7 @@ def inner_convert(loc):
 	else:
 		first = np.float(loc[0][:-1])
 
-	if west != "W":
+	if west == "W":
 		second = -np.float(loc[1][:-1])
 	else:
 		second = np.float(loc[1][:-1])
