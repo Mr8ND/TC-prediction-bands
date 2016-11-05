@@ -93,6 +93,52 @@ distMatrixPath = function(path_mat_list, output_length="nautical mile", longlat=
 	}
 
 	return(output_mat)
+}
 
+
+probMatrixPath = function(dist_matrix, epsilon=430){
+	#Given a certain distance Matrix D, this function gives back the probability matrix
+	#indicated in the paper, by first trasforming it using the exp(-D/epsilon).
+	#Epsilon is by default 430, but it can be changed using the related variable.
+
+	#The input is a matrix (n x n).
+	#Ouput is a matrix (n x n), with the rows summing to one.
+
+	w = exp(-1*(dist_matrix/epsilon))
+	return(w/rowSums(w))
+}
+
+
+d2MatrixPath = function(prob_matrix, t=5){
+	#Given a certain probability matrix P, this function computes the matrix D^2(x,y)
+	#defines as follows:
+	#   D^2(x,y) = sum_k (P(x,k)-P(y,k))/stat_k
+	#Where k is the stationary vector of the probability matrix.
+
+	#NOTE: This function always assumes that the probability matrix is built correctly
+	#and that all the rows sums to one, such that an eigenvalue 1 always exists - and 
+	#it is the biggest of the series. So the function goes and looks for the first
+	#eigenvector of the series.
+
+	#The input is the probability matrix (n x n)
+
+	#The output is the D^2(x,y) matrix (n x n)
+
+
+	prob_mat_t = prob_matrix**t
+	eigenvec_1 = eigen(prob_matrix)$vectors[,1]
+
+	n_mat= dim(prob_mat_t)[1]
+	output_mat = matrix(, nrow=n_mat, ncol=n_mat)
+
+	for (i in c(1:n_mat)){
+		for (j in c(i:n_mat)){
+			d2_vec = (prob_matrix[i,] - prob_matrix[j,])/(eigenvec_1**(1/2))
+			output_mat[i,j] = as.numeric(d2_vec %*% d2_vec)
+			output_mat[j,i] = output_mat[i,j] 
+		}
+	}
+
+	return(output_mat)
 }
 
