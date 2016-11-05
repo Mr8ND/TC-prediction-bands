@@ -67,5 +67,32 @@ distBetweenP = function(data.df.p1, data.df.p2, output_length="nautical mile", l
 	}
 
 	return(output_d)
+}
+
+
+distMatrixPath = function(path_mat_list, output_length="nautical mile", longlat=TRUE){
+	#This function calculates the distance matrix Delta between n paths.
+	#This matrix is a symmetric matrix, with the diagonal being 1, and each of the off
+	#diagonal element is the sum of the absolute distance of each point of the two paths.
+
+	#Input is a list of path. Each path is a matrix of (n x 2) elements, in which each
+	#row is a pair of longitude latitude points.
+	#Default is that the pair is (longitude, latitude), which is the flag variable
+	#"longlat". If this is set to false then both the dataframes will be simply swapped.
+
+	#Ouput is the delta matrix distance, output as a matrix (n x n).
+
+	n_mat = length(path_mat_list)
+	output_mat = matrix(, nrow=n_mat, ncol=n_mat)
+
+	for (i in c(1:n_mat)){
+		for (j in c(i:n_mat)){
+			output_mat[i,j] = sum(distBetweenP(path_mat_list[[i]], path_mat_list[[j]],longlat=longlat))
+			output_mat[j,i] = output_mat[i,j]
+		}
+	}
+
+	return(output_mat)
 
 }
+
