@@ -22,7 +22,7 @@ right_eigenvector_compression = function(P, nu = 100,nv = 100,plot_n=0,t=5){
   lambda_original = out$d
   lambda = lambda_original^t
   
-  if (plot != 0){
+  if (plot_n != 0){
     barplot(lambda_original[1:plot])
   }
   
