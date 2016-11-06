@@ -66,7 +66,7 @@ kernel_estimate = function(train,test,k){
   c_d = pi^(d/2)/factorial(d/2+1)
   n = nrow(train)
   
-  p  = 4/(n*c_d*dists_desired^d)
+  p  = d/(n*c_d*dists_desired^d)
   
   return(p)
 }
