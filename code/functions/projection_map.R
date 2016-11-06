@@ -1,4 +1,6 @@
 # functions to project into the smaller space
+library(kknn)
+
 
 right_eigenvector_compression = function(P, nu = 100,nv = 100,plot_n=0,t=5){
   # Compresses P transitional matrix to approximate D^2_t matrix (diffusion distance at scale t)
@@ -22,7 +24,7 @@ right_eigenvector_compression = function(P, nu = 100,nv = 100,plot_n=0,t=5){
   lambda_original = out$d
   lambda = lambda_original^t
   
-  if (plot != 0){
+  if (plot_n != 0){
     barplot(lambda_original[1:plot])
   }
   
@@ -53,6 +55,20 @@ new_points_projection = function(P_test,psi_map_train,lambda_train){
   psi_map_estimated = P_test %*% psi_over_lambda
   
   return(psi_map_estimated)
+}
+
+
+kernel_estimate = function(train,test,k){
+  dists = kknn.dist(train, test, k = k, distance = 3)    
+  dists_desired = dists[[2]][,k]
+  
+  d = ncol(train)
+  c_d = pi^(d/2)/factorial(d/2+1)
+  n = nrow(train)
+  
+  p  = 4/(n*c_d*dists_desired^d)
+  
+  return(p)
 }
 
 
