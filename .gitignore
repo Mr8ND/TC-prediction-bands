@@ -1,2 +1,6 @@
 .DS_Store
 data/
+.Rhistory
+!spec/*.Rhistory
+__pycache__/
+!spec/*__pycache__/
