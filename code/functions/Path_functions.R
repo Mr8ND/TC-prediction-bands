@@ -135,6 +135,66 @@ probMatrixPath = function(dist_matrix, epsilon=430){
 	return(w/rowSums(w))
 }
 
+#####################################
+# Extensions to probMatrix Creation #
+#####################################
+
+calc_k_dist = function(dist_matrix,K= 7){
+  # Finds the kth smallest distance for each point
+  # 
+  # Inputs:
+  #--------
+  # dist_matrix = n x k* matrix with distances (each row an observation)
+  #                   k* needs to be greater than k
+  # K           = number of neighbors desired
+  # 
+  # Outputs:
+  #---------
+  # dist_k = vector with kth distance (per each row)
+  
+  ncol_D = ncol(dist_matrix)
+  
+  if(ncol_D < K){
+    print("distance matrix is too small for that size of K")
+    return()
+  }
+  dist_k = sqrt(apply(dist_matrix,1,function(row) sort(row)[K])) # sqrt to make a distance (may be wrong)
+  
+  return(dist_k)
+}
+  
+probMatrixPath_k = function(dist_matrix, kNN_sigma, kNN_sigma_new = kNN_sigma){
+  # Creates Probability matrix, using KNN vector ot hold sigma
+  #
+  # Inputs:
+  #--------
+  # dist_matrix   = n x m distance matrix (assumed symmetric n x n) 
+  # kNN_sigma     = m x 1 vector with sigma estimates for original structure
+  # kNN_sigma_new = n x 1 vector with sigma estimates for new structure
+  #                   if dist_matrix is not symmetric, 
+  #                   assumed new relationships are being provided
+  #
+  # Outputs:
+  # --------
+  # p             = n x m matrix (transitional matrix)
+
+
+  if(!(length(kNN_sigma_new) == nrow(dist_matrix) & length(kNN_sigma) == ncol(dist_matrix) )){
+    print("Error in dimensions of inputs")
+    return()
+  }
+      
+
+  epsilon_matrix = kNN_sigma_new %*% t(kNN_sigma)
+  w = exp(-1*(dist_matrix/epsilon_matrix))
+  p = w/rowSums(w)
+  return(p)
+}
+
+
+##########
+##########
+
 
 d2MatrixPath = function(prob_matrix, t=5){
 	#Given a certain probability matrix P, this function computes the matrix D^2(x,y)
@@ -167,5 +227,173 @@ d2MatrixPath = function(prob_matrix, t=5){
 	}
 
 	return(output_mat)
+}
+
+#######################################
+# Extensions to d2MatrixPath Creation #
+#######################################
+# Updates to number of steps along transition matrix, averaging
+# Now requires 2 functions 
+# (I don't think we use the d2 but it wasn't the hard to copy)
+
+pMatrixPath_average = function(prob_matrix,t_var,t_type = "upper"){
+  # Averages together P matrices raised to different t values
+  #
+  # Inputs:
+  # -------
+  # prob_matrix = (n x n) transition matrix 
+  # t_var       = integer or vector containing information about t
+  # t_type      = string, either "upper", "vec", or "log2" 
+  #                 "upper" : integer t_var, range t from 1:t_var
+  #                 "vec"   : vector t_var range t along vec
+  #                 "log2"  : integer t_var, range t from 2^(0-> t_var)
+  #
+  # Outputs:
+  #---------
+  # p_average  = (n x n) transition matrix
+  # 
+  # Notes: 
+  #-------
+  # Assumes that the P matrix is well created (rows sum to 1)
+  
+  #### log2 way to express t
+  if(t_type == "log2"){
+    p_average = prob_matrix
+    intermediate_pt = p_average
+    for(i in 1:t_var){
+      intermediate_pt = intermediate_pt**2
+      p_average = p_average + intermediate_pt
+    }
+    p_average = p_average / (t_var + 1)
+    return(p_average)
+  }
+  
+  #### other ways to express t
+  if(t_type == "upper"){
+    t_var = 1:t_var
+  }
+  p_average = matrix(0,nrow = nrow(prob_matrix),ncol= ncol(prob_matrix))
+  
+  for(i in t_var){
+    p_average = p_average + prob_matrix**i
+  }
+  
+  p_average = p_average/(length(t_var))
+  return(p_average) 
+}
+
+
+d2MatrixPath_pt = function(prob_matrix_t){
+  # Computes matrix D^2(x,y)
+  #defines as follows:
+  #   D^2(x,y) = sum_k (P(x,k)-P(y,k))/stat_k
+  # Where k is the stationary vector of the probability matrix.
+  # 
+  # Input:
+  #-------
+  # prob_matrix_t =  (n x n) probability matrix
+  #
+  # Output:
+  #--------
+  # output_mat = (n x n) D^2(x,y) matrix
+  #
+  # Note: 
+  #------
+  # This function always assumes that the probability matrix is built correctly
+  #and that all the rows sums to one, such that an eigenvalue 1 always exists - and 
+  #it is the biggest of the series. So the function goes and looks for the first
+  #eigenvector of the series.
+  
+  eigenvec_1 = eigen(prob_matrix)$vectors[,1]
+  
+  n_mat= dim(prob_mat_t)[1]
+  output_mat = matrix(, nrow=n_mat, ncol=n_mat)
+  
+  for (i in c(1:n_mat)){
+    for (j in c(i:n_mat)){
+      d2_vec = (prob_matrix[i,] - prob_matrix[j,])/(eigenvec_1**(1/2))
+      output_mat[i,j] = as.numeric(d2_vec %*% d2_vec)
+      output_mat[j,i] = output_mat[i,j] 
+    }
+  }
+  
+  return(output_mat)
+}
+
+
+###########
+###########
+
+###################
+# inverse mapping #
+###################
+
+# for a single observation: 
+
+distance_mat_eulid = function(projection_locs){
+  # Wrapper for calculating euclidean distance
+  #
+  # Input:
+  #-------
+  # projection_locs = locations of TC in projected space (n x d)
+  #
+  # Output:
+  #--------
+  # e_distance      = euclidean distance matrix comparing between points
+  
+  n = nrow(projection_locs)
+  dist_structure = dist(projection_locs,upper = TRUE,diag = TRUE)
+
+  e_distance = matrix(0,nrow=n,ncol=n)
+  e_distance[lower.tri(x = e_distance,diag=F)] = matrix(dist_structure)
+  e_distance = e_distance + t(e_distance)
+  return(e_distance)
+}
+
+
+
+inverse_map =function(distance_projection,projection_locs,old_locs, new_p_loc,K =7){
+  # Predicts the Hurricane path from training data and location of projection
+  #
+  # Inputs:
+  #--------
+  # distance_projection = distances between observations in projection space 
+  #							(euclidean structure assumed)
+  # projection_locs     = projection location of training data
+  # old_locs            = true paths (list) of training data
+  # new_p_loc           = new observation's location in projection (p) space
+  # K                   = Number of neigbhors used to estimate \sigma_i(K)
+  #
+  # Outputs:
+  #---------
+  # predict 			= predicted path of new observation
+  #
+  # Note:
+  #------
+  # This function does a lot, it:
+  # 1) gets a prediction for s_i(k) for the new observation in the projection space
+  # 2) uses the kNN approach to calculate closeness weights (scaled obviously)
+  # 3) predicts the original space point by weighting the observations that it has seen
+  
+  
+  sigma_vec = calc_k_dist(distance_projection,K= K)
+  
+  ### first get distance in between (using euclidean distance on projection space)
+  distance =sqrt(rowSums(t(((t(projection_locs) - as.vector(new_p_loc))**2))))
+  ### similar calc_k_dist function, but for 1 observation
+  sigma_k = sort(distance)[K]
+  
+  weights = exp(-distance**2/(sigma_k*sigma_vec))
+  weights = weights/sum(weights)
+  
+  predict = matrix(0,nrow = nrow(old_locs[[1]]), ncol = ncol(old_locs[[1]]))
+
+  for(i in 1:length(old_locs)){
+  	predict = predict + old_locs[[i]] * weights[i]
+  }
+  
+  
+  return(predict)
+  
 }
 
