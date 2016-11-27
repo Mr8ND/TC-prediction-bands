@@ -90,11 +90,11 @@ lengths <- unlist(lapply(dflist, FUN = nrow))
 death.rate <- 1 / mean(lengths)
 
 ###########################
-##### Generate curves ##### # here
+##### Generate curves #####
 ###########################
 
 # Read in validation data 
-setwd("/Users/robindunn/Documents/CMU 1st Semester/Intro Machine Learning/Project/Coding/Hurricanes_701/data/training/validate")
+setwd("../../../data/training/validate")
 temp <- list.files(pattern=".txt")
 dfcv <- lapply(temp, read.table)
 
@@ -126,7 +126,8 @@ starts <- lapply(starts, FUN = append.block)
 
 
 names <- list.files(pattern=".txt")
-loc <- "/Users/robindunn/Documents/CMU 1st Semester/Intro Machine Learning/Project/Validation_Sims_Auto/"
+setwd("../../../")
+loc <- "/data/generate/"
 
 set.seed(1)
 
@@ -136,7 +137,7 @@ ptm <- proc.time()
 
 for(i in 1:length(names)){
   
-  newdir <- paste0(loc, substr(names[i],1,nchar(names[i])-4), "_sims")
+  newdir <- paste0(loc, substr(names[i],1,nchar(names[i])-4), "_ar_sims")
   dir.create(newdir)      # should test for error
   setwd(newdir)
   

@@ -83,10 +83,8 @@ speed.regs <- lapply(dflist.blocks, FUN = function(x)
 ##### Generate curves #####
 ###########################
 
-# List of n curves: Each curve should be a data frame with 2 columns 
-
 # Read in validation data 
-setwd("/Users/robindunn/Documents/CMU 1st Semester/Intro Machine Learning/Project/Coding/Hurricanes_701/data/training/validate")
+setwd("../../../data/training/validate")
 temp <- list.files(pattern=".txt")
 dfcv <- lapply(temp, read.table)
 
@@ -114,7 +112,8 @@ starts <- lapply(starts, FUN = append.block)
 
 
 names <- list.files(pattern=".txt")
-loc <- "/Users/robindunn/Documents/CMU 1st Semester/Intro Machine Learning/Project/Validation_Sims_No_Auto/"
+setwd("../../../")
+loc <- "/data/generate/"
 
 set.seed(1)
 
@@ -124,7 +123,7 @@ ptm <- proc.time()
 
 for(i in 1:length(names)){
   
-  newdir <- paste0(loc, substr(names[i],1,nchar(names[i])-4), "_sims")
+  newdir <- paste0(loc, substr(names[i],1,nchar(names[i])-4), "_non_ar_sims")
   dir.create(newdir)      # should test for error
   setwd(newdir)
   
