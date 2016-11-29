@@ -127,9 +127,15 @@ if run_initial_time ==True:
 	validation_count = np.zeros(xx.shape[0],dtype = np.int)
 	for i in np.arange(validation_count.shape[0]):
 		n = training_count[i]
-		validation_count[i] = n//2
+		validation_count[i] = n//2 # 
 		if n%2 != 0:
 			validation_count[i] +=np.random.binomial(n=n%2,p=1/2)
+
+
+
+
+	######### ## ## 
+
 	######### ## ## 
 
 	test_selection = dict()
@@ -151,6 +157,10 @@ if run_initial_time ==True:
 		n      = training_count[i]
 		validation_selection[xx[i]] = training_selection[xx[i]][np.random.choice(a = np.arange(n),
 								 size = amount,replace=False)]
+
+
+
+
 	######### ## ## 
 
 	names_dict_sorted = dict()
@@ -167,6 +177,31 @@ if run_initial_time ==True:
 
 
 
+	###############
+	###############
+	# adjusting validation to only 1/6 of training/validation data, in a way to 
+	# that doesn't mess up earlier data splitting (just give some from validate to training)
+	new_validation_count = np.zeros(xx.shape[0],dtype = np.int)
+	for i in np.arange(new_validation_count.shape[0]):
+		n = validation_count[i]
+		new_validation_count[i] = n//3
+		if n%3 != 0:
+			new_validation_count[i] +=np.random.binomial(n=n%3,p=1/3)
+	###############
+	###############
+
+	###############
+	###############
+	validation_selection_update = dict()
+	for i in np.arange(validation_count.shape[0]):
+		amount = new_validation_count[i]   
+		n      = validation_count[i]
+		validation_selection_update[xx[i]] = validation_selection[xx[i]][np.random.choice(a = np.arange(n),
+								 size = amount,replace=False)]
+	###############
+	###############
+
+
 	######
 	# now we need to use the selected numbers and the ordered names to get the 
 	# test/train hurricanes
@@ -174,6 +209,8 @@ if run_initial_time ==True:
 	test_list = list()
 	train_first_list = list()
 	valid_list = list()
+	valid_list_new = list()
+	train_first_list_new = list()
 	for year in names_dict_sorted.keys():
 		selection_test = test_selection[year]
 		selection_valid = validation_selection[year]
@@ -183,16 +220,25 @@ if run_initial_time ==True:
 		valid_list += list(names_dict_sorted[year][selection_valid])
 
 
+		selection_valid_new = validation_selection_update[year]
+		selection_train_first_new = np.array([x for x in training_selection[year] if x not in selection_valid_new])
+		valid_list_new += list(names_dict_sorted[year][selection_valid_new])
+		train_first_list_new += list(names_dict_sorted[year][selection_train_first_new])
+
 
 	test_list = np.array(test_list)
 	train_first_list = np.array(train_first_list)
 	valid_list = np.array(valid_list)
 
+	valid_list_new = np.array(valid_list_new)
+	train_first_list_new = np.array(train_first_list_new)
 
 	np.save("../../data/test/"+"test_names.npy",test_list)
 	np.save("../../data/training/validate/"+"validate_names.npy",valid_list)
 	np.save("../../data/training/train/"+"training_names.npy",train_first_list)
 
+	np.save("../../data/training/validate/"+"validate_names_new.npy",valid_list_new)
+	np.save("../../data/training/train/"+"training_names_new.npy",train_first_list_new)
 
 	# to load in: np.load("../../data/test/training_names.npy")
 
@@ -207,12 +253,15 @@ if run_initial_time == False:
 	valid_list = np.load("../../data/training/validate/"+"validate_names.npy")
 	train_first_list = np.load("../../data/training/train/"+"training_names.npy")
 	test_list = np.load("../../data/test/"+"test_names.npy")
-
-
+	train_first_list_new = np.load("../../data/training/train/"+"training_names_new.npy")
+	valid_list_new = np.load("../../data/training/validate/"+"validate_names_new.npy")
 
 data_dict_train_first = dict()
 data_dict_validate = dict()
 data_dict_test = dict()
+data_dict_train_first_new = dict()
+data_dict_validate_new = dict()
+
 
 
 for name in data_dict:
@@ -225,6 +274,12 @@ for name in data_dict:
 
 
 	#training_names
+
+for name in data_dict:
+	if name in train_first_list_new:
+		data_dict_train_first_new[name] = data_dict[name] 
+	elif name in valid_list_new:
+		data_dict_validate_new[name] = data_dict[name] 
 
 
 
@@ -247,7 +302,7 @@ for hurr in data_dict_train_first.keys():
 
 	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
 	data_r_train_first[hurr] = storage_mat
-	np.savetxt("../../data/training/train/"+ hurr + ".txt",storage_mat, 
+	np.savetxt("../../data/training/train_50/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")
 
 data_r_validate = dict()
@@ -265,7 +320,7 @@ for hurr in data_dict_validate.keys():
 
 	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
 	data_r_validate[hurr] = storage_mat
-	np.savetxt("../../data/training/validate/"+ hurr + ".txt",storage_mat, 
+	np.savetxt("../../data/training/validate_50/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")
 
 data_r_test = dict()
@@ -285,6 +340,54 @@ for hurr in data_dict_test.keys():
 	data_r_test[hurr] = storage_mat
 	np.savetxt("../../data/test/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")
+
+
+
+
+
+
+
+#######
+#######
+
+
+data_r_train_first_new = dict()
+for hurr in data_dict_train_first_new.keys():
+	interested_names = np.array(sorted(data_dict_train_first_new[hurr]))[:-2]
+	storage_mat = np.ones((interested_names.shape[0],19+1),dtype = np.object)*"NA" 
+	# 19 is the size of the information per point, need also to capture date
+	for i,step in enumerate(interested_names):
+		storage_mat[i,0] = step
+		if data_dict_train_first_new[hurr][step].shape[0] == 19:
+			storage_mat[i,1:] = data_dict_train_first_new[hurr][step]
+		else:
+			storage_mat[i,1] = data_dict_train_first_new[hurr][step][0]
+			storage_mat[i,3:] = data_dict_train_first_new[hurr][step][1:]
+
+	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
+	data_r_train_first_new[hurr] = storage_mat
+	np.savetxt("../../data/training/train/"+ hurr + ".txt",storage_mat, 
+		fmt="%s")
+
+data_r_validate_new = dict()
+for hurr in data_dict_validate_new.keys():
+	interested_names = np.array(sorted(data_dict_validate_new[hurr]))[:-2]
+	storage_mat = np.ones((interested_names.shape[0],19+1),dtype = np.object)*"NA" 
+	# 19 is the size of the information per point, need also to capture date
+	for i,step in enumerate(interested_names):
+		storage_mat[i,0] = step
+		if data_dict_validate_new[hurr][step].shape[0] == 19:
+			storage_mat[i,1:] = data_dict_validate_new[hurr][step]
+		else:
+			storage_mat[i,1] = data_dict_validate_new[hurr][step][0]
+			storage_mat[i,3:] = data_dict_validate_new[hurr][step][1:]
+
+	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
+	data_r_validate_new[hurr] = storage_mat
+	np.savetxt("../../data/training/validate/"+ hurr + ".txt",storage_mat, 
+		fmt="%s")
+
+
 
 
 
