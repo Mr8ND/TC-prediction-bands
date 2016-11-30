@@ -35,13 +35,14 @@ source(paste0(functions_loc,"load_training_first.R"))
 # Loading simulated data #
 ##########################
 
-amount = 1:5
+amount = 26:50
+amount_string = "26_50"
 
 no_auto = load_sims(project_location,sub_directory_no_auto,group = amount)
-auto = load_sims(project_location,sub_directory_auto,group = amount)
+#auto = load_sims(project_location,sub_directory_auto,group = amount)
 
 files_no_auto = list.files(paste0(project_location,sub_directory_no_auto))
-file_names = unlist(strsplit(x = files_no_auto,split = "_sims"))
+file_names = unlist(strsplit(x = files_no_auto,split = "_non_ar_sims"))
 file_names = as.vector(names)[amount]
 ########################
 ########################
@@ -53,6 +54,15 @@ file_names = as.vector(names)[amount]
 # Loading in training structure #
 #################################
 
+#train_list =load_train_first_data_list("")
+#train13 =thirteen_points_listable(list_df = train_list,lonlat = FALSE)
+#save(train13,file = paste0(train_f_loc,"train13.Rdata"))
+
+
+#D_train = distMatrixPath(path_mat_list = train13,longlat = TRUE)
+#  
+
+
 load(paste0(train_f_loc,"train13.Rdata")) # named train13
 load(paste0(train_f_loc,"D_matrix.Rdata")) # named D_train
 
@@ -62,26 +72,26 @@ test13_no_auto_list = list()
 
 
 for(i in amount){
-  test13_auto_list[[i]] = 
-    thirteen_points_listable(list_df = auto[[i]],
-                             c_position = 1:2,lonlat = TRUE)
+  #test13_auto_list[[i]] = 
+  #  thirteen_points_listable(list_df = auto[[i]],
+  #                           c_position = 1:2,lonlat = TRUE)
   test13_no_auto_list[[i]] = 
     thirteen_points_listable(list_df = no_auto[[i]],
                              c_position = 1:2,lonlat = TRUE)
   print(i)
 }
 
-# save(test13_auto_list,test13_no_auto_list,file = paste0(generate_loc,"test13_first5_27nov.Rdata"))
-# load(paste0(generate_loc,"test13_first5_27nov.Rdata")) # test13_auto_list,test13_no_auto_list
+save(test13_no_auto_list,file = paste0(generate_loc,"test13_",amount_string,"_28nov_no_auto.Rdata"))
+# load(paste0(generate_loc,"test13_first15_28nov.Rdata")) # test13_auto_list,test13_no_auto_list
 
 
-D_test_auto_list = list()
+#D_test_auto_list = list()
 D_test_no_auto_list = list()
 
 for(i in amount){
-  D_test_auto_list[[i]] = 
-    distMatrixPath_train_test(path_mat_list_test = test13_auto_list[[i]],
-                              path_mat_list_train = train13)
+  #D_test_auto_list[[i]] = 
+  #  distMatrixPath_train_test(path_mat_list_test = test13_auto_list[[i]],
+  #                            path_mat_list_train = train13)
   
   D_test_no_auto_list[[i]] = 
     distMatrixPath_train_test(path_mat_list_test = test13_no_auto_list[[i]],
@@ -89,7 +99,7 @@ for(i in amount){
   print(i)
 }
 
-# save(D_test_auto_list,D_test_no_auto_list,file = paste0(generate_loc,"dmat_first5_27nov.Rdata"))
+save(D_test_no_auto_list,file = paste0(generate_loc,"dmat_",amount_string,"_28nov_no_auto.Rdata"))
 # load(paste0(generate_loc,"dmat_first5_27nov.Rdata")) # D_test_auto_list,D_test_no_auto_list
 
 
@@ -145,11 +155,11 @@ estimate_p_wrapper = function(training_structure_estimating_p,D_test,kdensity = 
 
 
 training_structure=training_structure_estimating_p(D_train,K=4,t=1,dim=5,plot_n = 0)
-#save(training_structure,file = paste0(train_f_loc,"training_structure.Rdata"))
+save(training_structure,file = paste0(train_f_loc,"training_structure.Rdata"))
 #load(file = paste0(train_f_loc,"training_structure.Rdata")) # training_structure
 
 estimate_p_no_auto = list()
-estimate_p_auto = list()
+#estimate_p_auto = list()
 
 kdensity = 10
 
@@ -158,29 +168,42 @@ for(i in amount){
     estimate_p_wrapper(training_structure_estimating_p = training_structure,
                        D_test = D_test_no_auto_list[[i]],
                       kdensity = kdensity)
-  estimate_p_auto[[i]]    = 
-  estimate_p_wrapper(training_structure_estimating_p = training_structure,
-                     D_test = D_test_auto_list[[i]],
-                    kdensity = kdensity)
+  #estimate_p_auto[[i]]    = 
+  #estimate_p_wrapper(training_structure_estimating_p = training_structure,
+  #                   D_test = D_test_auto_list[[i]],
+  #                  kdensity = kdensity)
 }
 
-validation_data=load_validate_data_list_names("",names =T)
-
-list_valid_subset = list()
-for(name in seq_along(file_names)){
-  list_valid_subset[[name]] = validation_data$list[[which(validation_data$names == paste0(file_names[name],".txt"))]]
-}
-
-list_valid_subset13 = thirteen_points_listable(list_df = list_valid_subset,lonlat = FALSE)
+save(estimate_p_no_auto,file=paste0(generate_loc,"estimate_p_",amount_string,"_28nov_no_auto.Rdata"))
 
 
-for(i in seq_along(file_names)){
-  quartz()
-  plotting_funct(list_valid_subset13[[i]],list_estimate = test13_no_auto_list[[i]],weights= estimate_p_no_auto[[i]]$p_estimate_test,main= paste("No Auto",file_names[i]))
-  quartz()
-  plotting_funct(list_valid_subset13[[i]],list_estimate = test13_auto_list[[i]],weights= estimate_p_auto[[i]]$p_estimate_test,main= paste("Auto",file_names[i]))
+# validation_data=load_validate_data_list_names("",names =T)
 
-}
+# list_valid_subset = list()
+# for(name in seq_along(file_names)){
+#   list_valid_subset[[name]] = validation_data$list[[which(validation_data$names == paste0(file_names[name],".txt"))]]
+# }
+
+# list_valid_subset13 = thirteen_points_listable(list_df = list_valid_subset,lonlat = FALSE)
+
+
+  # for(i in seq_along(file_names)){
+  #   i=i+1
+  #   quartz()
+  #   par(mfrow=c(1,2))
+  #   plotting_funct(list_valid_subset13[[i]],
+  #     list_estimate = test13_no_auto_list[[i]],
+  #     weights= estimate_p_no_auto[[i]]$p_estimate_test,main= paste("No Auto",file_names[i]))
+  #   weights_all = rep(1,200)
+  #   plotting_funct_color_select(list_valid_subset13[[i]],
+  #     list_estimate = test13_no_auto_list[[i]],
+  #     cols= c("black"),index =weights_all,
+  #     main= paste("No Auto,No Weights",file_names[i]))
+
+  #   #quartz()
+  #   #plotting_funct(list_valid_subset13[[i]],list_estimate = test13_auto_list[[i]],weights= estimate_p_auto[[i]]$p_estimate_test,main= paste("Auto",file_names[i]))
+
+  # }
 
 
 

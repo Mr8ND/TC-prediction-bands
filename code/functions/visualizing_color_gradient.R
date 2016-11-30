@@ -1,8 +1,3 @@
-
-#colfunc <- colorRampPalette(c("white", "black"))
-#colfunc(10)
-
-
 library(rworldmap)
 
 index_funct = function(xx,levels = 3){
@@ -18,35 +13,24 @@ index_funct = function(xx,levels = 3){
   return(index)
 }
 
-# newmap = getMap(resolution = "low")
+col_convert_opacity = function(cols,alpha_level = 50){
+  # alpha is percentage (rounded to 5%)
+  if (alpha_level %%5 != 0){
+    print("Retry with alpha level integer in range 0-100, and divisible by 5")
+    return(NA)
+  }
 
-# plot(newmap, ylim = c(9, 40), xlim = c(-110, 2), asp = 1)
+  name = paste0("",seq(100,0,by=-5))
+  add_ons = c("FF","F2","E6","D9","CC","BF","B3","A6","99","8C","80","73",
+    "66","59","4D","40","33","26","1A","0D","00")
+  names(add_ons)= name
+  cols_split = sapply(cols,function(color){strsplit(color,"#")[[1]][2]})
 
-# validate_list =load_validate_data_list("")
+  return(paste0("#",add_ons[as.character(alpha_level)],cols_split))
+}
 
-# plot(newmap, ylim = c(9, 40), xlim = c(-110, 2), asp = 1)
-# lines(validate_list[[60]][,6],validate_list[[60]][,5],col="black")
-# num_paths = length(test_list)
-
-# xx = p_estimate_test
-# index = index_funct(xx,10)
-# for(i in 1:150){
-#     lines(test_list[[i]][,1],test_list[[i]][,2],col=colfunc(10)[index[i]])
-# }
-
-# lines(validate_list[[60]][,6],validate_list[[60]][,5],col="green",lwd=4)
-
-# # vs
-
-# for(i in 1:150){
-#   lines(test_list[[i]][,1],test_list[[i]][,2],col="black")
-# }
-
-
-
-plotting_funct = function(true13,list_estimate,weights,lower="white",
-  upper="black",levels =10,
-  ylim = c(9,40),xlim =c(-110,2),main="Aiite"){
+plotting_funct = function(true13,list_estimate,weights,lower="white", upper="black",levels =10,
+  ylim = c(9,40),xlim =c(-110,2),main="Aiite",alpha_level = 100){
   # function will plot the true curve in green, rest of curves color gradiation
   # based on weights
   
@@ -55,16 +39,32 @@ plotting_funct = function(true13,list_estimate,weights,lower="white",
   plot(newmap, ylim = ylim, xlim = xlim, asp = 1,main=main)
   colfunc = colorRampPalette(c(lower, upper))
   cols = colfunc(levels)
+  #cols = col_convert_opacity(cols,alpha_level = alpha_level)
   index = index_funct(weights,levels = levels)
-
-  for(i in 1:length(list_estimate)){
+  
+  ordering = order(index)
+  for(i in ordering){
     lines(list_estimate[[i]][,1],list_estimate[[i]][,2],col=cols[index[i]])
   }
 
 
   lines(true13[,1],true13[,2],col="green",lwd=4)
+}
+
+plotting_funct_color_select = function(true13,list_estimate,cols,index,
+  ylim = c(9,40),xlim =c(-110,2),main="Aiite"){
+  # function will plot the true curve in green, rest of curves color gradiation
+  # based on weights
+  
+
+  newmap = getMap(resolution = "low")
+  plot(newmap, ylim = ylim, xlim = xlim, asp = 1,main=main)
+
+  ordering = order(index)
+  for(i in ordering){
+    lines(list_estimate[[i]][,1],list_estimate[[i]][,2],col=cols[index[i]])
+  }
 
 
-
-
+  lines(true13[,1],true13[,2],col="green",lwd=4)
 }
