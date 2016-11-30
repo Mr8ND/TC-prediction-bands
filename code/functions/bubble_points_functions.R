@@ -1,7 +1,7 @@
 library(datamart)
 library(geosphere)
 
-rearrangePathList = function(list_path, prob_vec_path){
+rearrangePathList = function(list_path, prob_vec_path,long=1,lat=2,bear=3,bear.change=4,distance=6){
 	#This function takes as an input the list of the path, in which we have n elements, each of with is a path.
 	#A path is a dataframe of (k x 2), where k is the number of points of the path. k needs to be the same for 
 	#every path in the list or it will throw an error. the number of columns needs to be 2 as well or it is going
@@ -21,15 +21,19 @@ rearrangePathList = function(list_path, prob_vec_path){
 	if (n_df != 13){
 		print("Number of points in each dataset was should have 13 but it is not - just flagging it.")
 	}
-
-	output_mat = matrix(, nrow=n_df, ncol=2*n)
+  
+	output_mat = matrix(, nrow=n_df, ncol=5*n)
 	output_list = list()
 	for (j in c(1:n_df)){
 		for (i in c(1:n)){
-			output_mat[j,(2*i-1)] = list_path[[i]][j,1]
-			output_mat[j,(2*i)] =list_path[[i]][j,2]
+			output_mat[j,(5*i-4)] = list_path[[i]][j,long]
+			output_mat[j,(5*i-3)] =list_path[[i]][j,lat]
+			output_mat[j,(5*i-2)] =list_path[[i]][j,bear]
+			output_mat[j,(5*i-1)] =list_path[[i]][j,bear.change]
+			output_mat[j,(5*i)] =list_path[[i]][j,distance]
 		}
 		output_list[[j]] = data.frame(cbind(t(matrix(output_mat[j,], ncol=n)),prob_vec_path))
+		colnames(output_list[[j]]) = c("long", "lat", "bearing", "bearing.change", "distance", "probability")
 	}
 	return(output_list)
 }
