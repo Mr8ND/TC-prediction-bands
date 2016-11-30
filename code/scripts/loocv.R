@@ -54,8 +54,9 @@ loocv_wrapper= function(path_mat_list,Dmat,K=7,t=1,output_length="nautical mile"
     phi_map_out = right_eigenvector_compression(
       P = prob_minus_obs,nu = project_size,nv = project_size,plot_n = plot_n,t = t)
     phi_map_x_minus_obs = phi_map_out$psi_map_x
+    phi_map_x_minus_obs = phi_map_x_minus_obs[,-1]
     lambda_x_minus_obs = phi_map_out$lambda
-    
+    lambda_x_minus_obs = lambda_x_minus_obs[-1]
     # for new point
     prob_obs = probMatrixPath_k(data_obs, kNN_sigma = dist_k_minus_obs,kNN_sigma_new = dist_k_obs)
     
@@ -91,7 +92,7 @@ loocv_wrapper= function(path_mat_list,Dmat,K=7,t=1,output_length="nautical mile"
   return(list(Dmat = Dmat, predicted = storage, diffs = diff))
 }
 
-again = F
+again = T
 
 if(again == T){
   capture = list()
@@ -110,11 +111,13 @@ if(again == T){
     k_index = k_index + 1
     
     train_f_loc = "data/training/train/"
-    save(capture,file = paste0(train_f_loc,"capture.Rdata"))
+    save(capture,file = paste0(train_f_loc,"capture2.Rdata"))
   }
 }else{
-    load(file = paste0(train_f_loc,"capture.Rdata"))
+    load(file = paste0(train_f_loc,"capture2.Rdata"))
 }
+
+
 
 
 #####################################################
@@ -134,6 +137,8 @@ rownames(error) = paste0("t= ",c(1,3,5,7),":")
 # error
 xtable(error)
 
+
+save(error,file=paste0(train_f_loc,"error_loocv_new2.Rdata"))
 ############################
 # plotting some estimates: #
 ############################
