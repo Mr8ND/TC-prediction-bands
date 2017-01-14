@@ -397,3 +397,50 @@ inverse_map =function(distance_projection,projection_locs,old_locs, new_p_loc,K 
   
 }
 
+
+
+
+
+
+
+
+
+
+##########################
+# Distance Between Speed #
+##########################
+
+distMatrixPath_innersq = function(path_mat_list, output_length="nautical mile", 
+                                    longlat=TRUE){
+  # this function is similar to the one above - but we get the sum of square 
+  # differences - which I think we should have got before anyway
+  #
+  #
+
+  n_mat = length(path_mat_list)
+  output_mat = matrix(, nrow=n_mat, ncol=n_mat)
+
+  for (i in c(1:n_mat)){
+    for (j in c(i:n_mat)){
+      output_mat[i,j] = sum(distBetweenP(path_mat_list[[i]], path_mat_list[[j]],longlat=longlat)^2)
+      output_mat[j,i] = output_mat[i,j]
+    }
+  }
+
+  return(output_mat)
+}
+
+
+
+distMatrixSpeed_innersq = function(speed_df){
+  # this function is similar to the ones above - but we get the sum of square 
+  # differences of the speed (this ends up being just a wrapper)
+  #
+  #
+
+  distance = dist(speed_df)
+  d2 = as.matrix(distance)^2
+
+  return(d2)
+}
+
