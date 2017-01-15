@@ -42,11 +42,13 @@ The `python` file requires the following packages:
 - `kknn`: kNN algorithm, and kNN density estimator
 - `rworldmap`: plotting 2d surfaces of the earth
 - `plot3D`: plotting 3d compressions
+- `xtable`: creating latex tables for presentation
 
 ### Order of Files to Run
 - `cleaning_data_test_train_subset.py`:
 - `initial_pipeline.R`:
-- ... 
+- `loocv.R`
+- ...
 
 
 ## Contributors 
