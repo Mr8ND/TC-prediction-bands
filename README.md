@@ -24,18 +24,18 @@ to gather the split from Ben LeRoy, otherwise, go into
 ### Running files
 All files (`python` and `R`) should be run from the upper projection location (
 `Hurricanes_701`) which we notate as the `project_location`. Python file 
-(`.py`) should be run using python3.
+(`.py`) should be run using `python3`.
 
-The python file requires the following packages:
+The `python` file requires the following packages:
 - `numpy`: general data structure
 - `pickle`: saving files (although all important files are saved as `csv`s for 
-R)
+`R`)
 - `re`: general expression manipulations
 - `collections`: table and counting structure
 - `matplotlib`,`matplotlib.pyplot`: plotting
 - `sys`: file location
 
-R files require the following libraries:
+`R` files require the following libraries:
 - `geosphere`: distances and bearing on spheres (for the earth: which is non euclidean)
 - `plyr`: 
 - `datamart`: 
