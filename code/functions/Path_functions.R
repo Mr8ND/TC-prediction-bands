@@ -30,8 +30,8 @@ distAlongP = function(data.df, output_length="nautical mile", longlat=TRUE){
 	output_b = numeric(n-1)
 
 	for (i in c(1:(n-1))){
-		output_d[i] = uconv(distGeo(data.df[i,], data.df[i+1,]), "m", output_length, "Length")
-		output_b[i] = bearing(data.df[i,], data.df[i+1,])
+		output_d[i] = uconv(distGeo(data.df[i,1:2], data.df[i+1,1:2]), "m", output_length, "Length")
+		output_b[i] = bearing(data.df[i,1:2], data.df[i+1,1:2])
 	}
 
 	return(list(output_d,output_b))
