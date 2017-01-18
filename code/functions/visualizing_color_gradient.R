@@ -30,7 +30,7 @@ col_convert_opacity = function(cols,alpha_level = 50){
 }
 
 plotting_funct = function(true13,list_estimate,weights,lower="white", upper="black",levels =10,
-  ylim = c(9,40),xlim =c(-110,2),main="Aiite",alpha_level = 100){
+  ylim = c(9,40),xlim =c(-110,2),main="Aiite",alpha_level = 100,col_true = "green",lwd_true = 4){
   # function will plot the true curve in green, rest of curves color gradiation
   # based on weights
   
@@ -48,11 +48,11 @@ plotting_funct = function(true13,list_estimate,weights,lower="white", upper="bla
   }
 
 
-  lines(true13[,1],true13[,2],col="green",lwd=4)
+  lines(true13[,1],true13[,2],col=col_true,lwd=lwd_true)
 }
 
 plotting_funct_color_select = function(true13,list_estimate,cols,index,
-  ylim = c(9,40),xlim =c(-110,2),main="Aiite"){
+  ylim = c(9,40),xlim =c(-110,2),main="Aiite",col_true = "green",lwd_true = 4){
   # function will plot the true curve in green, rest of curves color gradiation
   # based on weights
   
@@ -66,5 +66,5 @@ plotting_funct_color_select = function(true13,list_estimate,cols,index,
   }
 
 
-  lines(true13[,1],true13[,2],col="green",lwd=4)
+  lines(true13[,1],true13[,2],col=col_true,lwd=lwd_true)
 }

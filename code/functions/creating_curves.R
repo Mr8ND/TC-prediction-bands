@@ -9,7 +9,7 @@ is.dead.inner <- function(curve.df,death.regs,bad.locations,death.rate){
   	prob = death.rate
   }else{
   	prob <- predict(death.regs[[block]],type= "response",
-  	                newdata = data.frame(curve.df[n.row,]))
+  	newdata = data.frame(curve.df[n.row,]))
   }
   #print(prob)
   return(rbinom(1,1,prob) == 1)
@@ -30,7 +30,6 @@ bearing.inner <- function(curve.df,bearing.regs){
   
   curve.df[n.row,'bearing'] <- curve.df[(n.row-1),'bearing'] + 
   		curve.df[n.row,'bearing.change']
-  
   # making sure size of bearing stays in range
   while(curve.df[n.row,'bearing'] < 0){
     curve.df[n.row,'bearing'] <- curve.df[n.row,'bearing'] + 360
@@ -67,7 +66,6 @@ speed.inner <- function(curve.df,speed.regs){
 update.curve.inner <- function(curve.df){
   n.row <- nrow(curve.df)
   curve.df <- rbind(curve.df,rep(NA,ncol(curve.df)))
-
   # Append new point to curve.df
   new.point <- destPoint(p=c(curve.df$long[n.row], curve.df$lat[n.row]), 
                         b = curve.df$bearing[n.row], 
@@ -132,6 +130,7 @@ generate.curve <- function(curve.df,bearing.regs,speed.regs,death.regs,
 	is.dead     <- is.dead.function(curve.df,death.regs,bad.locations,
 									death.rate)
 	life.length <- 2 + 1*auto.ind
+
 
 	while(!is.dead & life.length <= max.length){
 		curve.df <- bearing.inner(curve.df,bearing.regs)

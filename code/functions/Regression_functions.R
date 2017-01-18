@@ -1,3 +1,5 @@
+library(geosphere)
+
 ######################################################## 
 ##### Append latitude and longitude to data frames #####
 ########################################################
@@ -28,7 +30,7 @@ append.bearing <- function(df){
   
   # Ensure -180 < bearing.change <= 180
   # If bearing.change <= -180, add 360
-  df[df$bearing.change <= -180 & !is.na(df$bearing.change),]$bearing.change <- df[df$bearing.change < -180 & !is.na(df$bearing.change),]$bearing.change + 360
+  df[df$bearing.change <= -180 & !is.na(df$bearing.change),]$bearing.change <- df[df$bearing.change <= -180 & !is.na(df$bearing.change),]$bearing.change + 360
   # If bearing.change > 180, subtract 360
   df[df$bearing.change > 180 & !is.na(df$bearing.change),]$bearing.change <- df[df$bearing.change > 180 & !is.na(df$bearing.change),]$bearing.change - 360
   
