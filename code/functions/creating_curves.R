@@ -5,11 +5,6 @@ is.dead.inner <- function(curve.df,death.regs,bad.locations,death.rate){
   current.long <- curve.df$long[n.row]
   current.lat <- curve.df$lat[n.row]
 
-  if(current.long < -107.3 | current.long > 10 | current.lat < 8 | 
-  	current.lat > 60 | (current.long < -90 & current.lat > 40)){
-    return(TRUE) # is dead
-  }
-
   if(block %in% bad.locations){
   	prob = death.rate
   }else{
@@ -19,7 +14,6 @@ is.dead.inner <- function(curve.df,death.regs,bad.locations,death.rate){
   #print(prob)
   return(rbinom(1,1,prob) == 1)
 }
-
 
 bearing.inner <- function(curve.df,bearing.regs){
   n.row <- nrow(curve.df)
@@ -36,8 +30,7 @@ bearing.inner <- function(curve.df,bearing.regs){
   
   curve.df[n.row,'bearing'] <- curve.df[(n.row-1),'bearing'] + 
   		curve.df[n.row,'bearing.change']
-  
-  # making sure size of bearing (seems excessive to use while, but whatever
+  # making sure size of bearing stays in range
   while(curve.df[n.row,'bearing'] < 0){
     curve.df[n.row,'bearing'] <- curve.df[n.row,'bearing'] + 360
   }
@@ -73,9 +66,6 @@ speed.inner <- function(curve.df,speed.regs){
 update.curve.inner <- function(curve.df){
   n.row <- nrow(curve.df)
   curve.df <- rbind(curve.df,rep(NA,ncol(curve.df)))
-  #new.row <- rep(NA, ncol(curve.df),)
-  #names(new.row) <- names(curve.df)
-
   # Append new point to curve.df
   new.point <- destPoint(p=c(curve.df$long[n.row], curve.df$lat[n.row]), 
                         b = curve.df$bearing[n.row], 
@@ -105,33 +95,60 @@ update.curve.inner <- function(curve.df){
 }
 
 
-generate.curve.auto.ben <- function(curve.df,bearing.regs,speed.regs,death.regs,
-			max.length,bad.locations,death.rate){
+generate.curve <- function(curve.df,bearing.regs,speed.regs,death.regs,
+			max.length,bad.locations,death.rate,death.regs.ind,auto.ind){
 	# this function should actually generate the rest of the curve 
 	#
 	# Inputs:
 	# -------
-	# curve.df     = the initial 3 rows of the curve 
-	# bearing.regs = bearing regressions (block dependent)
-	# speed.regs   = speed regressions (block dependent)
-	# death.regs   = death regressions (block dependent)
+	# curve.df       = the initial 3 rows of the curve 
+	# bearing.regs   = bearing regressions (block dependent)
+	# speed.regs     = speed regressions (block dependent)
+	# death.regs     = death regressions (block dependent)
+  # max.length     = max length of tropical cyclones in train data
+  # bad.locations  = blocks with <= 1 death
+  # death.rate     = 1 / mean length of TCs in train data
+  # death.regs.ind = indicator, whether to use death regressions
+  # auto.ind       = indicator, whether bearing/speed regs are autoregressive
 
 	# Output:
 	# -------
-	# out          = updated curve.df when it finally died, long, lat
+	# out            = updated curve.df when it finally died, long, lat
 
-	is.dead     <- is.dead.inner(curve.df,death.regs,bad.locations,
+  if(death.regs.ind){
+    is.dead.function <- is.dead.inner
+  }else{
+    is.dead.false.function <- function(a,b,c,d){
+      return(FALSE)
+    }
+    is.dead.function <- is.dead.false.function
+    
+    max.length <- round(rexp(1, death.rate))
+  }
+  
+
+	is.dead     <- is.dead.function(curve.df,death.regs,bad.locations,
 									death.rate)
-	life.length <- 3
+	life.length <- 2 + 1*auto.ind
+
 
 	while(!is.dead & life.length <= max.length){
 		curve.df <- bearing.inner(curve.df,bearing.regs)
 		curve.df <- speed.inner(curve.df,speed.regs)
 		curve.df <- update.curve.inner(curve.df)
 
-		is.dead <- is.dead.inner(curve.df,death.regs,bad.locations,
+		is.dead <- is.dead.function(curve.df,death.regs,bad.locations,
 									death.rate)
-		# odd - input suggests dead at time 3
+		
+		current.long <- curve.df[nrow(curve.df),]$long
+		current.lat <- curve.df[nrow(curve.df),]$lat
+		
+		# kill tropical cyclone if it goes outside reasonable range
+		if(current.long < -107.3 | current.long > 10 | current.lat < 8 | 
+		   current.lat > 60 | (current.long < -90 & current.lat > 40)){
+		  is.dead <- TRUE 
+		}
+
 		life.length <- life.length + 1
 	}
 
@@ -139,7 +156,7 @@ generate.curve.auto.ben <- function(curve.df,bearing.regs,speed.regs,death.regs,
 	curve.df[n.row,"death"] <- 1
 
 	out <- cbind(curve.df$long,curve.df$lat) 
-	# ^for some reason we want it like this
+	# ^saves each curve as a table with a longitude column and a latitude column 
 	return(out)
 }
 
