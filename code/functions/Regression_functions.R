@@ -1,5 +1,3 @@
-library(geosphere)
-
 ######################################################## 
 ##### Append latitude and longitude to data frames #####
 ########################################################
@@ -30,9 +28,12 @@ append.bearing <- function(df){
   
   # Ensure -180 < bearing.change <= 180
   # If bearing.change <= -180, add 360
-  df[df$bearing.change <= -180 & !is.na(df$bearing.change),]$bearing.change <- df[df$bearing.change <= -180 & !is.na(df$bearing.change),]$bearing.change + 360
+  inds <- which(df$bearing.change <= -180 & !is.na(df$bearing.change))
+  df[inds,]$bearing.change <- df[inds,]$bearing.change + 360
+  
   # If bearing.change > 180, subtract 360
-  df[df$bearing.change > 180 & !is.na(df$bearing.change),]$bearing.change <- df[df$bearing.change > 180 & !is.na(df$bearing.change),]$bearing.change - 360
+  inds <- which(df$bearing.change > 180 & !is.na(df$bearing.change))
+  df[inds,]$bearing.change <- df[inds,]$bearing.change - 360
   
   df$bearing.prev <- c(NA, bear[1:(n.row-1)])
   return(df)
@@ -41,6 +42,9 @@ append.bearing <- function(df){
 ####################################
 ##### Append east/west heading #####
 ####################################
+
+# This is the direction that the hurricane traveled from the 
+# previous position to the current position.
 
 append.eastwest <- function(df){
   east <- df$bearing.prev < 180
@@ -218,6 +222,96 @@ append.block <- function(df){
   return(df)
 } 
 
+#######################################
+##### Append regression variables #####
+#######################################
+
+append.reg.vars <- function(df, auto = T){
+  df <- append.lat.long(df)
+  df <- append.bearing(df)
+  df <- append.eastwest(df)
+  df <- append.speed(df)
+  df <- append.time.death(df)
+  df <- append.block(df)
+  if(auto){
+    df <- lag.bearing.speed.change(df)
+  }
+  return(df)
+}
+
+#############################################
+##### Block-specific bearing/speed regs #####
+#############################################
+
+get.bearing.speed.regs <- function(dflist.unlist, auto){
+  
+  if(auto){
+    # Remove obs w/o lag change in bearing (or speed)
+    dflist.unlist <- dflist.unlist[!is.na(dflist.unlist$bearing.change.lag1),]
+    
+    # Store a separate data frame for each block
+    dflist.blocks <- split(dflist.unlist, f = dflist.unlist$block)
+    
+    # Block-specific change in bearing regs
+    bearing.regs <- lapply(dflist.blocks, FUN = function(x) 
+      return(lm(bearing.change ~ lat + long + bearing.prev + speed.prev
+                + bearing.change.lag1, 
+                data = x)))
+    
+    # Block-specific change in speed regs
+    speed.regs <- lapply(dflist.blocks, FUN = function(x) 
+      return(lm(speed.change ~ lat + long + bearing.prev + speed.prev
+                + speed.change.lag1, 
+                data = x)))
+    
+  } else {
+    # Remove obs w/o change in bearing (or speed)
+    dflist.unlist <- dflist.unlist[!is.na(dflist.unlist$bearing.change),]
+    
+    # Store a separate data frame for each block
+    dflist.blocks <- split(dflist.unlist, f = dflist.unlist$block)
+    
+    # Block-specific change in bearing regs
+    bearing.regs <- lapply(dflist.blocks, FUN = function(x) 
+      return(lm(bearing.change ~ lat + long + bearing.prev + speed.prev, 
+                data = x)))
+    
+    # Block-specific change in speed regs
+    speed.regs <- lapply(dflist.blocks, FUN = function(x) 
+      return(lm(speed.change ~ lat + long + bearing.prev + speed.prev, 
+                data = x)))
+  }
+  
+  return(list(bearing.regs, speed.regs))
+}
+
+######################################################
+##### Store starting points (& set up regr vars) #####
+######################################################
+
+get.starting.points <- function(dfcv, auto = T){
+  
+  dfcv <- lapply(dfcv, FUN = append.lat.long)
+  
+  if(auto){
+    starts <- lapply(dfcv, FUN = function(x) return(rbind(x[1,], x[2,], x[3,])))
+  } else {
+    starts <- lapply(dfcv, FUN = function(x) return(rbind(x[1,], x[2,])))
+  }
+  
+  starts <- lapply(starts, FUN = append.bearing)
+  starts <- lapply(starts, FUN = append.eastwest)
+  starts <- lapply(starts, FUN = append.speed)
+  starts <- lapply(starts, FUN = append.time.death)
+  starts <- lapply(starts, FUN = append.block)
+  
+  if(auto){
+    starts <- lapply(starts, FUN = lag.bearing.speed.change)
+  }
+  
+  return(starts)
+}
+
 ###########################################################
 ##### Simulate new point for non-autoregressive model #####
 ###########################################################
@@ -296,8 +390,8 @@ new.point.no.auto <- function(curve.df, final.length){
   }
   
   curve.df[n.row+1,]['block'] <- get.block(curve.df[n.row+1,]['long'], 
-                                                   curve.df[n.row+1,]['lat'],
-                                                   curve.df[n.row+1,]['east.west.prev'])
+                                           curve.df[n.row+1,]['lat'],
+                                           curve.df[n.row+1,]['east.west.prev'])
   
   return(curve.df)
 }
