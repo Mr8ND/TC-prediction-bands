@@ -1,4 +1,5 @@
 .DS_Store
+!data/README.md
 data/
 .Rhistory
 !spec/*.Rhistory
