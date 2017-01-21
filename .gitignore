@@ -1,6 +1,6 @@
 .DS_Store
 !data/README.md
-data/
+data/*
 .Rhistory
 !spec/*.Rhistory
 __pycache__/
