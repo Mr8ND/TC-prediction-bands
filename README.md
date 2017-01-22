@@ -56,11 +56,14 @@ The `python` file requires the following packages:
 - `xtable`: creating latex tables for presentation
 
 ### Order of Files to Run
-- `cleaning_data_test_train_subset.py`:
-- `initial_pipeline.R`:
-- `loocv.R`
-- 
+- `cleaning_data_test_train_subset.py`: python process to clean and prepare data for R code
+- `create_folders.sh`: bash script to make the correct subdirectories for simulated data created in `Simulate_Validation_Paths.R`
+- `Simulate_Validation_Paths.R`: created simulated paths for the training data$^*$
+- `initial_pipeline.R`: Creates Distance matrices, Markov Matrices and more on the test data (Spectral Analysis).$^*$
+- `loocv.R`: Tune parameters for density map estimation using LOOCV $^{**}$
+- `second_pipeline`: Estimate likelihood of generated paths using Spectral Analysis
 
+$^*$ means it takes a long time to run
 
 ## Contributors 
 - Nic Dalmasso ([`Mr8ND`](https://github.com/Mr8ND))
