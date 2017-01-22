@@ -139,7 +139,7 @@ average_ratio = mean(c(ratio_max,ratio_mean))
 D_speed = D_train_squared_speed * ratio_mean
 D_path  = D_train_squared 
 
-D_combo = sqrt(D_speed + D_path)
+D_combo = D_speed + D_path
 
 
 if("D_combo.Rdata" %in% Rdata_files_train){
