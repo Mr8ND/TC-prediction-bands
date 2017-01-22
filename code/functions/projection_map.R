@@ -83,98 +83,98 @@ kernel_estimate = function(train,test,k){
 }
 
 
-
-loocv_wrapper= function(path_mat_list,Dmat,K=7,t=1,output_length="nautical mile",
-                        longlat=TRUE,project_size = 5,plot_eigen =FALSE){
-  # Inputs:
-  #--------
-  # path_mat_list = list of original paths of hurricanes
-  # Dmat          = distances between hurricanes,
-  #                    costly to compute if already made
-  # K             = number of neigbhors for transition matrix creation
-  # t             = power to raise transition matrix too
-  # output_length = (not used), was for units of length outputted
-  # longlat       = (not used), was logical statement if input was order longlat
-  # project_size  = size of projection space
-  # plot_eigen    = logical statement if function should plot eigenvalues,
-  #                   for first LOOCV step only
-  # 
-  # Outputs
-  #--------
-  # Dmat          = returns Dmat put in (don't know why)
-  # predicted     = predicted Hurricane paths 
-  # diffs         = distance between predicted an true paths
-  #
-  # Notes:
-  #-------
-  # this function needs to:
-  # 1) create a distance matrix for all observations  
-  # FOR EACH OBSERVATION:
-  # a) Create transition matrix
-  # b) decompose transition matrix
-  # c) project to get new points (3d minus first observation vector - 
-  #    check plots of eigenvectors afterwards?)
-  # d) get new distance structure for point
-  # e) predict new point
-  # f) save new points
-  # g) calc distance between points
+#### the below function appears in loocv.R 
+# loocv_wrapper= function(path_mat_list,Dmat,K=7,t=1,output_length="nautical mile",
+#                         longlat=TRUE,project_size = 5,plot_eigen =FALSE){
+#   # Inputs:
+#   #--------
+#   # path_mat_list = list of original paths of hurricanes
+#   # Dmat          = distances between hurricanes,
+#   #                    costly to compute if already made
+#   # K             = number of neigbhors for transition matrix creation
+#   # t             = power to raise transition matrix too
+#   # output_length = (not used), was for units of length outputted
+#   # longlat       = (not used), was logical statement if input was order longlat
+#   # project_size  = size of projection space
+#   # plot_eigen    = logical statement if function should plot eigenvalues,
+#   #                   for first LOOCV step only
+#   # 
+#   # Outputs
+#   #--------
+#   # Dmat          = returns Dmat put in (don't know why)
+#   # predicted     = predicted Hurricane paths 
+#   # diffs         = distance between predicted an true paths
+#   #
+#   # Notes:
+#   #-------
+#   # this function needs to:
+#   # 1) create a distance matrix for all observations  
+#   # FOR EACH OBSERVATION:
+#   # a) Create transition matrix
+#   # b) decompose transition matrix
+#   # c) project to get new points (3d minus first observation vector - 
+#   #    check plots of eigenvectors afterwards?)
+#   # d) get new distance structure for point
+#   # e) predict new point
+#   # f) save new points
+#   # g) calc distance between points
   
-  n = length(path_mat_list) # 334
-  storage = list() # holds new predicted points
-  diff = c()
-  for(obs in 1:n){
-    data_minus_obs   = Dmat[-obs,-obs] # 333 x 333
-    data_obs         = matrix(Dmat[obs,-obs],nrow=1) # 1 x 333
-    dist_k_minus_obs = calc_k_dist(data_minus_obs,K) # 333 x 1
-    dist_k_obs       = calc_k_dist(matrix(data_obs,nrow=1),K) # 1 x 1 
+#   n = length(path_mat_list) # 334
+#   storage = list() # holds new predicted points
+#   diff = c()
+#   for(obs in 1:n){
+#     data_minus_obs   = Dmat[-obs,-obs] # 333 x 333
+#     data_obs         = matrix(Dmat[obs,-obs],nrow=1) # 1 x 333
+#     dist_k_minus_obs = calc_k_dist(data_minus_obs,K) # 333 x 1
+#     dist_k_obs       = calc_k_dist(matrix(data_obs,nrow=1),K) # 1 x 1 
     
 
     
-    prob_minus_obs = probMatrixPath_k(data_minus_obs, kNN_sigma = dist_k_minus_obs)
+#     prob_minus_obs = probMatrixPath_k(data_minus_obs, kNN_sigma = dist_k_minus_obs)
 
-    # need to project into correct space
-    plot_n = 0
-    if(obs ==1 & plot_eigen ==T){
-      plot_n = project_size
-    }
+#     # need to project into correct space
+#     plot_n = 0
+#     if(obs ==1 & plot_eigen ==T){
+#       plot_n = project_size
+#     }
     
-    phi_map_out = right_eigenvector_compression(
-      P = prob_minus_obs,nu = project_size,nv = project_size,plot_n = plot_n,t = t)
-    phi_map_x_minus_obs = phi_map_out$psi_map_x
-    lambda_x_minus_obs = phi_map_out$lambda
+#     phi_map_out = right_eigenvector_compression(
+#       P = prob_minus_obs,nu = project_size,nv = project_size,plot_n = plot_n,t = t)
+#     phi_map_x_minus_obs = phi_map_out$psi_map_x
+#     lambda_x_minus_obs = phi_map_out$lambda
     
-    # for new point
-    prob_obs = probMatrixPath_k(data_obs, kNN_sigma = dist_k_minus_obs,kNN_sigma_new = dist_k_obs)
+#     # for new point
+#     prob_obs = probMatrixPath_k(data_obs, kNN_sigma = dist_k_minus_obs,kNN_sigma_new = dist_k_obs)
     
-    obs_projection = new_points_projection(prob_obs,psi_map_train = phi_map_x_minus_obs,
-                          lambda_train = lambda_x_minus_obs)
+#     obs_projection = new_points_projection(prob_obs,psi_map_train = phi_map_x_minus_obs,
+#                           lambda_train = lambda_x_minus_obs)
     
-    minus_obs_projection = new_points_projection(prob_minus_obs,
-                                                 psi_map_train = phi_map_x_minus_obs,
-                                                 lambda_train = lambda_x_minus_obs)
+#     minus_obs_projection = new_points_projection(prob_minus_obs,
+#                                                  psi_map_train = phi_map_x_minus_obs,
+#                                                  lambda_train = lambda_x_minus_obs)
     
-    project_locs = rbind(minus_obs_projection,obs_projection)
-    project_dist = distance_mat_eulid(project_locs)
+#     project_locs = rbind(minus_obs_projection,obs_projection)
+#     project_dist = distance_mat_eulid(project_locs)
     
     
-    dist_minus_obs_project   = project_dist[1:(n-1),1:(n-1)]
-    dist_obs_project         = matrix(project_dist[n,1:(n-1)],nrow =1)
+#     dist_minus_obs_project   = project_dist[1:(n-1),1:(n-1)]
+#     dist_obs_project         = matrix(project_dist[n,1:(n-1)],nrow =1)
 
-    point = inverse_map(distance_projection = dist_minus_obs_project,
-                projection_locs = minus_obs_projection,
-                old_locs = path_mat_list[-obs], 
-                new_p_loc = obs_projection,K =K)
+#     point = inverse_map(distance_projection = dist_minus_obs_project,
+#                 projection_locs = minus_obs_projection,
+#                 old_locs = path_mat_list[-obs], 
+#                 new_p_loc = obs_projection,K =K)
   
       
-  storage[[obs]] = point  
-  diff[obs] = sum(distBetweenP(path_mat_list[[obs]],point))
-  }
+#   storage[[obs]] = point  
+#   diff[obs] = sum(distBetweenP(path_mat_list[[obs]],point))
+#   }
     
 
 
   
-  return(list(Dmat = Dmat, predicted = storage, diffs = diff))
-}
+#   return(list(Dmat = Dmat, predicted = storage, diffs = diff))
+# }
 
 
 

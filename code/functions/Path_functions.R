@@ -406,9 +406,13 @@ inverse_map =function(distance_projection,projection_locs,old_locs, new_p_loc,K 
 
 
 
-##########################
-# Distance Between Speed #
-##########################
+##############################################
+# Distance Between Speed and GeoDist Correct #
+##############################################
+
+#############################
+# Train to Train (Standard) #
+#############################
 
 distMatrixPath_innersq = function(path_mat_list, output_length="nautical mile", 
                                     longlat=TRUE){
@@ -444,3 +448,44 @@ distMatrixSpeed_innersq = function(speed_df){
   return(d2)
 }
 
+
+
+#######################
+# Train to Test (t2t) #
+#######################
+
+
+distMatrixPath_t2t_path = function(path_mat_list_train,path_mat_list_test, output_length="nautical mile", longlat= TRUE){
+  # creates a path distance matrix between the test paths and training paths
+  # contains the correct L2 norm structure sum of square distances
+  
+  n_test  = length(path_mat_list_test)
+  n_train = length(path_mat_list_train)
+  output_mat = matrix(, nrow=n_test, ncol=n_train)
+  
+  for (i in c(1:n_test)){
+    for (j in c(1:n_train)){
+      output_mat[i,j] = sum(distBetweenP(path_mat_list_test[[i]], path_mat_list_train[[j]],longlat=longlat)^2)
+    }
+  }
+  
+  return(output_mat)
+}
+
+distMatrixPath_t2t_speed = function(speed_mat_list_train,speed_mat_list_test){
+  # creates a speed distance matrix between the test paths and training paths
+  # contains the correct L2 norm structure sum of square distances (obv)
+
+  mat_train = t(sapply(speed_mat_list_train,function(x) x[[1]]))
+  mat_test  = t(sapply(speed_mat_list_test,function(x) x[[1]]))
+
+  n_test  = nrow(mat_test)
+  n_train = nrow(mat_train)
+  
+  both = rbind(mat_train,mat_test)
+  all_dist = as.matrix(dist(both))
+
+  output_mat = all_dist[(n_train+1):(n_test+n_train),1:n_train]
+
+  return(output_mat)
+}

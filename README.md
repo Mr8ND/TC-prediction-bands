@@ -6,12 +6,23 @@ Carnegie Mellon University
 
 Fall 2016
 
-This repository stores the documentation of our analysis ... (blah blah blah ... fill in)
-
+This repository stores the documentation of our new approach to predicting the 
+full paths of tropical storms (TCs) using just a few initial points by 
+leveraging extensions on regression models to generate curves, combined with 
+updates to use weighting metrics from a compression of the training data 
+using spectral analysis to get a density estimation for the training data,
+and two dimensional confidence bands. This approach was specifically designed
+with the use of the 
+[*HURDAT 2*](http://www.aoml.noaa.gov/hrd/hurdat/hurdat2-1851-2015-070616.txt) 
+data set from the 
+[*National Oceanic and Atmospheric Administration*](http://www.aoml.noaa.gov/hrd/hurdat/Data_Storm.html). 
 
 ## Replication of Results
 As is generally the case in papers today, our analysis is replicable. Follow the
 below instructions to do so.
+
+### Initial Folder Creation 
+could do a `make` file to get the data from the website and put it in a data folder
 
 ### Location of Important Code Files
 Files in `code/final_script` directory can replicate the work presented in the 
@@ -45,11 +56,14 @@ The `python` file requires the following packages:
 - `xtable`: creating latex tables for presentation
 
 ### Order of Files to Run
-- `cleaning_data_test_train_subset.py`:
-- `initial_pipeline.R`:
-- `loocv.R`
-- ...
+- `cleaning_data_test_train_subset.py`: python process to clean and prepare data for R code
+- `create_folders.sh`: bash script to make the correct subdirectories for simulated data created in `Simulate_Validation_Paths.R`
+- `Simulate_Validation_Paths.R`: created simulated paths for the training data *
+- `initial_pipeline.R`: Creates Distance matrices, Markov Matrices and more on the test data (Spectral Analysis).*
+- `loocv.R`: Tune parameters for density map estimation using LOOCV **
+- `second_pipeline`: Estimate likelihood of generated paths using Spectral Analysis *
 
+"*"" means it takes a long time to run
 
 ## Contributors 
 - Nic Dalmasso ([`Mr8ND`](https://github.com/Mr8ND))
