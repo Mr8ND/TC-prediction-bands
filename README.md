@@ -63,7 +63,7 @@ The `python` file requires the following packages:
 - `loocv.R`: Tune parameters for density map estimation using LOOCV **
 - `second_pipeline`: Estimate likelihood of generated paths using Spectral Analysis *
 
-"*"" means it takes a long time to run
+"*" means it takes a long time to run
 
 ## Contributors 
 - Nic Dalmasso ([`Mr8ND`](https://github.com/Mr8ND))

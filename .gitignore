@@ -1,5 +1,6 @@
 .DS_Store
 data/*
+!data/makefile
 !data/README.md
 .Rhistory
 !spec/*.Rhistory
