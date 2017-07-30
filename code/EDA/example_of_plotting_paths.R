@@ -6,16 +6,21 @@ source(paste0(functions_loc,"load_training_first.R"))
 
 validate_list =load_validate_data_list("")
 
-test_list = load_generated_curve_list(project_location = "",sub_directory = "AL021972/")
+# 9/AL011978 is too long, but not bad.
+# Same for 10/AL011983, AL031982/58, AL031985/60
+# Check out 42/AL021987. :D 83,84
+test_list = load_generated_curve_list(project_location = "",sub_directory = "AL011960_sims/")
 
 plot(newmap, ylim = c(9, 40), xlim = c(-110, 2), asp = 1)
 
 num_paths = length(test_list)
 
-for(i in 1:150){
+for(i in 1:100){
     lines(test_list[[i]][,1],test_list[[i]][,2],col="red")
 }
 
+
+lines(validate_list[[2]][,6],validate_list[[2]][,5],col="green")
 
 
 
