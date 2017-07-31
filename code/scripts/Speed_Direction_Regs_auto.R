@@ -127,13 +127,17 @@ starts <- lapply(starts, FUN = append.block)
 
 names <- list.files(pattern=".txt")
 setwd("../../../")
-loc <- "/data/generate/"
+loc <- "data/generate/"
+newdir <- paste0(loc, "ar_sims")
+dir.create(newdir)
+
+loc <- "data/generate/ar_sims/"
 
 set.seed(1)
 
 ptm <- proc.time()
 
-# Run time: 3.8 hours to generate 100 curves on each of 333 hurricane starts.
+# Run time: 2.5 hours to generate 100 curves on each of 333 hurricane starts.
 
 for(i in 1:length(names)){
   
@@ -141,7 +145,7 @@ for(i in 1:length(names)){
   dir.create(newdir)      # should test for error
   setwd(newdir)
   
-  paths <- vector("list", 100)
+  paths <- vector("list", 200)
   paths <- lapply(paths, FUN = function(x) return(starts[[i]]))
   
   paths <- lapply(paths, FUN = function(x) generate.curve.auto(x, death.rate))
@@ -152,6 +156,8 @@ for(i in 1:length(names)){
     write.table( paths[[j]], paste0(substr(names[i], 1, nchar(names[i])-4), "_sim_", j), 
                  append= F, sep=',', col.names = c("long", "lat"), row.names = F)
   }
+  
+  setwd("../../../../")
   
   cat(i)
 }

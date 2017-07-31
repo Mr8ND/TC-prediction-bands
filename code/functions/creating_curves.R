@@ -96,7 +96,7 @@ update.curve.inner <- function(curve.df){
 
 
 generate.curve <- function(curve.df,bearing.regs,speed.regs,death.regs,
-			max.length,bad.locations,death.rate,death.regs.ind,auto.ind){
+			max.length,bad.locations,death.rate,death.dens,death.regs.ind,auto.ind){
 	# this function should actually generate the rest of the curve 
 	#
 	# Inputs:
@@ -108,6 +108,7 @@ generate.curve <- function(curve.df,bearing.regs,speed.regs,death.regs,
   # max.length     = max length of tropical cyclones in train data
   # bad.locations  = blocks with <= 1 death
   # death.rate     = 1 / mean length of TCs in train data
+  # death.dens     = kernel density estimate of TC death times
   # death.regs.ind = indicator, whether to use death regressions
   # auto.ind       = indicator, whether bearing/speed regs are autoregressive
 
@@ -123,7 +124,8 @@ generate.curve <- function(curve.df,bearing.regs,speed.regs,death.regs,
     }
     is.dead.function <- is.dead.false.function
     
-    max.length <- round(rexp(1, death.rate))
+    # draw (upper bound on) death time from kernel density estimate
+    max.length <- round(sample(death.dens$x, size = 1, replace=TRUE, prob=death.dens$y))
   }
   
 
