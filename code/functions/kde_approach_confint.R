@@ -24,8 +24,6 @@ for (i in c(1:length(dflist))){
 ### KDE APPROACH
 ###########################################
 
-probability.vec = seq(0.001, 0.1, length.out = length(dflist))
-
 flattenTCListWeight = function(dflist, weight.vec){
   # Dflist in this case is a list with n different hurricanes. Usually we have n=100.
   # Each element of such list a dataframe with at least longitude and latitude.
@@ -95,12 +93,8 @@ evaluatePredictedMatrix = function(predicted.mat, weight=3, in.alpha.level=5){
 }
 
 
-dfmat = flattenTCListWeight(dflist, probability.vec)
-kde.obj = fitKDEObject(dfmat, h.band=0.06)
-predict.mat = predictKDEObject(kde.obj, dfmat[c(1:100),], alpha.level = .9)
-metric.value = evaluatePredictedMatrix(predict.mat)
 
-library(caret)
+
 
 kcvValidationSingleTC = function(dflist, weight.vec, alpha.levels, bandwith.levels, k=5, seed=7){
   
@@ -145,6 +139,11 @@ kcvValidationSingleTC = function(dflist, weight.vec, alpha.levels, bandwith.leve
   return(results.list)
 }
 
+probability.vec = seq(0.001, 0.1, length.out = length(dflist))
+dfmat = flattenTCListWeight(dflist, probability.vec)
+kde.obj = fitKDEObject(dfmat, h.band=0.06)
+predict.mat = predictKDEObject(kde.obj, dfmat[c(1:100),], alpha.level = .9)
+metric.value = evaluatePredictedMatrix(predict.mat)
 
 
 bandwith.levels = c(0.01, 0.03, 0.05, 0.07, 0.09)
