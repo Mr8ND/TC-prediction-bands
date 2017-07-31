@@ -1,7 +1,7 @@
 library(datamart)
 library(geosphere)
 
-#rearrangePathListNew = function(list_path, prob_vec_path,long=1,lat=2,bear=3,bear.change=4,distance=6){
+rearrangePathListNew = function(list_path, prob_vec_path,long=1,lat=2,bear=3,bear.change=4,distance=6){
 	#This function takes as an input the list of the path, in which we have n elements, each of with is a path.
 	#A path is a dataframe of (k x 2), where k is the number of points of the path. k needs to be the same for 
 	#every path in the list or it will throw an error. the number of columns needs to be 2 as well or it is going
@@ -16,27 +16,27 @@ library(geosphere)
 	#The output is a list of length k in which each element are all the k^th points of all the n path, with associated
 	#the probability of such path. Every element of the output is a dataframe.
 
-#	n = length(list_path)
-#	n_df = dim(list_path[[1]])[1]
-#	if (n_df != 13){
-#		print("Number of points in each dataset was should have 13 but it is not - just flagging it.")
-#	}
+	n = length(list_path)
+	n_df = dim(list_path[[1]])[1]
+	if (n_df != 13){
+	  		print("Number of points in each dataset was should have 13 but it is not - just flagging it.")
+	}
   
-#	output_mat = matrix(, nrow=n_df, ncol=5*n)
-#	output_list = list()
-#	for (j in c(1:n_df)){
-#		for (i in c(1:n)){
-#			output_mat[j,(5*i-4)] = list_path[[i]][j,long]
-#			output_mat[j,(5*i-3)] =list_path[[i]][j,lat]
-#			output_mat[j,(5*i-2)] =list_path[[i]][j,bear]
-#			output_mat[j,(5*i-1)] =list_path[[i]][j,bear.change]
-#			output_mat[j,(5*i)] =list_path[[i]][j,distance]
-#		}
-#		output_list[[j]] = data.frame(cbind(t(matrix(output_mat[j,], ncol=n)),prob_vec_path))
-#		colnames(output_list[[j]]) = c("long", "lat", "bearing", "bearing.change", "distance", "probability")
-#	}
-#	return(output_list)
-#}
+	output_mat = matrix(, nrow=n_df, ncol=5*n)
+	output_list = list()
+	for (j in c(1:n_df)){
+		for (i in c(1:n)){
+			output_mat[j,(5*i-4)] = list_path[[i]][j,long]
+			output_mat[j,(5*i-3)] =list_path[[i]][j,lat]
+			output_mat[j,(5*i-2)] =list_path[[i]][j,bear]
+			output_mat[j,(5*i-1)] =list_path[[i]][j,bear.change]
+			output_mat[j,(5*i)] =list_path[[i]][j,distance]
+		}
+		output_list[[j]] = data.frame(cbind(t(matrix(output_mat[j,], ncol=n)),prob_vec_path))
+		colnames(output_list[[j]]) = c("long", "lat", "bearing", "bearing.change", "distance", "probability")
+	}
+	return(output_list)
+}
 
 
 rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, lat=2){
@@ -125,7 +125,7 @@ selectCIPath = function(path_prob_df, level=.95, output_length="nautical mile"){
 }
 
 
-bubbleCI = function(list_path, prob_vec_path, level=.95){
+bubbleCI = function(list_path, prob_vec_path, level=.95, max_n=FALSE){
 
 	#This function is simply a wrapper around rearrangePathList and selectCIPath.
 
@@ -135,7 +135,7 @@ bubbleCI = function(list_path, prob_vec_path, level=.95){
 	#OUPUT: A list with k dataframes, each of which has the closest points around the point of the maximum likely path  
 	#such that the sum of their probability is above the level requested.
 
-	points_prob_list = rearrangePathList(list_path, prob_vec_path)
+	points_prob_list = rearrangePathList(list_path, prob_vec_path, max_n=max_n)
 
 	n = length(points_prob_list)
 	output_list = list()
@@ -151,11 +151,14 @@ bubbleCI = function(list_path, prob_vec_path, level=.95){
 #no_auto = load_sims(project_location,sub_directory_no_auto,group = 1:114)
 #auto = load_sims(project_location,sub_directory_auto,group = 1:114)
 
-selected_ones = 8
-dflist_toy_bubble = auto[[selected_ones]]
-probability_vec = estimate_p_auto[[selected_ones]]$p_estimate_test/sum(estimate_p_auto[[selected_ones]]$p_estimate_test)
+selected_ones = 27
+dflist_toy_bubble = no_auto[[selected_ones]]
+#probability_vec = estimate_p_auto[[selected_ones]]$p_estimate_test/sum(estimate_p_auto[[selected_ones]]$p_estimate_test)
+weight_vec = rnorm(n = 100, mean = 10, sd = 1)
+probability_vec = weight_vec/sum(weight_vec)
 
 rearrangePathList(dflist_toy_bubble, probability_vec)
+#rearrangePathListNew(dflist_toy_bubble, probability_vec)
 
 bubble_steps_CI <- bubbleCI(dflist_toy_bubble, probability_vec)
 
@@ -207,6 +210,8 @@ print(upper_bound_errors.df)
 
 quartz(width = 8,height = 6.5)
 newmap = getMap(resolution = "low")
+xlim = c(-105,0)
+ylim = c(16, 36)
 plot(newmap, ylim = ylim, xlim = xlim, asp = 1)
 
 for(i in 1:length(dflist_toy_bubble)){
@@ -224,7 +229,7 @@ points(center.radius.df[,1], center.radius.df[,2], col="black")
 lines(lower_bound_errors.df[,1], lower_bound_errors.df[,2], col="red")
 lines(upper_bound_errors.df[,1], upper_bound_errors.df[,2], col="red")
 
-lines(list_valid_subset13[[selected_ones]][,1], list_valid_subset13[[selected_ones]][,2],col="green")
+lines(list_valid_subset13[[selected_ones]][,1], list_valid_subset13[[selected_ones]][,2], col="blue")
 
 #lines(lowerbound.df[,1], lowerbound.df[,2], col="blue")
 #lines(upperbound.df[,1], upperbound.df[,2], col="blue")
