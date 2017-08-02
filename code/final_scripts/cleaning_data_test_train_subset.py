@@ -1,6 +1,5 @@
 # initial data cleaning and processing
 
-# **no longer** run from code/scripts/
 # run from project location
 
 #################
@@ -44,9 +43,10 @@ for line in data_line:
 		data_dict[hurricane_name] =dict()
 		data_dict[hurricane_name]["name"] = clean_line[1]
 		data_dict[hurricane_name]["n_points"] = clean_line[2]
-		#print(hurricane_name)
+
+		hurricane_name_hold = hurricane_name
 	else:
-		data_dict[hurricane_name][str(clean_line[0])+":"+str(clean_line[1])]= clean_line[1:]
+		data_dict[hurricane_name_hold][str(clean_line[0])+":"+str(clean_line[1])]= clean_line[1:]
 
 
 # small corrections to some errors in the code:
@@ -60,7 +60,7 @@ data_dict["AL051952"]["19520914:1200"][3] = str(360-358.4)+"E"
 
 pickle.dump(data_dict,open(data_location+"hurricane_dict_full.pkl","wb"))
 # load that file:
-#with open("../../data/"+"hurricane_dict_full.pkl","rb") as pfile:
+#with open("data/"+"hurricane_dict_full.pkl","rb") as pfile:
 #	hurricanes = pickle.load(pfile) 
 
 ################################
@@ -76,9 +76,9 @@ for key in data_dict.keys():
 data_dict_old = data_dict
 data_dict = data_dict_new
 
-pickle.dump(data_dict,open("../../data/"+"hurricane_dict.pkl","wb"))
+pickle.dump(data_dict,open("data/"+"hurricane_dict.pkl","wb"))
 # load that file:
-# with open("../../data/"+"hurricane_dict.pkl","rb") as pfile:
+# with open("data/"+"hurricane_dict.pkl","rb") as pfile:
 # 	hurricanes = pickle.load(pfile) 
 
 
@@ -92,7 +92,7 @@ pickle.dump(data_dict,open("../../data/"+"hurricane_dict.pkl","wb"))
 #####
 # Only run on Ben's Computer so as not to allow python to mess with setting seed 
 # 	(line 97)
-run_initial_time =False #only done on Ben's computer
+run_initial_time =True #only done on Ben's computer
 
 if run_initial_time ==True:
 	count_dict=dict()
@@ -223,28 +223,22 @@ if run_initial_time ==True:
 	valid_list_new = np.array(valid_list_new)
 	train_first_list_new = np.array(train_first_list_new)
 
-	np.save("../../data/test/"+"test_names.npy",test_list)
-	np.save("../../data/training/validate/"+"validate_names.npy",valid_list)
-	np.save("../../data/training/train/"+"training_names.npy",train_first_list)
+	np.save("data/test/"+"test_names.npy",test_list)
+	np.save("data/training/validate/"+"validate_names.npy",valid_list)
+	np.save("data/training/train/"+"training_names.npy",train_first_list)
 
-	np.save("../../data/training/validate/"+"validate_names_new.npy",valid_list_new)
-	np.save("../../data/training/train/"+"training_names_new.npy",train_first_list_new)
+	np.save("data/training/validate/"+"validate_names_new.npy",valid_list_new)
+	np.save("data/training/train/"+"training_names_new.npy",train_first_list_new)
 
-	# to load in: np.load("../../data/test/training_names.npy")
 
-	# training_names = list()
-
-	# for name in data_dict:
-	# 	if name not in test_list:
-	# 		training_names += [name]
 
 
 if run_initial_time == False:
-	valid_list = np.load("../../data/training/validate/"+"validate_names.npy")
-	train_first_list = np.load("../../data/training/train/"+"training_names.npy")
-	test_list = np.load("../../data/test/"+"test_names.npy")
-	train_first_list_new = np.load("../../data/training/train/"+"training_names_new.npy")
-	valid_list_new = np.load("../../data/training/validate/"+"validate_names_new.npy")
+	valid_list = np.load("data/training/validate/"+"validate_names.npy")
+	train_first_list = np.load("data/training/train/"+"training_names.npy")
+	test_list = np.load("data/test/"+"test_names.npy")
+	train_first_list_new = np.load("data/training/train/"+"training_names_new.npy")
+	valid_list_new = np.load("data/training/validate/"+"validate_names_new.npy")
 
 data_dict_train_first = dict()
 data_dict_validate = dict()
@@ -291,7 +285,7 @@ for hurr in data_dict_train_first.keys():
 
 	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
 	data_r_train_first[hurr] = storage_mat
-	np.savetxt("../../data/training/train_50/"+ hurr + ".txt",storage_mat, 
+	np.savetxt("data/training/train_50/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")
 
 data_r_validate = dict()
@@ -309,7 +303,7 @@ for hurr in data_dict_validate.keys():
 
 	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
 	data_r_validate[hurr] = storage_mat
-	np.savetxt("../../data/training/validate_50/"+ hurr + ".txt",storage_mat, 
+	np.savetxt("data/training/validate_50/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")
 
 data_r_test = dict()
@@ -327,7 +321,7 @@ for hurr in data_dict_test.keys():
 
 	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
 	data_r_test[hurr] = storage_mat
-	np.savetxt("../../data/test/"+ hurr + ".txt",storage_mat, 
+	np.savetxt("data/test/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")
 
 #######
@@ -348,7 +342,7 @@ for hurr in data_dict_train_first_new.keys():
 
 	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
 	data_r_train_first_new[hurr] = storage_mat
-	np.savetxt("../../data/training/train/"+ hurr + ".txt",storage_mat, 
+	np.savetxt("data/training/train/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")
 
 data_r_validate_new = dict()
@@ -366,5 +360,5 @@ for hurr in data_dict_validate_new.keys():
 
 	storage_mat[:,4:6] = convert_latlon(storage_mat[:,4:6]) 
 	data_r_validate_new[hurr] = storage_mat
-	np.savetxt("../../data/training/validate/"+ hurr + ".txt",storage_mat, 
+	np.savetxt("data/training/validate/"+ hurr + ".txt",storage_mat, 
 		fmt="%s")

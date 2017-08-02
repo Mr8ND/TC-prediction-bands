@@ -3,13 +3,7 @@
 # This script should be run in the project folder location
 # it creates folders for each validation TC in the desired folders
 
-
 cd data/generate/
-
-mkdir {Val_Sims_Auto_DeathRegs,Val_Sims_Auto_NoDeathRegs,Val_Sims_NoAuto_DeathRegs,Val_Sims_NoAuto_NoDeathRegs}
-
-
-
 
 cd Val_Sims_Auto_DeathRegs
 
