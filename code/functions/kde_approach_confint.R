@@ -3,6 +3,7 @@ require(geosphere)
 require(plyr)
 require(rworldmap)
 require(caret)
+require(ks)
 
 # Set the right working directory before running the code
 temp <- list.files(pattern="")
@@ -89,12 +90,8 @@ evaluatePredictedMatrix = function(predicted.mat, weight=3, in.alpha.level=5){
   
   sel.vec = predicted.mat[, in.alpha.level]==0
   calc.mat = predicted.mat[sel.vec,weight]
-  return(sum(calc.mat)/length(calc.mat))
+  return(sum(calc.mat)/sum(predicted.mat[,weight]))
 }
-
-
-
-
 
 kcvValidationSingleTC = function(dflist, weight.vec, alpha.levels, bandwith.levels, k=5, seed=7){
   
@@ -114,13 +111,13 @@ kcvValidationSingleTC = function(dflist, weight.vec, alpha.levels, bandwith.leve
     result.mat = matrix(, nrow = length(bandwith.levels), ncol = length(bandwith.levels))
     
     # Creates the training matrix
-    train.idx.vec = as.numeric(unlist(flds[k.vec[-k.value]]))
+    train.idx.vec = as.numeric(unlist(fold.list[k.vec[-k.value]]))
     train.list = dflist[train.idx.vec]
     train.weight.vec = weight.vec[train.idx.vec]
     train.mat = flattenTCListWeight(train.list, train.weight.vec)
     
     # Creates the test matrix
-    test.idx.vec = as.numeric(unlist(flds[k.vec[k.value]]))
+    test.idx.vec = as.numeric(unlist(fold.list[k.vec[k.value]]))
     test.list = dflist[test.idx.vec]
     test.weight.vec =  weight.vec[test.idx.vec]
     test.mat = flattenTCListWeight(test.list, test.weight.vec)
@@ -136,25 +133,41 @@ kcvValidationSingleTC = function(dflist, weight.vec, alpha.levels, bandwith.leve
     results.list[[k.value]] = result.mat
   }
   
-  return(results.list)
+  final.result.mat = Reduce("+", results.list) / length(results.list)
+  return(final.result.mat)
 }
 
-probability.vec = seq(0.001, 0.1, length.out = length(dflist))
+percDecrFormatting = function(result.mat){
+  perc.final.result.mat = matrix(, nrow=nrow(result.mat), ncol=ncol(result.mat)-1)
+  for (j in c(1:ncol(perc.final.result.mat))){
+    perc.final.result.mat[,j] = 100*(result.mat[,j+1]-result.mat[,j])/result.mat[,j]
+  }
+  return(perc.final.result.mat)
+}
+
+
+
+#probability.vec = seq(0.001, 0.1, length.out = length(dflist))
+probability.vec = estimate_p$auto_d[[1]]$p_estimate_test
+probability.vec = probability.vec/sum(probability.vec)
+
 dfmat = flattenTCListWeight(dflist, probability.vec)
 kde.obj = fitKDEObject(dfmat, h.band=0.06)
 predict.mat = predictKDEObject(kde.obj, dfmat[c(1:100),], alpha.level = .9)
 metric.value = evaluatePredictedMatrix(predict.mat)
 
 
+
 bandwith.levels = c(0.01, 0.03, 0.05, 0.07, 0.09)
 alpha.levels = c(0.75, 0.80, 0.85, 0.90, 0.95)
 
 ptm <- proc.time()
-metric.res.list = kcvValidationSingleTC(dflist = dflist, weight.vec = probability.vec, 
+final.result.mat = kcvValidationSingleTC(dflist = dflist, weight.vec = probability.vec, 
                                         alpha.levels = alpha.levels, bandwith.levels = bandwith.levels)
 proc.time() - ptm
-final.result.mat = Reduce("+", metric.res.list) / length(metric.res.list)
 
-
-
+perc.result.mat = percDecrFormatting(final.result.mat)
+which(perc.result.mat==min(perc.result.mat), arr.ind=TRUE)
+perc.result.mat
+final.result.mat
 
