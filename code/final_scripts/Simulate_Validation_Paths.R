@@ -22,8 +22,8 @@ ptm <- proc.time()
 # Run time: to generate 100 curves on each of 114 hurricane starts
 # with 4 combos of auto/non-auto and speed/non-speed.
 # > proc.time() - ptm
-#    user   system  elapsed 
-# 6957.826   79.612 7273.600 
+# user   system  elapsed 
+# 6476.972   53.255 6809.528 
 
 
 tf <- c(T, F)
@@ -58,7 +58,11 @@ for(auto.ind in tf){
   death.regs <- lapply(dflist.blocks,FUN = function(x) 
     return(glm(death ~ lat +long + bearing.prev + speed.prev + timestep,
                family = binomial, data = x)))  
-    
+  
+  # Fit kernel density to TC death times
+  death.times <- sapply(dflist, FUN = function(x) nrow(x))
+  death.dens <- density(death.times, bw = bw.nrd(death.times), kernel = "gaussian")
+  
   # Get max observed tropical cyclone length
   lengths <- unlist(lapply(dflist, FUN = nrow))
   death.rate <- 1 / mean(lengths)
@@ -109,7 +113,7 @@ for(auto.ind in tf){
       paths <- lapply(paths, FUN = function(path) generate.curve(path, 
                                              bearing.regs, speed.regs, death.regs, 
                                              max.length, bad.locations, death.rate,
-                                             death.regs.ind, auto.ind))
+                                             death.dens, death.regs.ind, auto.ind))
       
       # round to closest tenth to match NOAA format
       paths <- lapply(paths, FUN = function(x) round.curve(x))
