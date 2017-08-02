@@ -21,16 +21,15 @@ data set from the
 As is generally the case in papers today, our analysis is replicable. Follow the
 below instructions to do so.
 
-### Initial Folder Creation 
-could do a `make` file to get the data from the website and put it in a data folder
 
 ### Location of Important Code Files
 Files in `code/final_script` directory can replicate the work presented in the 
 paper. No initial `set seed` was used in the initial segmentation of the 
 tropical storms (TCs), and as such, to completely replicate the work, you'd need
-to gather the split from Ben LeRoy, otherwise, go into 
+to gather the split from Ben LeRoy and additionally you'd want to go into 
 `cleaning_data_test_train_subset.py` and change line 95 to have 
-`run_initial_time = True`.
+`run_initial_time = False` (Keep it `True` if you aren't too worried about the 
+split).
 
 ### Running files
 All files (`python` and `R`) should be run from the upper projection location (
@@ -55,15 +54,24 @@ The `python` file requires the following packages:
 - `plot3D`: plotting 3d compressions
 - `xtable`: creating latex tables for presentation
 
+### Getting the Data and Creating Necessary Subfolders in the Data Directory
+
+Go into the data folder and run `make all`. Note that later you'll need to run
+a bash shell file (`.sh`) to create more subfolders.
+
 ### Order of Files to Run
+
 - `cleaning_data_test_train_subset.py`: python process to clean and prepare data for R code
-- `create_folders.sh`: bash script to make the correct subdirectories for simulated data created in `Simulate_Validation_Paths.R`
+- `create_folders.sh`: bash script to make the correct subdirectories for simulated data created in `Simulate_Validation_Paths.R` (will need to be done after `cleaning_data_test_train_subset.py` is run,
+can do in the terminal with `bash create_folder.sh`)
 - `Simulate_Validation_Paths.R`: created simulated paths for the training data *
 - `initial_pipeline.R`: Creates Distance matrices, Markov Matrices and more on the test data (Spectral Analysis).*
 - `loocv.R`: Tune parameters for density map estimation using LOOCV **
 - `second_pipeline`: Estimate likelihood of generated paths using Spectral Analysis *
 
-"*"" means it takes a long time to run
+"*" means it takes a long time to run
+
+
 
 ## Contributors 
 - Nic Dalmasso ([`Mr8ND`](https://github.com/Mr8ND))
