@@ -386,4 +386,4 @@ result.list.maxntrue = confintPipelineWrapper(sim.curve.folders.list=sim.curve.f
 
 
 save(result.list, file = "confint_result_list.Rdata")
-save(result.list, file = "confint_result_list_maxntrue.Rdata")
+save(result.list.maxntrue, file = "confint_result_list_maxntrue.Rdata")
