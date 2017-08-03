@@ -339,9 +339,8 @@ confintPipeline = function(sim.curve.folders.list, true.curve.file.vec, weight.f
     in.vec = checkPointsInBands(true.curve,center.radius.df)
     result.mat[idx, 2] = sum(in.vec)/length(in.vec)
     
-    print(paste("TC number",idx,"done."))
+    print(paste("TC number",idx,"done - ", curve.type, "type of curves."))
   }
-  
   return(result.mat)
 }
 
@@ -353,3 +352,28 @@ example.result.mat = confintPipeline(sim.curve.folders.list=sim.curve.folders.li
                                      curve.type='auto_d')
 proc.time() - ptm
 
+
+confintPipelineWrapper = function(sim.curve.folders.list, true.curve.file.vec, weight.files,
+                       long.true.curves = 6, lat.true.curves = 5, max_n_bubble=TRUE,
+                       alpha.value = .9){
+  curve.type.vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')
+  result.list = list()
+  
+  for (j in c(1:length(curve.type.vec))){
+    result.list[[j]] = confintPipeline(sim.curve.folders.list = sim.curve.folders.list,
+                                 true.curve.file.vec = true.curve.file.vec, 
+                                 weight.files = weight.files, 
+                                 curve.type = curve.type.vec[j],
+                                 long.true.curves = long.true.curves,
+                                 lat.true.curves = lat.true.curves,
+                                 max_n_bubble = max_n_bubble,
+                                 alpha.value = alpha.value)
+  }
+  names(result.list) = curve.type.vec
+  return(result.list)
+}
+
+
+result.list = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.list,
+                                      true.curve.file.vec=true.curve.file.vec, 
+                                      weight.files=weight.files)
