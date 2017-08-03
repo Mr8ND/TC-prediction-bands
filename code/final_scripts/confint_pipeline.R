@@ -356,6 +356,7 @@ proc.time() - ptm
 confintPipelineWrapper = function(sim.curve.folders.list, true.curve.file.vec, weight.files,
                        long.true.curves = 6, lat.true.curves = 5, max_n_bubble=TRUE,
                        alpha.value = .9){
+  
   curve.type.vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')
   result.list = list()
   
@@ -377,3 +378,4 @@ confintPipelineWrapper = function(sim.curve.folders.list, true.curve.file.vec, w
 result.list = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.list,
                                       true.curve.file.vec=true.curve.file.vec, 
                                       weight.files=weight.files)
+save(result.list, file = "result_list.Rdata")
