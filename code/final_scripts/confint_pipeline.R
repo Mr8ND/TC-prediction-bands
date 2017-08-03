@@ -287,7 +287,7 @@ checkPointsInBands = function(df, center.radius.df){
 ############
 
 confintPipeline = function(sim.curve.folders.list, true.curve.file.vec, weight.files, curve.type,
-                           long.true.curves = 6, lat.true.curves = 5, max_n_bubble=TRUE,
+                           long.true.curves = 6, lat.true.curves = 5, max_n_bubble=FALSE,
                            alpha.value = .9){
   
   # curve.type can be one out of 'auto_d', 'auto_nd', 'no_auto_d' or 'no_auto_nd'
@@ -354,7 +354,7 @@ proc.time() - ptm
 
 
 confintPipelineWrapper = function(sim.curve.folders.list, true.curve.file.vec, weight.files,
-                       long.true.curves = 6, lat.true.curves = 5, max_n_bubble=TRUE,
+                       long.true.curves = 6, lat.true.curves = 5, max_n_bubble=FALSE,
                        alpha.value = .9){
   
   curve.type.vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')
@@ -378,4 +378,12 @@ confintPipelineWrapper = function(sim.curve.folders.list, true.curve.file.vec, w
 result.list = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.list,
                                       true.curve.file.vec=true.curve.file.vec, 
                                       weight.files=weight.files)
-save(result.list, file = "result_list.Rdata")
+
+result.list.maxntrue = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.list,
+                                              true.curve.file.vec=true.curve.file.vec, 
+                                              weight.files=weight.files,
+                                              max_n_bubble=TRUE)
+
+
+save(result.list, file = "confint_result_list.Rdata")
+save(result.list, file = "confint_result_list_maxntrue.Rdata")
