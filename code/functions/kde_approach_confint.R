@@ -21,6 +21,7 @@ for (i in c(1:length(dflist))){
   lines(dflist[[i]][,1], dflist[[i]][,2], col='black')
 }
 
+
 ##########################################
 ### KDE APPROACH
 ###########################################
@@ -47,15 +48,20 @@ flattenTCListWeight = function(dflist, weight.vec){
   return(dfmat)
 }
 
-fitKDEObject = function(dfmat, h.band, long=1, lat=2, weight=3, grid.size=1000){
+fitKDEObject = function(dfmat, h.band=NULL, long=1, lat=2, weight=3, grid.size=1000){
   
   # This function simply the KDE object given a matrix which has the dataframes TC for training
   # appended to it. By default it considers longitude as first column, latitude as second and
   # weight as third. The default grid size for fitting the KDE is 1000 - it can be reduced
   # to speed up the computation times.
   
-  h.mat = diag(2)*h.band
-  return(kde(dfmat[,c(long,lat)], w=dfmat[,weight], gridsize=c(grid.size), H=h.mat))
+  if (!is.null(h.band)){
+    h.mat = diag(2)*h.band
+    kde.obj = kde(dfmat[,c(long,lat)], w=dfmat[,weight], gridsize=c(grid.size), H=h.mat)
+  } else {
+    kde.obj = kde(dfmat[,c(long,lat)], w=dfmat[,weight], gridsize=c(grid.size))
+  }
+  return(kde.obj)
 }
 
 predictKDEObject = function(kde.obj, predict.mat, alpha.level=NULL, long=1, lat=2){
@@ -145,6 +151,18 @@ percDecrFormatting = function(result.mat){
   return(perc.final.result.mat)
 }
 
+absDecrFormatting = function(result.mat){
+  perc.final.result.mat = matrix(, nrow=nrow(result.mat), ncol=ncol(result.mat)-1)
+  for (j in c(1:ncol(perc.final.result.mat))){
+    perc.final.result.mat[,j] = (result.mat[,j+1]-result.mat[,j])
+  }
+  return(perc.final.result.mat)
+}
+
+
+
+
+
 
 
 #probability.vec = seq(0.001, 0.1, length.out = length(dflist))
@@ -152,7 +170,7 @@ probability.vec = estimate_p$auto_d[[1]]$p_estimate_test
 probability.vec = probability.vec/sum(probability.vec)
 
 dfmat = flattenTCListWeight(dflist, probability.vec)
-kde.obj = fitKDEObject(dfmat, h.band=0.06)
+kde.obj = fitKDEObject(dfmat)
 predict.mat = predictKDEObject(kde.obj, dfmat[c(1:100),], alpha.level = .9)
 metric.value = evaluatePredictedMatrix(predict.mat)
 
@@ -166,8 +184,28 @@ final.result.mat = kcvValidationSingleTC(dflist = dflist, weight.vec = probabili
                                         alpha.levels = alpha.levels, bandwith.levels = bandwith.levels)
 proc.time() - ptm
 
-perc.result.mat = percDecrFormatting(final.result.mat)
-which(perc.result.mat==min(perc.result.mat), arr.ind=TRUE)
-perc.result.mat
+abs.result.mat = absDecrFormatting(final.result.mat)
+which(abs.result.mat==min(abs.result.mat), arr.ind=TRUE)
+abs.result.mat
 final.result.mat
 
+true.curve = data.frame(read.table("data/training/validate/AL011969.txt", header=FALSE, sep=" "))[,c(6,5)]
+names(true.curve) = c("long", "lat")
+
+predictKDEObject(kde.obj, true.curve, alpha.level = .9)
+
+
+
+
+quartz(width = 8,height = 6.5)
+newmap = getMap(resolution = "low")
+xlim = c(-105,0)
+ylim = c(16, 36)
+plot(newmap, ylim = ylim, xlim = xlim, asp = 1)
+
+plot(kde.obj, cont = c(50,75,90,95,99), add=TRUE, col.pt="blue", display="filled.contour2")
+
+for (i in c(1:length(dflist))){
+  lines(dflist[[i]][,1], dflist[[i]][,2], col='black')
+}
+lines(true.curve[,1], true.curve[,2], col='blue', lwd=3)
