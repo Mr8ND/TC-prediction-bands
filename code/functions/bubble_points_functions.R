@@ -152,7 +152,8 @@ bubbleCI = function(list_path, prob_vec_path, level=.95, max_n=FALSE){
 #auto = load_sims(project_location,sub_directory_auto,group = 1:114)
 
 selected_ones = 27
-dflist_toy_bubble = no_auto[[selected_ones]]
+#dflist_toy_bubble = no_auto[[selected_ones]]
+dflist_toy_bubble = dflist
 #probability_vec = estimate_p_auto[[selected_ones]]$p_estimate_test/sum(estimate_p_auto[[selected_ones]]$p_estimate_test)
 weight_vec = rnorm(n = 100, mean = 10, sd = 1)
 probability_vec = weight_vec/sum(weight_vec)
@@ -160,7 +161,7 @@ probability_vec = weight_vec/sum(weight_vec)
 rearrangePathList(dflist_toy_bubble, probability_vec)
 #rearrangePathListNew(dflist_toy_bubble, probability_vec)
 
-bubble_steps_CI <- bubbleCI(dflist_toy_bubble, probability_vec)
+bubble_steps_CI <- bubbleCI(dflist_toy_bubble, probability_vec, max_n=TRUE)
 
 
 calculateErrorBandsBubble = function(bubble.df, long=1, lat=2, distance=4, conversion=TRUE){
