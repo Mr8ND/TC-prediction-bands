@@ -15,7 +15,7 @@ hist(death.times, breaks = 20, freq = F, xlim=c(0,130), ylim=c(0,0.04),
 
 time.density <- density(death.times, bw = bw.nrd(death.times), kernel = "gaussian")
 hist(death.times, breaks = 20, freq = F, xlim = c(0,130), ylim = c(0,0.04),
-     xlab = "Death Time", ylab = "Density", main = "Density of TC Death Times (Kernel)")
+     xlab = "Death Time", ylab = "Density", main = "Kernel Density of TC Death Times")
 par(new = T)
 plot(time.density, xlim = c(0,130), ylim = c(0,0.04), xlab = "", ylab = "", main = "")
 
