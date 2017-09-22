@@ -36,7 +36,7 @@ sim.curve.folders = findFilesInFolder(sim_curve_loc, "Val_Sims", path.out=TRUE)
 tc.code.list = findFilesInFolder(sim.curve.folders[1], "AL")
 
 # Limit the tc.code.list to the first 100
-limit.tc = 100
+limit.tc = 114
 tc.code.list = tc.code.list[c(1:limit.tc)]
 
 # True Curve file list
@@ -132,7 +132,7 @@ predictKDEObject = function(kde.obj, predict.mat, alpha.level=NULL, long=1, lat=
 
 # Bubble Points Functions
 
-rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, lat=2){
+rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, lat=2, direct_selection=TRUE, direct_selection_idx=NULL){
   #This function takes as an input the list of the path, in which we have n elements, each of with is a path.
   #A path is a dataframe of (k x 2), where k is the number of points of the path. k needs to be the same for 
   #every path in the list or it will throw an error. the number of columns needs to be 2 as well or it is going
@@ -162,6 +162,11 @@ rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, la
   }
   else{
     ind_max_prob = which(prob_vec_path==max(prob_vec_path))[1]
+    n_df = dim(list_path[[ind_max_prob]])[1]
+  }
+  
+  if (direct_selection == TRUE){
+    ind_max_prob = direct_selection_idx
     n_df = dim(list_path[[ind_max_prob]])[1]
   }
   
@@ -216,7 +221,7 @@ selectCIPath = function(path_prob_df, level=.95, output_length="nautical mile"){
   return(ordered_path_prob_df[c(1:ind_sel),])
 }
 
-bubbleCI = function(list_path, prob_vec_path, level=.95, max_n=FALSE){
+bubbleCI = function(list_path, prob_vec_path, level=.95, max_n=FALSE, direct_sel=FALSE, direct_sel_idx=NULL){
   
   #This function is simply a wrapper around rearrangePathList and selectCIPath.
   
@@ -226,7 +231,8 @@ bubbleCI = function(list_path, prob_vec_path, level=.95, max_n=FALSE){
   #OUPUT: A list with k dataframes, each of which has the closest points around the point of the maximum likely path  
   #such that the sum of their probability is above the level requested.
   
-  points_prob_list = rearrangePathList(list_path, prob_vec_path, max_n=max_n)
+  points_prob_list = rearrangePathList(list_path, prob_vec_path, max_n=max_n,
+                                       direct_selection=direct_sel, direct_selection_idx=direct_sel_idx)
   
   n = length(points_prob_list)
   output_list = list()
@@ -282,6 +288,14 @@ checkPointsInBands = function(df, center.radius.df){
   return(in.vec)
 }
 
+
+# Non-parametric estimation of the curves
+
+source(paste0(functions_loc, '13pointreduction.R'))
+source(paste0(functions_loc, 'Path_functions.R'))
+source('code/final_scripts/depth_function.R')
+
+
 ############
 # Pipeline #
 ############
@@ -298,7 +312,7 @@ confintPipeline = function(sim.curve.folders.list, true.curve.file.vec, weight.f
   sim.curve.folders = sim.curve.folders.list[[curve.type]]
   
   # Initialize the result matrix
-  result.mat = matrix(, nrow=length(sim.curve.folders), ncol=2)
+  result.mat = matrix(, nrow=length(sim.curve.folders), ncol=3)
   
   for (idx in c(1:length(sim.curve.folders))){
     
@@ -338,6 +352,29 @@ confintPipeline = function(sim.curve.folders.list, true.curve.file.vec, weight.f
     
     in.vec = checkPointsInBands(true.curve,center.radius.df)
     result.mat[idx, 2] = sum(in.vec)/length(in.vec)
+    
+    
+    #BUBBLE APPROACH WITH NONPARAMETRIC
+    dflist_13pointsreduction = thirteen_points_listable(dflist, c_position = 1:2)
+    dist_matrix_13pointsreduction = distMatrixPath(dflist_13pointsreduction)
+    depth_vector = depth_function(dist_matrix_13pointsreduction)
+    depth_vector_idx = which(depth_vector==max(depth_vector))
+    
+    bubble_steps_CI_np = bubbleCI(dflist, tc.weight.vec, level = alpha.value, direct_sel = TRUE, direct_sel_idx = depth_vector_idx[1])
+    NSWE.lists.np = calculateErrorBandsBubble(bubble_steps_CI_np, conversion=TRUE)
+    error.NS.np = NSWE.lists.np[[1]]
+    error.EW.np = NSWE.lists.np[[2]]
+    center.radius.np = NSWE.lists.np[[3]]
+    
+    center.radius.df.np = c()
+    for (i in c(1:length(center.radius.np))){
+      center.radius.df.np = c(center.radius.df.np, center.radius.np[[i]][c(1,2,3)])
+    }
+    center.radius.df.np = data.frame(t(matrix(center.radius.df.np, nrow=3)))
+    
+    in.vec.np = checkPointsInBands(true.curve,center.radius.df.np)
+    result.mat[idx, 2] = sum(in.vec.np)/length(in.vec.np)
+  
     
     print(paste("TC number",idx,"done - ", curve.type, "type of curves."))
   }
@@ -379,11 +416,11 @@ result.list = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.li
                                       true.curve.file.vec=true.curve.file.vec, 
                                       weight.files=weight.files)
 
-result.list.maxntrue = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.list,
-                                              true.curve.file.vec=true.curve.file.vec, 
-                                              weight.files=weight.files,
-                                              max_n_bubble=TRUE)
+#result.list.maxntrue = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.list,
+#                                              true.curve.file.vec=true.curve.file.vec, 
+#                                              weight.files=weight.files,
+#                                              max_n_bubble=TRUE)
 
 
-save(result.list, file = "confint_result_list.Rdata")
-save(result.list.maxntrue, file = "confint_result_list_maxntrue.Rdata")
+save(result.list, file = "confint_result_list_bubbleKDEnonParam.Rdata")
+#save(result.list.maxntrue, file = "confint_result_list_maxntrue.Rdata")
