@@ -5,9 +5,65 @@ require(rworldmap)
 require(caret)
 require(ks)
 
-# Set the right working directory before running the code
-temp <- list.files(pattern="")
+
+#############
+# Locations #
+#############
+
+project_location      = ""
+functions_loc         = "code/functions/"
+weights_loc           = "data/"
+true_curve_loc        = "data/training/validate/"
+sim_curve_loc         = "data/"
+
+findFilesInFolder = function(subfolder, name.pattern, path.out=FALSE){
+  temp = list.files(path=subfolder, pattern=name.pattern)
+  if (path.out==TRUE){
+    for (i in c(1:length(temp))){
+      temp[i] = paste0(subfolder,temp[i])
+    }
+  }
+  return(temp)
+}
+
+weight.files = findFilesInFolder(weights_loc, "estimate_p", path.out=TRUE)
+sim.curve.folders = findFilesInFolder(sim_curve_loc, "Val_Sims", path.out=TRUE)
+tc.code.list = findFilesInFolder(sim.curve.folders[1], "AL")
+
+# Limit the tc.code.list to the first 100
+limit.tc = 100
+tc.code.list = tc.code.list[c(1:limit.tc)]
+
+# True Curve file list
+true.curve.file.vec = rep_len("", length.out=limit.tc)
+for (j in c(1:limit.tc)){
+  true.curve.file.vec[j] = paste0(true_curve_loc, findFilesInFolder(true_curve_loc, tc.code.list[j]))
+}
+
+# Creating a list with all the location files according to the sim.curve.folders.
+# Every list is going to have a list in which to look for the simulated TC of the TC with that
+# specific code.
+
+sim.curve.folders.list = list()
+for (j in c(1:4)){
+  path.vec = rep_len("", length.out=length(tc.code.list))
+  for (i in c(1:length(tc.code.list))){
+    path.vec[i] = findFilesInFolder(paste0(sim.curve.folders[j],'/'), tc.code.list[i] , path.out=TRUE)
+    path.vec[i] = paste0(path.vec[i], '/')
+  }
+  sim.curve.folders.list[[j]] = path.vec
+}
+names(sim.curve.folders.list) = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')
+
+
+#######################
+
+idx_chosen = 18
+curve.type = 'auto_d'
+sim.curve.folders = sim.curve.folders.list[[curve.type]]
+temp = findFilesInFolder(sim.curve.folders[idx_chosen], "_sim_", path.out=TRUE)
 dflist = lapply(temp, function(x) data.frame(read.table(x, header=TRUE, sep=",")))
+
 
 quartz(width = 8,height = 6.5)
 newmap = getMap(resolution = "low")
@@ -162,25 +218,35 @@ absDecrFormatting = function(result.mat){
 
 
 
+# Loading in the true curve. We automatic assume that longitude is in the 6th curve for true
+# curves and latitude is in 5
+true.curve = data.frame(read.table(true.curve.file.vec[idx_chosen], header=FALSE, sep=" "))[,c(6,5)]
+names(true.curve) = c("long", "lat")
+
+# Loading in the right weight and normalizing them
+idx.weights = (idx_chosen-1) %/% 25
+load(weight.files[idx.weights+1])
+tc.weight.vec = estimate_p[[curve.type]][[idx_chosen]]$p_estimate_test
+tc.weight.vec = tc.weight.vec/sum(tc.weight.vec)
 
 
 
 #probability.vec = seq(0.001, 0.1, length.out = length(dflist))
-probability.vec = estimate_p$auto_d[[1]]$p_estimate_test
-probability.vec = probability.vec/sum(probability.vec)
+#probability.vec = estimate_p$auto_d[[1]]$p_estimate_test
+#probability.vec = probability.vec/sum(probability.vec)
 
-dfmat = flattenTCListWeight(dflist, probability.vec)
-kde.obj = fitKDEObject(dfmat)
-predict.mat = predictKDEObject(kde.obj, dfmat[c(1:100),], alpha.level = .9)
-metric.value = evaluatePredictedMatrix(predict.mat)
+#dfmat = flattenTCListWeight(dflist, probability.vec)
+#kde.obj = fitKDEObject(dfmat)
+#predict.mat = predictKDEObject(kde.obj, dfmat[c(1:100),], alpha.level = .9)
+#metric.value = evaluatePredictedMatrix(predict.mat)
 
-
+#### CROSS-VALIDATION
 
 bandwith.levels = c(0.01, 0.03, 0.05, 0.07, 0.09)
 alpha.levels = c(0.75, 0.80, 0.85, 0.90, 0.95)
 
 ptm <- proc.time()
-final.result.mat = kcvValidationSingleTC(dflist = dflist, weight.vec = probability.vec, 
+final.result.mat = kcvValidationSingleTC(dflist = dflist, weight.vec = tc.weight.vec, 
                                         alpha.levels = alpha.levels, bandwith.levels = bandwith.levels)
 proc.time() - ptm
 
@@ -189,13 +255,19 @@ which(abs.result.mat==min(abs.result.mat), arr.ind=TRUE)
 abs.result.mat
 final.result.mat
 
-true.curve = data.frame(read.table("data/training/validate/AL011969.txt", header=FALSE, sep=" "))[,c(6,5)]
-names(true.curve) = c("long", "lat")
+#true.curve = data.frame(read.table("data/training/validate/AL011969.txt", header=FALSE, sep=" "))[,c(6,5)]
+#names(true.curve) = c("long", "lat")
 
 predictKDEObject(kde.obj, true.curve, alpha.level = .9)
 
 
+####################
+## VISUALIZATION
+####################
 
+ptm <- proc.time()
+dfmat = flattenTCListWeight(dflist, tc.weight.vec)
+kde.obj = fitKDEObject(dfmat)
 
 quartz(width = 8,height = 6.5)
 newmap = getMap(resolution = "low")
@@ -203,9 +275,42 @@ xlim = c(-105,0)
 ylim = c(16, 36)
 plot(newmap, ylim = ylim, xlim = xlim, asp = 1)
 
-plot(kde.obj, cont = c(50,75,90,95,99), add=TRUE, col.pt="blue", display="filled.contour2")
-
 for (i in c(1:length(dflist))){
-  lines(dflist[[i]][,1], dflist[[i]][,2], col='black')
+  lines(dflist[[i]][,1], dflist[[i]][,2], col=rgb(0,0,0,0.25), lwd=0.2)
 }
-lines(true.curve[,1], true.curve[,2], col='blue', lwd=3)
+plot(kde.obj, cont = 85, add=TRUE, col='pink', drawlabels=FALSE, lwd=4)
+lines(true.curve[,1], true.curve[,2], col='red', lwd=4)
+proc.time() - ptm
+
+
+############################
+## VISUALIZATION PIPELINE
+############################
+
+
+function(curve.type, sim.curve.folders.list, length.hurricane=114){
+  
+  sim.curve.folders = sim.curve.folders.list[[curve.type]]
+  kde.list = list()
+  
+  for (index_chosen in c(1,length.hurricane)){
+    true.curve = data.frame(read.table(true.curve.file.vec[index_chosen], header=FALSE, sep=" "))[,c(6,5)]
+    names(true.curve) = c("long", "lat")
+    
+    temp = findFilesInFolder(sim.curve.folders[index_chosen], "_sim_", path.out=TRUE)
+    dflist = lapply(temp, function(x) data.frame(read.table(x, header=TRUE, sep=",")))
+    
+    idx.weights = (index_chosen-1) %/% 25
+    load(weight.files[idx.weights+1])
+    tc.weight.vec = estimate_p[[curve.type]][[index_chosen]]$p_estimate_test
+    tc.weight.vec = tc.weight.vec/sum(tc.weight.vec)
+    
+    dfmat = flattenTCListWeight(dflist, tc.weight.vec)
+    kde.obj = fitKDEObject(dfmat)
+    
+    kde.list[[index_chosen]] = kde.obj
+  }
+  return(kde.list)
+}
+
+
