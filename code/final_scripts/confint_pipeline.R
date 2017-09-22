@@ -293,7 +293,7 @@ checkPointsInBands = function(df, center.radius.df){
 
 source(paste0(functions_loc, '13pointreduction.R'))
 source(paste0(functions_loc, 'Path_functions.R'))
-source('code/final_scripts/depth_function.R')
+source('code/functions/depth_function.R')
 
 
 ############
