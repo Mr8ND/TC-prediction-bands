@@ -312,7 +312,8 @@ kdeListFunction <- function(curve.type, sim.curve.folders.list, true.curve.file.
     
     kde.list[[index_chosen]] = kde.obj
   }
-  save(kde.list, file = paste0(c('kde_obj_list', curve.type, '.Rdata')))
+  print(paste0('kde_obj_list', curve.type, '.Rdata'))
+  save(kde.list, file = paste0('kde_obj_list', curve.type, '.Rdata'))
 }
 
 ## Run everything in location before running this part
