@@ -4,6 +4,7 @@ require(plyr)
 require(rworldmap)
 require(caret)
 require(ks)
+require(gtools)
 
 
 #############
@@ -26,12 +27,12 @@ findFilesInFolder = function(subfolder, name.pattern, path.out=FALSE){
   return(temp)
 }
 
-weight.files = findFilesInFolder(weights_loc, "estimate_p", path.out=TRUE)
+weight.files = mixedsort(findFilesInFolder(weights_loc, "estimate_p", path.out=TRUE))
 sim.curve.folders = findFilesInFolder(sim_curve_loc, "Val_Sims", path.out=TRUE)
 tc.code.list = findFilesInFolder(sim.curve.folders[1], "AL")
 
 # Limit the tc.code.list to the first 100
-limit.tc = 100
+limit.tc = 114
 tc.code.list = tc.code.list[c(1:limit.tc)]
 
 # True Curve file list
@@ -288,12 +289,14 @@ proc.time() - ptm
 ############################
 
 
-function(curve.type, sim.curve.folders.list, length.hurricane=114){
+kdeListFunction <- function(curve.type, sim.curve.folders.list, true.curve.file.vec, weight.files, length.hurricane=114){
   
-  sim.curve.folders = sim.curve.folders.list[[curve.type]]
+  print(paste0('Working on ', curve.type,' Curves.'))
+  curve.type.index = which(c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')==curve.type)
+  sim.curve.folders = sim.curve.folders.list[[curve.type.index]]
   kde.list = list()
   
-  for (index_chosen in c(1,length.hurricane)){
+  for (index_chosen in c(1:length.hurricane)){
     true.curve = data.frame(read.table(true.curve.file.vec[index_chosen], header=FALSE, sep=" "))[,c(6,5)]
     names(true.curve) = c("long", "lat")
     
@@ -304,13 +307,21 @@ function(curve.type, sim.curve.folders.list, length.hurricane=114){
     load(weight.files[idx.weights+1])
     tc.weight.vec = estimate_p[[curve.type]][[index_chosen]]$p_estimate_test
     tc.weight.vec = tc.weight.vec/sum(tc.weight.vec)
-    
     dfmat = flattenTCListWeight(dflist, tc.weight.vec)
     kde.obj = fitKDEObject(dfmat)
     
     kde.list[[index_chosen]] = kde.obj
   }
-  return(kde.list)
+  save(kde.list, file = paste0(c('kde_obj_list', curve.type, '.Rdata')))
+}
+
+## Run everything in location before running this part
+
+for (ct in c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')){
+  kdeListFunction(curve.type = ct, 
+                  sim.curve.folders.list = sim.curve.folders.list, 
+                  true.curve.file.vec = true.curve.file.vec,
+                  weight.files = weight.files)
 }
 
 
