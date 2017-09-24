@@ -289,7 +289,7 @@ proc.time() - ptm
 ############################
 
 
-kdeListFunction <- function(curve.type, sim.curve.folders.list, true.curve.file.vec, weight.files, length.hurricane=114){
+kdeListFunction <- function(curve.type, sim.curve.folders.list, true.curve.file.vec, weight.files, length.hurricane=114, weights.unif=FALSE){
   
   print(paste0('Working on ', curve.type,' Curves.'))
   curve.type.index = which(c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')==curve.type)
@@ -303,26 +303,36 @@ kdeListFunction <- function(curve.type, sim.curve.folders.list, true.curve.file.
     temp = findFilesInFolder(sim.curve.folders[index_chosen], "_sim_", path.out=TRUE)
     dflist = lapply(temp, function(x) data.frame(read.table(x, header=TRUE, sep=",")))
     
-    idx.weights = (index_chosen-1) %/% 25
-    load(weight.files[idx.weights+1])
-    tc.weight.vec = estimate_p[[curve.type]][[index_chosen]]$p_estimate_test
-    tc.weight.vec = tc.weight.vec/sum(tc.weight.vec)
+    if (weights.unif==FALSE){
+      idx.weights = (index_chosen-1) %/% 25
+      load(weight.files[idx.weights+1])
+      tc.weight.vec = estimate_p[[curve.type]][[index_chosen]]$p_estimate_test
+      tc.weight.vec = tc.weight.vec/sum(tc.weight.vec)
+    } else {
+      tc.weight.vec = rep(1, length(dflist))
+    }
+    
     dfmat = flattenTCListWeight(dflist, tc.weight.vec)
     kde.obj = fitKDEObject(dfmat)
     
     kde.list[[index_chosen]] = kde.obj
   }
   print(paste0('kde_obj_list', curve.type, '.Rdata'))
-  save(kde.list, file = paste0('kde_obj_list', curve.type, '.Rdata'))
+  weight.title = if(weights.unif==FALSE) 'weights' else 'no_weights'
+  save(kde.list, file = paste0('kde_obj_list_', curve.type, '_weight.title', '.Rdata'))
 }
 
 ## Run everything in location before running this part
 
-for (ct in c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')){
-  kdeListFunction(curve.type = ct, 
-                  sim.curve.folders.list = sim.curve.folders.list, 
-                  true.curve.file.vec = true.curve.file.vec,
-                  weight.files = weight.files)
+for (weights.selection in c(FALSE, TRUE)){
+  for (ct in c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')){
+    ptm <- proc.time()
+    kdeListFunction(curve.type = ct, 
+                    sim.curve.folders.list = sim.curve.folders.list, 
+                    true.curve.file.vec = true.curve.file.vec,
+                    weight.files = weight.files,
+                    weights.unif = weights.selection)
+    print(proc.time() - ptm)
+  }
 }
-
 
