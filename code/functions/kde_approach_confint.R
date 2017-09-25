@@ -319,7 +319,7 @@ kdeListFunction <- function(curve.type, sim.curve.folders.list, true.curve.file.
   }
   print(paste0('kde_obj_list', curve.type, '.Rdata'))
   weight.title = if(weights.unif==FALSE) 'weights' else 'no_weights'
-  save(kde.list, file = paste0('kde_obj_list_', curve.type, '_weight.title', '.Rdata'))
+  save(kde.list, file = paste0('kde_obj_list_', curve.type, weight.title, '.Rdata'))
 }
 
 ## Run everything in location before running this part
