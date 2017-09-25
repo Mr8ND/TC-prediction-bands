@@ -10,6 +10,7 @@ library(plyr)
 library(rworldmap)
 library(caret)
 library(ks)
+require(gtools)
 
 #############
 # Locations #
@@ -31,7 +32,7 @@ findFilesInFolder = function(subfolder, name.pattern, path.out=FALSE){
   return(temp)
 }
 
-weight.files = findFilesInFolder(weights_loc, "estimate_p", path.out=TRUE)
+weight.files = mixedsort(findFilesInFolder(weights_loc, "estimate_p", path.out=TRUE))
 sim.curve.folders = findFilesInFolder(sim_curve_loc, "Val_Sims", path.out=TRUE)
 tc.code.list = findFilesInFolder(sim.curve.folders[1], "AL")
 
@@ -373,7 +374,7 @@ confintPipeline = function(sim.curve.folders.list, true.curve.file.vec, weight.f
     center.radius.df.np = data.frame(t(matrix(center.radius.df.np, nrow=3)))
     
     in.vec.np = checkPointsInBands(true.curve,center.radius.df.np)
-    result.mat[idx, 2] = sum(in.vec.np)/length(in.vec.np)
+    result.mat[idx, 3] = sum(in.vec.np)/length(in.vec.np)
   
     
     print(paste("TC number",idx,"done - ", curve.type, "type of curves."))
@@ -416,11 +417,98 @@ result.list = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.li
                                       true.curve.file.vec=true.curve.file.vec, 
                                       weight.files=weight.files)
 
-#result.list.maxntrue = confintPipelineWrapper(sim.curve.folders.list=sim.curve.folders.list,
-#                                              true.curve.file.vec=true.curve.file.vec, 
-#                                              weight.files=weight.files,
-#                                              max_n_bubble=TRUE)
-
-
 save(result.list, file = "confint_result_list_bubbleKDEnonParam.Rdata")
-#save(result.list.maxntrue, file = "confint_result_list_maxntrue.Rdata")
+
+
+############################
+# Pipeline Without Weights #
+############################
+
+confintPipelineNoWeights =  function(sim.curve.folders.list, true.curve.file.vec, curve.type,
+                                     long.true.curves = 6, lat.true.curves = 5, max_n_bubble=FALSE,
+                                     alpha.value = .9){
+  
+  # curve.type can be one out of 'auto_d', 'auto_nd', 'no_auto_d' or 'no_auto_nd'
+  if (!is.element(curve.type, c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd'))){
+    stop("curve.type must be one out of 'auto_d', 'auto_nd', 'no_auto_d' or 'no_auto_nd'")
+  }
+  # First we select the folders from which to take the simulation curves
+  sim.curve.folders = sim.curve.folders.list[[curve.type]]
+  
+  # Initialize the result matrix
+  result.mat = matrix(, nrow=length(sim.curve.folders), ncol=2)
+  
+  for (idx in c(1:length(sim.curve.folders))){
+    
+    # Loading in the simulated curve
+    temp = findFilesInFolder(sim.curve.folders[idx], "_sim_", path.out=TRUE)
+    dflist = lapply(temp, function(x) data.frame(read.table(x, header=TRUE, sep=",")))
+    
+    # Loading in the true curve. We automatic assume that longitude is in the 6th curve for true
+    # curves and latitude is in 5
+    true.curve = data.frame(read.table(true.curve.file.vec[idx], header=FALSE, sep=" "))[,c(long.true.curves,lat.true.curves)]
+    names(true.curve) = c("long", "lat")
+    
+    #Setting the weights to be uniform
+    tc.weight.vec = rep(1, length(dflist))
+    
+    # KDE APPROACH
+    dfmat = flattenTCListWeight(dflist, tc.weight.vec)
+    kde.obj = fitKDEObject(dfmat)
+    predicted.kde.mat = predictKDEObject(kde.obj, true.curve, alpha.level = alpha.value)
+    result.mat[idx, 1] = sum(predicted.kde.mat[,4])/nrow(predicted.kde.mat)
+    
+    
+    #BUBBLE APPROACH WITH NONPARAMETRIC
+    dflist_13pointsreduction = thirteen_points_listable(dflist, c_position = 1:2)
+    dist_matrix_13pointsreduction = distMatrixPath(dflist_13pointsreduction)
+    depth_vector = depth_function(dist_matrix_13pointsreduction)
+    depth_vector_idx = which(depth_vector==max(depth_vector))
+    
+    bubble_steps_CI_np = bubbleCI(dflist, tc.weight.vec, level = alpha.value, direct_sel = TRUE, direct_sel_idx = depth_vector_idx[1])
+    NSWE.lists.np = calculateErrorBandsBubble(bubble_steps_CI_np, conversion=TRUE)
+    error.NS.np = NSWE.lists.np[[1]]
+    error.EW.np = NSWE.lists.np[[2]]
+    center.radius.np = NSWE.lists.np[[3]]
+    
+    center.radius.df.np = c()
+    for (i in c(1:length(center.radius.np))){
+      center.radius.df.np = c(center.radius.df.np, center.radius.np[[i]][c(1,2,3)])
+    }
+    center.radius.df.np = data.frame(t(matrix(center.radius.df.np, nrow=3)))
+    
+    in.vec.np = checkPointsInBands(true.curve,center.radius.df.np)
+    result.mat[idx, 2] = sum(in.vec.np)/length(in.vec.np)
+    
+    
+    print(paste("TC number",idx,"done - ", curve.type, "type of curves."))
+  }
+  return(result.mat)
+}
+
+
+confintPipelineWrapperNoWeights = function(sim.curve.folders.list, true.curve.file.vec,
+                                  long.true.curves = 6, lat.true.curves = 5, max_n_bubble=FALSE,
+                                  alpha.value = .9){
+  
+  curve.type.vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')
+  result.list = list()
+  
+  for (j in c(1:length(curve.type.vec))){
+    result.list[[j]] = confintPipelineNoWeights(sim.curve.folders.list = sim.curve.folders.list,
+                                       true.curve.file.vec = true.curve.file.vec,
+                                       curve.type = curve.type.vec[j],
+                                       long.true.curves = long.true.curves,
+                                       lat.true.curves = lat.true.curves,
+                                       max_n_bubble = max_n_bubble,
+                                       alpha.value = alpha.value)
+  }
+  names(result.list) = curve.type.vec
+  return(result.list)
+}
+
+
+result.list.noweights = confintPipelineWrapperNoWeights(sim.curve.folders.list=sim.curve.folders.list,
+                                     true.curve.file.vec=true.curve.file.vec)
+
+save(result.list.noweights, file = "confint_result_list_noweights_KDEnonParam.Rdata")
