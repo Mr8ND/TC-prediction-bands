@@ -133,7 +133,7 @@ predictKDEObject = function(kde.obj, predict.mat, alpha.level=NULL, long=1, lat=
 
 # Bubble Points Functions
 
-rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, lat=2, direct_selection=TRUE, direct_selection_idx=NULL){
+rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, lat=2, direct_selection=FALSE, direct_selection_idx=NULL){
   #This function takes as an input the list of the path, in which we have n elements, each of with is a path.
   #A path is a dataframe of (k x 2), where k is the number of points of the path. k needs to be the same for 
   #every path in the list or it will throw an error. the number of columns needs to be 2 as well or it is going
@@ -149,10 +149,6 @@ rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, la
   #the probability of such path. Every element of the output is a dataframe.
   
   n = length(list_path)
-  #n_df = dim(list_path[[1]])[1]
-  #if (n_df != 13){
-  #  print("Number of points in each dataset was should have 13 but it is not - just flagging it.")
-  #}
   
   if (max_n == TRUE){
     n_df.vec = numeric(n)
@@ -169,6 +165,12 @@ rearrangePathList = function(list_path, prob_vec_path, max_n = FALSE, long=1, la
   if (direct_selection == TRUE){
     ind_max_prob = direct_selection_idx
     n_df = dim(list_path[[ind_max_prob]])[1]
+    
+    # ARTIFAX
+    # In the case in which the weights are all the same we need to differentiate in some way the one which has been
+    # selected to be the one with highest weight, otherwise that point would be selected randomly
+    # We add a very small value to it so that it will automatically come up as the one with highest weight in general.
+    prob_vec_path[ind_max_prob] = prob_vec_path[ind_max_prob] + 0.0001 
   }
   
   output_mat = matrix(, nrow=n_df, ncol=2*n)
@@ -198,6 +200,7 @@ selectCIPath = function(path_prob_df, level=.95, output_length="nautical mile"){
   #such that the sum of their probability is above the level requested are output.
   
   ind_max_prob = which(path_prob_df[,3]==max(path_prob_df[,3]))
+  
   if (length(ind_max_prob) > 1){
     print('There is a case of tie in calculating the most likely path. Taking the first one as default')
     ind_max_prob = ind_max_prob[1]
@@ -450,7 +453,7 @@ confintPipelineNoWeights =  function(sim.curve.folders.list, true.curve.file.vec
     names(true.curve) = c("long", "lat")
     
     #Setting the weights to be uniform
-    tc.weight.vec = rep(1, length(dflist))
+    tc.weight.vec = rep(1, length(dflist))/length(dflist)
     
     # KDE APPROACH
     dfmat = flattenTCListWeight(dflist, tc.weight.vec)
