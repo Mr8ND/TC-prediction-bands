@@ -111,14 +111,18 @@ data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
 ggvis_paths <- function(data_out, zoom = 4,
 						test_color_power = 1/3, 
 						test_color_low = "white",
-						test_color_high = "red"){
+						test_color_high = "red",
+						base_graph = NULL){
 	# creates ggmap visual of lat/lon paths 
 	# 
 	# Input:
 	# -----
-	# data_out : data frame with correct path information same as outputed from
-	#            data_plot_sc_paths functions
-	# zoom     : map zoom for ggmap
+	# data_out   : data frame with correct path information same as outputed 
+	#				from data_plot_sc_paths functions
+	# zoom       : map zoom for ggmap
+	# 
+	# base_graph : ggplot object for base graph 
+	#				(created from data_out otherwise)
 	# 
 	# Output:
 	# ------
@@ -127,15 +131,19 @@ ggvis_paths <- function(data_out, zoom = 4,
 	# Note / TODO: 
 	# -----------
 	# 1. Function currently uses geom_path - assumed euclidean space for map :/
-	# 2. Have function allow user to feed in their own base map
-	 
-	latrange <- range(data_out$lat)
-	lonrange <- range(data_out$long)
-
-	ocean <- c(left = lonrange[1], bottom = latrange[1],
-				right = lonrange[2], top = latrange[2])
-	map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 	
+	if (!is.na(base_graph)){
+		latrange <- range(data_out$lat)
+		lonrange <- range(data_out$long)
+
+		ocean <- c(left = lonrange[1], bottom = latrange[1],
+					right = lonrange[2], top = latrange[2])
+		map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+		
+		base_graph <- ggmap(map)
+
+	} 
+
 	## coloring
 	color_out <- color_function(data_out$weight,
 							test_color_power = test_color_power,
@@ -147,9 +155,8 @@ ggvis_paths <- function(data_out, zoom = 4,
 
 
 	# final map:
-	base <- ggmap(map)
 
-	ggout <- base + geom_path(data = data_out, aes(x = long, y = lat, 
+	ggout <- base_graph + geom_path(data = data_out, aes(x = long, y = lat, 
 							  color = weight_discrete, group = curve)) +
 				scale_color_manual(values = colors_rw) +
 				labs(color = paste0("weights^(",round(test_color_power,2),")"))
