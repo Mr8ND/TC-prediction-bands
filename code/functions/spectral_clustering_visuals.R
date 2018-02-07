@@ -16,30 +16,31 @@ source("code/functions/point_reduction_with_speed.R")
 
 ### from second_pipeline.R
 
+#' Spectral Clustering Process
+#' 
+#' produces weights and projection for paths (from projection)
+#'
+#' @param test_list list of paths to analysis (each a df)
+#' @param train_df 13 point compression of training curves
+#' @param D_train distance matrix from training curves
+#' @param K nearest neighbors for spectral clustering inside smoothing
+#' @param t power to raise spectral cluster transition matrix
+#' @param dim dimension of lower dimensional projection from spectral c.
+#' @param kdensity nearest neighbors for density estimate in lower dim space
+#' @param c_position nearest neighbors for density estimate in lower dim space
+#'
+#' @return test_p_estimate probability estimates for test data
+#' @return test_weight scaled probabilities estimates (by max of probs) for test
+#' @return test_13point 13 point compression for test data
+#' @return test_projected test data in projection space
+#' @return train_projected training data in projection space
+#' 
+#' @export
+#'
+#' @examples
 spectral_cluster_process <- function(test_list, train_df, D_train,
 							 K = 4, t = 1, dim = 5, kdensity = 10,
 							 c_position = 1:2){
-	# produces weights and projection for paths
-	#
-	# Inputs:
-	# ------
-	# test_list  : list of paths to analysis (each a df)
-	# train_df   : 13 point compression of training curves
-	# D_train    : distance matrix from training curves
-	# K          : nearest neighbors for spectral clustering inside smoothing
-	# t          : power to raise spectral cluster transition matrix
-	# dim        : dimension of lower dimensional projection from spectral c.
-	# kdensity   : nearest neighbors for density estimate in lower dim space
-	# c_position : positions of lat and lon columns in test_list data frames
-	#
-	# Outputs:
-	# -------
-	# output : list of objects as follows
-	#  - test_p_estimate: probability estimates for test data
-	#  - test_weight: scaled probabilities estimates (by max of probs) for test
-	#  - test_13point: 13 point compression for test data
-	#  - test_projected: test data in projection space
-	#  - train_projected: training data in projection space
 
 	compression_both <- compression_points_listable(list_df = test_list,
 	                            c_position = c_position,lonlat = TRUE)
@@ -51,7 +52,8 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 					path_mat_list_test = compression_pts,
 					path_mat_list_train = train_df) 
 
-	#^- should create matrix comparing training to ordered test matrix (13 point compression)
+	#^- should create matrix comparing training to ordered test matrix 
+	# (13 point compression)
 	# second_pipeline.R 121 stores a list for some reason
 
 	training_structure <- training_structure_estimating_p(D_train,
@@ -59,8 +61,7 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 														  t = 1,
 														  dim = 5,
 														  plot_n = 0)
-
-
+	
 	estimate_p <- estimate_p_wrapper(
 					training_structure_estimating_p = training_structure,
 	                D_test = D_test,
@@ -68,7 +69,8 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 
 	output <- list()
 	output[["test_p_estimate"]] <- estimate_p$p_estimate_test$p
-	output[["test_weight"]] <- estimate_p$p_estimate_test$p/max(estimate_p$p_estimate_test$p)
+	output[["test_weight"]] <- estimate_p$p_estimate_test$p /
+	                              max(estimate_p$p_estimate_test$p)
 	output[["test_13point"]] <- compression_pts
 	output[["test_projected"]] <- estimate_p$test_projected
 	output[["train_projected"]] <- training_structure$train_projected
@@ -77,23 +79,24 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 }
 
 
+#' Compresses data from list (to be plotted in ggplot)
+#' 
+#' compresses data into tidyverse focused dataframe (for ggplot)
+#'
+#' @param test_list list of paths to analysis (each a df)
+#' @param scp_output spectral_cluster_process function output
+#' @param c_position positions of lat and lon columns in test_list data frames
+#'
+#' @return data_out data frame that can be used to visualize curves
+#' @export
+#'
+#' @examples
 data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
-	# compresses data into tidyverse focused dataframe (for ggplot)
-	#
-	# Input:
-	# -----
-	# test_list  : list of paths to analysis (each a df)
-	# scp_output : spectral_cluster_process function output
-	# c_position : positions of lat and lon columns in test_list data frames
-	#
-	# Output:
-	# ------
-	# data_out   : data frame that can be used to visualize curves
 
 	data_out <- data.frame(lat = -360, long = -360, prob = 0, 
 						   weight = 0, curve = 0)
 
-	for (i in 1:length(test_list)){
+	for (i in 1:length(test_list)) {
 		data_out <- rbind(data_out,
 						  data.frame(lat = test_list[[i]][c_position[2]],
 						  			 long = test_list[[i]][c_position[1]],
@@ -104,35 +107,35 @@ data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
 	data_out <- data_out[-1,]
 
 	return(data_out)
-
 }
 
 
+#' Visualize the TC paths
+#'
+#'	Note / TODO: 
+#'	1. Function currently uses geom_path - assumed euclidean space for map :/
+#'
+#' @param data_out data frame with correct path information same as outputed 
+#' from data_plot_sc_paths functions
+#' @param zoom map zoom for ggmap
+#' @param test_color_power power to raise the probability weights 
+#' (then use linear scaling for colors)
+#' @param test_color_low lower color value for color range, 
+#' @param test_color_high higher color value for color range,
+#' @param base_graph ggplot object for base graph 
+#' (created from data_out otherwise)
+#'
+#' @return ggmap based map object
+#' @export
+#'
+#' @examples
 ggvis_paths <- function(data_out, zoom = 4,
 						test_color_power = 1/3, 
 						test_color_low = "white",
 						test_color_high = "red",
 						base_graph = NULL){
-	# creates ggmap visual of lat/lon paths 
-	# 
-	# Input:
-	# -----
-	# data_out   : data frame with correct path information same as outputed 
-	#				from data_plot_sc_paths functions
-	# zoom       : map zoom for ggmap
-	# 
-	# base_graph : ggplot object for base graph 
-	#				(created from data_out otherwise)
-	# 
-	# Output:
-	# ------
-	# ggout    : ggmap based map object
-	# 
-	# Note / TODO: 
-	# -----------
-	# 1. Function currently uses geom_path - assumed euclidean space for map :/
-	
-	if (!is.na(base_graph)){
+
+	if (is.null(base_graph)) {
 		latrange <- range(data_out$lat)
 		lonrange <- range(data_out$long)
 
@@ -164,18 +167,16 @@ ggvis_paths <- function(data_out, zoom = 4,
 	return(ggout)
 }
 
+#' Get points for objects in projection space
+#'
+#' @param scp_output pectral_cluster_process function output
+#'
+#' @return test_df data frame of training points and probability weights
+#' @return train_df data frame of test points
+#' @export
+#'
+#' @examples
 data_projection <- function(scp_output){
-	# makes data frame for projection space visualization
-	# 
-	# Input:
-	# -----
-	# scp_output : spectral_cluster_process function output
-	# 
-	# Output:
-	# ------
-	# test_df    : data frame of training points and probability weights
-	# train_df   : data frame of test points
-
 	n <- dim(scp_output$test_projected)[1]
 	test_df <- scp_output$test_projected %>% data.frame %>% 
 				mutate(prob = scp_output$test_p_estimate,
@@ -187,6 +188,19 @@ data_projection <- function(scp_output){
 }
 
 
+#' Inner color function setup
+#'
+#' @param weights_in probability weights for 
+#' @param test_color_power power to raise the probability weights 
+#' (then use linear scaling for colors)
+#' @param test_color_low lower color value for color range, 
+#' @param test_color_high higher color value for color range,
+#'
+#' @return breaks vector of which of the 10 breaks each weight is in 
+#' (relative to power transformation)
+#' @return colors_rw color palette ramp vector
+#'
+#' @examples
 color_function <- function(weights_in,
 							test_color_power = 1/3,
 							test_color_low = "white",
@@ -200,31 +214,27 @@ color_function <- function(weights_in,
 	return(list(breaks = breaks, colors_rw = colors_rw))
 }
 
+#' Creates ggplot of projections
+#'
+#' Note:
+#' 	ggplot experts are encouraged to use the output of data_projection 
+#' 	function applied to scp_output instead of this wrapper
+#'
+#' @param scp_output spectral_cluster_process function output
+#' @param train_alpha opacity level for black training points
+#' @param test_color_power power transformation (x^ test_color_power) of 
+#' probability values for test points color
+#' @param test_color_low lower color for range of colors on test points prob
+#' @param test_color_high high color for range of colors on test points prob
+#'
+#' @return ggplot scatter plot of training and colored test points
+#' @export
+#'
+#' @examples
 ggvis_projection <- function(scp_output, train_alpha = .3, 
 							 test_color_power = 1/3, 
 							 test_color_low = "white",
 							 test_color_high = "red"){
-	# creates ggplot of projections
-	# 
-	# Input:
-	# -----
-	# scp_output       : spectral_cluster_process function output
-	# train_alpha      : opacity level for black training points
-	# test_color_power : power transformation (x^ test_color_power) of 
-	#						probability values for test points color
-	# test_color_low   : lower color for range of colors on test points prob
-	# test_color_high  : high color for range of colors on test points prob
-	#
-	# Output:
-	# ------
-	# ggout            : ggplot scatter plot of training and colored test points
-	# 
-	# Note:
-	# ----
-	# ggplot experts are encouraged to use the output of data_projection 
-	#   function applied to scp_output instead of this wrapper
-
-
 	# data
 	data_p <- data_projection(scp_output)
 	test_df <- data_p$test_df
@@ -257,6 +267,32 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
 
 
 
+#' 	Creates clean visual of weighted curves using Spectral Clustering Analysis
+#' 	Specifically, the projected points in 2d and the paths colored
+#'
+#' Note:
+#' ggplot experts are encouraged to use the output of this function to  
+#' instead of just running with the created plot
+#'
+#' @param scp_output spectral_cluster_process function output
+#' @param test_list list of paths to analysis (each a df)
+#' @param c_position positions of lat and lon columns in test_list data frames
+#' @param zoom map zoom for ggmap (plot 2: map)
+#' @param train_alpha opacity level for black training points (plot 1: scatter)
+#' @param test_color_power power transformation (x^ test_color_power) of 
+#' probability values for test points color (plot 1: scatter)
+#' @param test_color_low lower color for range of colors on test points prob
+#' (plot 1: scatter)
+#' @param test_color_high high color for range of colors on test points prob
+#' (plot 1: scatter)
+#'
+#' @return gg_path ggmap based map object of colored test curves
+#' @return gg_proj ggplot scatter plot of training and colored test points
+#' 
+#' also visualizes both graphics together using grid.arrange
+#' @export
+#'
+#' @examples
 ggvis_all <- function(scp_output, test_list, 
 				   	  c_position = 1:2,
 				   	  zoom = 4,
@@ -264,39 +300,6 @@ ggvis_all <- function(scp_output, test_list,
 					  test_color_power = 1/3, 
 					  test_color_low = "white",
 					  test_color_high = "red"){
-	# Creates clean visual of weighted curves using Spectral Clustering Analysis
-	# Specifically, the projected points in 2d and the paths colored
-	#
-	# Input:
-	# -----
-	# scp_output       : spectral_cluster_process function output
-	# test_list    : list of paths to analysis (each a df)
-	# c_position : positions of lat and lon columns in test_list data frames
-	# zoom     : map zoom for ggmap (plot 2: map)
-	# train_alpha      : opacity level for black training points 
-	#						(plot 1: scatter)
-	# test_color_power : power transformation (x^ test_color_power) of 
-	#						probability values for test points color 
-	# 						(plot 1: scatter)
-	# test_color_low   : lower color for range of colors on test points prob
-	# 						(plot 1: scatter)
-	# test_color_high  : high color for range of colors on test points prob
-	#						(plot 1: scatter)
-	#
-	# Output:
-	# ------
-	# gg_path : ggmap based map object of colored test curves
-	# gg_proj : ggplot scatter plot of training and colored test points
-	#
-	# also visualizes both graphics together.
-	#
-	# Note:
-	# ----
-	# ggplot experts are encouraged to use the output of this function to  
-	#   instead of just running with the created plot
-
-	
-
 	# create data
 	data_curves <- data_plot_sc_paths(test_list,scp_output,c_position)
 
