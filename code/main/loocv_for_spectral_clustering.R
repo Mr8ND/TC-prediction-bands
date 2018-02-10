@@ -5,7 +5,7 @@ library(progress)
 functions_loc <- "code/functions/"
 data_loc <- "data/"
 
-desired_functions <- c("Path_functions.R","thirteen_point_compression.R",
+desired_functions <- c("path_functions.R","thirteen_point_compression.R",
                     "projection_map.R","loocv_functions.R")
 
 for (f_name in desired_functions) {
