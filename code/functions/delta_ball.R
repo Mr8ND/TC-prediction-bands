@@ -360,31 +360,4 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 }
 
 
-#' Visualize delta ball exterior centers (with ggplot)
-#'
-#' @param output_lines data frame of exterior lines (not ordered)
-#' @param base_graph ggplot object for base graph 
-#'       (created from data_out otherwise)
-#'
-#' @return ggplot object of contour and data points.
-#' @export
-#'
-#' @examples
-gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL){
-  
-  if (is.null(base_graph)) {
-    latrange <- range(output_lines$lat)
-    lonrange <- range(output_lines$long)
-    
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
-    map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
-    
-    base_graph <- ggmap(map)
-  } 
-  
-  ggout <- base_graph + 
-    geom_line(data = output_lines, aes(x = lat, y = lon, group = idx))
-  
-  return(ggout)
-}
+

@@ -228,7 +228,7 @@ bubble_data_plot_prep <- function(bubble_step){
 bubble_data_plot_lines <- function(bubble_plot_data,gg_add = NULL,
                                    color = "pink", linewidth = 1, ...){
   data_plot_lower <- bubble_plot_data$lower
-  names(data_plot_lower)[1:2] <- c("lat", "lon")
+  names(data_plot_lower)[1:2] <- c("lat", "lo")
   data_plot_upper <- bubble_plot_data$upper
   names(data_plot_upper)[1:2] <- c("lat", "lon")
   
