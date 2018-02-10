@@ -47,8 +47,8 @@ get_box_points <- function(data, n = 10000){
   return(list(box_points = box_points, size = size))
 }
 
-#' Estimate the Area of Union balls using uniform draws (with radius delta)
-#' TODO: Make this function have get_box_points inside instead
+#' Inner Estimate the Area of Union balls using uniform draws 
+#' (with radius delta)
 #'
 #' @param data data continuous data frame of individual points (in each row)
 #' @param query data points uniformly drawn from a space (with calculated size)
@@ -59,10 +59,9 @@ get_box_points <- function(data, n = 10000){
 #' @return area estimated area of union of balls
 #' @return area_ci vector with lower and upper confidence interval estimate
 #' 
-#' @export
 #'
 #' @examples
-get_area <- function(data, query, size, delta, alpha = .05){
+get_area_inner <- function(data, query, size, delta, alpha = .05){
   n = nrow(query)
   neighbor <- nn2(data = data, query = query,
                   k = 1, treetype = "kd")
@@ -73,6 +72,31 @@ get_area <- function(data, query, size, delta, alpha = .05){
   area <- prop * size 
   area_ci <- prop_ci * size
   return(list(area = area, area_ci = area_ci))
+}
+
+
+#' Estimate the Area of Union balls using uniform draws (with radius delta)
+#'
+#' @param data data continuous data frame of individual points (in each row)
+#' @param delta radius of each ball inside the union
+#' @param n number of points drawn uniformly within a box around the true data
+#' @param alpha alpha level for 2 sided confidence interval estimate
+#'
+#' @return area estimated area of union of balls
+#' @return area_ci vector with lower and upper confidence interval estimate
+#' 
+#' @export
+#'
+#' @examples
+get_area <- function(data, delta, n = 10000, alpha = .05){
+  
+  unif_points <- get_box_points(data, n = n)
+  query <- unif_points$box_points
+  size  <- unif_points$size
+  
+  area_info <- get_area_inner(data, query, size, delta, alpha = alpha)
+    
+  return(area_info)
 }
 
 #' Makes triangle matrix for points in matrix 
