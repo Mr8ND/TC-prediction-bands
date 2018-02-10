@@ -1,5 +1,7 @@
+library(progress)
+
 functions_loc <- "code/functions/"
-desired_functions <- c("projection_map.R","Path_functions.R")
+desired_functions <- c("projection_map.R","path_functions.R")
 
 # functions
 for (f_name in desired_functions) {
@@ -11,7 +13,6 @@ for (f_name in desired_functions) {
 #' $K$ and the power we raise the transition matrix to $t$
 #'
 #' @param path_mat_list list of paths to train on
-#' @param speed_list list of speed vectors to train on
 #' @param Dmat distance matrix of the paths to train on
 #' @param K K nearest neighbors value (for localization of distance matrix)
 #' @param t power to raise the transition matrix P
@@ -19,21 +20,23 @@ for (f_name in desired_functions) {
 #' (set at "nautical mile" )
 #' @param longlat boolean if order of columns is longlat
 #' @param project_size dimension of projected space 
-#' @param plot_eigen boolean if we plot the first `project_size` eigenvectors 
-#' before t is applied to transition matrix (so looks like t = 1)
+#' @param verbose it progress bar is provided
 #'
 #' @return Dmat distance matrix of the paths to train on that was inputted
-#' @return predicted_p list of predicted curves
-#' @return diff_p distance between true curves and predicted curves
-#' @return predicted_s list of predicted speed
-#' @return diff_s distance between true curves' speed and predicted speed
+#' @return predicted_curves list of predicted curves
+#' @return diff_curves distance between true curves and predicted curves
 #' @return K power to raise the transition matrix P (same as inputted)
 #' @return t power to raise the transition matrix P (same as inputted)
 #'
 #' @examples
-loocv_wrapper <- function(path_mat_list, speed_list, Dmat,
-                        K = 7, t = 1, output_length = "nautical mile",
-                        longlat = TRUE, project_size = 4, plot_eigen = FALSE){
+loocv_wrapper <- function(path_mat_list, Dmat,
+                        K = 7, t = 1, 
+                        output_length = "nautical mile",
+                        longlat = TRUE, project_size = 4, 
+                        verbose = TRUE){
+  
+
+  
   # this function needs to:
   # 1) create a distance matrix for all observations (provided)
   # FOR EACH OBSERVATION:
@@ -46,30 +49,34 @@ loocv_wrapper <- function(path_mat_list, speed_list, Dmat,
   # g) calc distance between points
   
 
-  n <- length(path_mat_list) # 334
-  storage <- list() # holds new predicted points (path)
-  storage_speed <- list() #hold new predicted points (speed)
-  diff <- c()
-  diff_speed <- c()
+  n <- length(path_mat_list) 
+  storage_curve <- list() # holds new predicted path
+  diff_curves <- c()
 
+  # progress bar
+  if (verbose) {
+    pb <- progress_bar$new(
+      format = "  Processing [:bar] :percent eta: :eta",
+      total = n, clear = FALSE, width = 40)
+  }
+  
+  
   for (obs in 1:n) {
-    data_minus_obs   <- Dmat[-obs,-obs] # 333 x 333
-    data_obs         <- matrix(Dmat[obs,-obs], nrow = 1) # 1 x 333
-    dist_k_minus_obs <- calc_k_dist(data_minus_obs, K) # 333 x 1
-    dist_k_obs       <- calc_k_dist(matrix(data_obs, nrow = 1), K) # 1 x 1 
+    data_minus_obs   <- Dmat[-obs,-obs] 
+    data_obs         <- matrix(Dmat[obs,-obs], nrow = 1) 
+    dist_k_minus_obs <- calc_k_dist(data_minus_obs, K) 
+    dist_k_obs       <- calc_k_dist(matrix(data_obs, nrow = 1), K)  
     
-    prob_minus_obs <- probMatrixPath_k(data_minus_obs, kNN_sigma = dist_k_minus_obs)
+    prob_minus_obs <- probMatrixPath_k(data_minus_obs, 
+                                       kNN_sigma = dist_k_minus_obs)
 
     # need to project into correct space
-    plot_n <- 0
-    if (obs == 1 & plot_eigen == T) {
-      plot_n <- project_size
-    }
-    
     phi_map_out <- right_eigenvector_compression(P = prob_minus_obs,
                                                  nu = project_size,
                                                  nv = project_size,
-                                                 plot_n = plot_n,
+                                                 plot_n = 0, 
+                                                 # ^ don't plot eigen values 
+                                                 # in the LOOCV function 
                                                  t = t)
     phi_map_x_minus_obs <- phi_map_out$psi_map_x
     lambda_x_minus_obs <- phi_map_out$lambda
@@ -98,22 +105,17 @@ loocv_wrapper <- function(path_mat_list, speed_list, Dmat,
                 projection_locs = minus_obs_projection,
                 old_locs = path_mat_list[-obs], 
                 new_p_loc = obs_projection, K = K)
+
+
+  storage_curve[[obs]] <- point  
+  diff_curves[obs] <- sum(distBetweenP(path_mat_list[[obs]],point)^2) 
   
-    point_speed <- inverse_map(distance_projection = dist_minus_obs_project,
-                projection_locs = minus_obs_projection,
-                old_locs = speed_list[-obs],
-                new_p_loc = obs_projection, K = K)  
-
-
-  storage[[obs]] <- point  
-  storage_speed[[obs]] <- point_speed
-  diff[obs] <- sum(distBetweenP(path_mat_list[[obs]],point)^2) 
-  diff_speed[obs] <- sum((speed_list[[obs]] - point_speed)^2)
-  # note: when scaling remember to multiple by ratio_mean^2 when dealing with 
-  # diffs (actually not since scaling was done to the squared versions, then
-  # square rooted)
+  if (verbose) {
+    pb$tick()
+  }
+  
   }
     
-  return(list(Dmat = Dmat, predicted_p = storage, diff_p = diff,
-    predicted_s = storage_speed,diff_s = diff_speed, K = K, t = t))
+  return(list(Dmat = Dmat, predicted_curves = storage_curve, 
+              diff_curves = diff_curves, K = K, t = t))
 }
