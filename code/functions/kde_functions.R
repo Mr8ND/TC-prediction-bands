@@ -87,8 +87,7 @@ fit_kde_object = function(dfmat, h_band = NULL, long = 1, lat = 2, grid_size = 1
 #' This function evaluates a matrix of geographical points with respect to a KDE object.
 #'
 #' @param kde_obj kde object - in our case based on TC points
-#' @param predict_mat optional argument for the bandwidth of the kde object. If NULL, the
-#' optimal band would be selected through the @kde function. Default is NULL.
+#' @param predict_mat matrix with points to be predicted through KDE
 #' @param alpha_level alpha level of the contour plot. Default is NULL. If not NULL,
 #' then an extra column will be added, in which 1 means that the value is above the 
 #' alpha_level contour - i.e. within that probability contour - else 0 is returned.
@@ -157,9 +156,9 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL, long = 1
 extract_countour <- function(kde_obj, level) {
   alpha <- (100 - level)
   cont_level <- paste0(as.character(alpha), "%")
-  contour <- with(kde_obj, contourLines(x = eval.points[[1]],y = eval.points[[2]],
+  cont <- with(kde_obj, contourLines(x = eval.points[[1]],y = eval.points[[2]],
                                       z = estimate,levels = cont[cont_level])[[1]]) # needs to be 1-\alpha
-  return(contour)
+  return(cont)
 }
 
 
@@ -169,7 +168,7 @@ extract_countour <- function(kde_obj, level) {
 #' This function calculates the area of a contour object by creating a closed
 #' polygon and calculating the area of it.
 #'
-#' @param contour kde contour object.
+#' @param cont kde contour object.
 #
 #' @return Area of the kde contour object.
 #' 
@@ -181,16 +180,90 @@ extract_countour <- function(kde_obj, level) {
 #' dfmat <- cbind(x1,y1)
 #' kde_object <- kde(dfmat)
 #' cont <- with(kde_object, contourLines(x = eval.points[[1]],y = eval.points[[2]],
-#'                                    z = estimate,levels = cont["95%"])[[1]])
+#'                                    z = estimate,levels = cont["5%"])[[1]])
 #' 
 #' cont_area <- kde_contour_area(cont)
 #'
-kde_contour_area <- function(contour) {
+kde_contour_area <- function(cont) {
 
-  poly <- with(contour, data.frame(x,y))
+  poly <- with(cont, data.frame(x,y))
   poly <- rbind(poly, poly[1, ])    # polygon needs to be closed
   spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)),ID = 1)))
   area <- gArea(spPoly)
   
   return(area)
+}
+
+
+#' Identification of points inside a contour
+#' 
+#' @description 
+#' This function calculates whether a series of points are inside a given
+#' contour or not.
+#'
+#' @param cont kde contour object.
+#' @param predict_mat matrix with the points to be determined in terms of position
+#' with respect to the contour.
+#' @param long index of the column referring to "longitude". Default is 1.
+#' @param lat index of the column referring to "latitude". Default is 2.
+#
+#' @return Vector of binary values, 1 if the point is inside the contour, 0 is not.
+#' Dimensionality is the same as the number of rows in predict_mat
+#' 
+#' @examples
+#' set.seed(8192)
+#' 
+#' x1 <- 2^rnorm(100)
+#' y1 <- rnorm(100)
+#' dfmat <- cbind(x1,y1)
+#' kde_object <- kde(dfmat)
+#' cont <- with(kde_object, contourLines(x = eval.points[[1]],y = eval.points[[2]],
+#'                                    z = estimate,levels = cont["5%"])[[1]])
+#' x1 <- 2^rnorm(100)
+#' y1 <- rnorm(100)
+#' predict_mat <- cbind(x1,y1)
+#' 
+#' position_wrt_contour <- points_in_contour(cont, predict_mat)
+#'
+points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
+
+  poly <- with(cont, data.frame(x,y))
+  poly <- rbind(poly, poly[1, ])    # polygon needs to be closed
+  spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)),ID = 1)))
+
+  points_in_poly <- point.in.polygon(predict_mat[, long], predict_mat[, lat],
+                                    spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
+                                    spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
+
+  return(points_in_poly)
+}
+
+
+#' Contour and area from TC list
+#' 
+#' @description 
+#' This function calculates contour points and area from list of generated TC.
+#'
+#' @param dflist list of TC dataframes
+#' @param level contour level, an integer from 1 to 99. A level 5 gives back
+#' 95% contour
+#' @param h_band optional argument for the bandwidth of the kde object. If NULL, the
+#' optimal band would be selected through the @kde function. Default is NULL.
+#' @param long index of the column referring to "longitude". Default is 1.
+#' @param lat index of the column referring to "latitude". Default is 2.
+#' @param grid_size size of the grid which is going to be used for the evaluation of kde
+#' object. Can be reduced to speed-up computation.
+#
+#' @return Contour at the specified level and contour area.
+#'
+kde_contour_from_tclist <- function(dflist, level, h_band = NULL, long = 1, lat = 2,
+                                    grid_size = 1000) {
+
+  dfmat <- flatten_tc_list(dflist)
+  kde_object <- fit_kde_object(dfmat, h_band = h_band, grid_size = grid_size, 
+                                long = long, lat = lat)
+  cont <- extract_countour(kde_object, level = level)
+  area_cont <- kde_contour_area(cont)
+
+  return(list('contour' = cont, 'area' = area_cont))
 }
