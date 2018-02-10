@@ -2,7 +2,7 @@
 library(geosphere)
 
 #### Loading inner functions
-source(file = "code/functions/Path_functions.R")
+source(file = "code/functions/path_functions.R")
 
 #' Coverts list of point locations to 13 points equally spaced apart
 #'
