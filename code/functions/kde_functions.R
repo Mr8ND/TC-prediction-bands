@@ -254,7 +254,8 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 #' @param grid_size size of the grid which is going to be used for the evaluation of kde
 #' object. Can be reduced to speed-up computation.
 #
-#' @return Contour at the specified level and contour area.
+#' @return Contour at the specified level
+#' @return Contour area
 #'
 kde_contour_from_tclist <- function(dflist, level, h_band = NULL, long = 1, lat = 2,
                                     grid_size = 1000) {

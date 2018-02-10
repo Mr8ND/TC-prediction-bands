@@ -11,8 +11,9 @@ library(progress)
 #'
 #' @param data points to find a convex hull over (assumed n x 2)
 #'
-#' @return poly spatial polygon object of convex hull
+#' @return polygon dataframe
 #' @return size area of the convex hull
+#' @return poly spatial polygon object of convex hull
 #' @export
 #'
 #' @examples 
@@ -43,7 +44,52 @@ get_area_c <- function(data){
   
   poly <- rbind(c_points,c_points[1,])    # polygon needs to be closed...
   spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)),ID = 1)))
-  return(list(poly = poly, size = gArea(spPoly)))
+  return(list(poly_df = poly, size = gArea(spPoly), spPoly = spPoly))
+}
+
+
+#' Identification of points inside a spatial polygon
+#' 
+#' @description 
+#' This function calculates whether a series of points are inside a given
+#' polygon or not
+#'
+#' @param spPoly polygon object.
+#' @param predict_mat matrix with the points to be determined in terms of position
+#' with respect to the contour.
+#' @param long index of the column referring to "longitude". Default is 1.
+#' @param lat index of the column referring to "latitude". Default is 2.
+#
+#' @return Vector of binary values, 1 if the point is inside the polygon, 0 is not.
+#' Dimensionality is the same as the number of rows in predict_mat
+#' 
+#' @examples
+#' set.seed(8192)
+#' 
+#' x1 <- 2^rnorm(100)
+#' y1 <- rnorm(100)
+#' dfmat <- cbind(x1,y1)
+#' kde_object <- kde(dfmat)
+#' cont <- with(kde_object, contourLines(x = eval.points[[1]],y = eval.points[[2]],
+#'                                    z = estimate,levels = cont["5%"])[[1]])
+#' 
+#' poly <- with(cont, data.frame(x,y))
+#' poly <- rbind(poly, poly[1, ])    # polygon needs to be closed
+#' spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)),ID = 1)))
+#' 
+#' x1 <- 2^rnorm(100)
+#' y1 <- rnorm(100)
+#' predict_mat <- cbind(x1,y1)
+#' 
+#' position_wrt_contour <- points_in_spatial_polygon(spPoly, predict_mat)
+#'
+points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2) {
+
+  points_in_poly <- point.in.polygon(predict_mat[, long], predict_mat[, lat],
+                                    spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
+                                    spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
+
+  return(points_in_poly)
 }
 
 
