@@ -4,10 +4,6 @@ library(geosphere)
 #### Loading inner functions
 source(file = "code/functions/Path_functions.R")
 
-############
-# Function #
-############
-
 #' Coverts list of point locations to 13 points equally spaced apart
 #'
 #' @param df2 2 column data frame with all points lat/lon 
@@ -105,36 +101,3 @@ thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat =TRUE){
   
   return(out_list)
 }
-
-
-####################
-# Function Testing #
-####################
-
-### visual testing of function
-## should be able to make df2 any lat long matrix from the training data:
-## df_full = AL011955
-## df2 =df_full[,5:6]
-# df2 =data.frame(matrix(c( 
-# 27.5, -87.5,
-# 27.6, -87.9,
-# 27.8, -88.2,
-# 28.2, -88.4,
-# 28.6, -88.6,
-# 29.3, -89.0,
-# 29.7, -89.4,
-# 29.9, -89.5,
-# 30.6, -90.4,
-# 31.1, -91.6,
-# 31.5, -92.8,
-# 31.8, -93.8,
-# 32.2, -94.7,
-# 32.7, -95.0),ncol=2,byrow=T))
-# 
-# library(rworldmap)
-# newmap = getMap(resolution = "low")
-# plot(newmap, ylim = c(10, 47), xlim = c(-90, -10), asp = 1)
-# 
-# lines(df2[,2],df2[,1], col = "red")
-# news_df2 =  thirteen_points(df2,lonlat = F)
-# points(news_df2[,1],news_df2[,2], col = "red")
