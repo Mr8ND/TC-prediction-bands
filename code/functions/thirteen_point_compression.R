@@ -87,16 +87,32 @@ thirteen_points <- function(df2, lonlat = TRUE,
 #' lonlat coordinates 
 #' @param lonlat boolean logical if columns are lonlat 
 #' (false if they are latlon)
+#' @param verbose boolean for having a progress bar
 #'
 #' @return
 #' @export
 #'
 #' @examples
-thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat =TRUE){
+thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat = TRUE,
+                                     verbose = TRUE){
   out_list <- list()
-  for (i in 1:length(list_df)) {
-    df_pulled_out <- list_df[[i]][,c_position]
-    out_list[[i]] <- thirteen_points(df_pulled_out, lonlat)
+  n_tc = length(list_df)
+  
+  if (verbose) {
+    pb <- progress_bar$new(
+      format = "Compressing [:bar] :percent eta: :eta",
+      total = n_tc, clear = FALSE, width = 38)
+  }
+
+
+  
+  
+  for (path_name in names(list_df)) {
+    df_pulled_out <- list_df[[path_name]][,c_position]
+    out_list[[path_name]] <- thirteen_points(df_pulled_out, lonlat)
+    if (verbose) {
+      pb$tick()
+    }
   }
   
   return(out_list)
