@@ -101,7 +101,8 @@ get_tri_matrix <- function(dtri_data_tri){
 #'
 #' TODO: this function needs to be cleaned up
 #'
-#' @param tuples_of_tri data frame with tuples of triangle edges and triangle index
+#' @param tuples_of_tri data frame with tuples of triangle edges and 
+#' triangle index
 #' @param removed_mat edges to be removed
 #'
 #' @return data frame with tuples of triangle not removed
