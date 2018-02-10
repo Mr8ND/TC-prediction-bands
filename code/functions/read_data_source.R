@@ -95,15 +95,18 @@ pull_data <- function(){
   return(tc_list)
 }
 
-#' Title
+#' Split TC data into training and testing
 #'
-#' @description 
+#' @description This function splits the list of TC data frames into training
+#' and test data. It reproduces the splits from the paper if reproduce = T.
 #'
-#' @param tc_list 
-#' @param train_prop 
-#' @param reproduce 
+#' @param tc_list List of TC data frames
+#' @param train_prop Proportion of TC to use as training data
+#' @param reproduce Boolean. If TRUE, splits data into same train/test files as 
+#' paper, to make paper reproducible.
 #'
-#' @return
+#' @return List of length 2. First element is list of all training TCs.
+#' Second element is list of all test TCs.
 #' @export
 split_train_test <- function(tc_list, train_prop = 0.7, reproduce = T){
   # Require 0 < train_prop < 1
