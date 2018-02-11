@@ -47,8 +47,8 @@ get_box_points <- function(data, n = 10000){
   return(list(box_points = box_points, size = size))
 }
 
-#' Estimate the Area of Union balls using uniform draws (with radius delta)
-#' TODO: Make this function have get_box_points inside instead
+#' Inner Estimate the Area of Union balls using uniform draws 
+#' (with radius delta)
 #'
 #' @param data data continuous data frame of individual points (in each row)
 #' @param query data points uniformly drawn from a space (with calculated size)
@@ -59,10 +59,9 @@ get_box_points <- function(data, n = 10000){
 #' @return area estimated area of union of balls
 #' @return area_ci vector with lower and upper confidence interval estimate
 #' 
-#' @export
 #'
 #' @examples
-get_area <- function(data, query, size, delta, alpha = .05){
+get_area_inner <- function(data, query, size, delta, alpha = .05){
   n = nrow(query)
   neighbor <- nn2(data = data, query = query,
                   k = 1, treetype = "kd")
@@ -73,6 +72,31 @@ get_area <- function(data, query, size, delta, alpha = .05){
   area <- prop * size 
   area_ci <- prop_ci * size
   return(list(area = area, area_ci = area_ci))
+}
+
+
+#' Estimate the Area of Union balls using uniform draws (with radius delta)
+#'
+#' @param data data continuous data frame of individual points (in each row)
+#' @param delta radius of each ball inside the union
+#' @param n number of points drawn uniformly within a box around the true data
+#' @param alpha alpha level for 2 sided confidence interval estimate
+#'
+#' @return area estimated area of union of balls
+#' @return area_ci vector with lower and upper confidence interval estimate
+#' 
+#' @export
+#'
+#' @examples
+get_area <- function(data, delta, n = 10000, alpha = .05){
+  
+  unif_points <- get_box_points(data, n = n)
+  query <- unif_points$box_points
+  size  <- unif_points$size
+  
+  area_info <- get_area_inner(data, query, size, delta, alpha = alpha)
+    
+  return(area_info)
 }
 
 #' Makes triangle matrix for points in matrix 
@@ -101,7 +125,8 @@ get_tri_matrix <- function(dtri_data_tri){
 #'
 #' TODO: this function needs to be cleaned up
 #'
-#' @param tuples_of_tri data frame with tuples of triangle edges and triangle index
+#' @param tuples_of_tri data frame with tuples of triangle edges and 
+#' triangle index
 #' @param removed_mat edges to be removed
 #'
 #' @return data frame with tuples of triangle not removed
@@ -278,18 +303,12 @@ remove_duplicates_func <- function(data_raw){
 #' on both sides, that will be checked to approximate all points along the line
 #' @param remove_duplicates boolean if need to remove duplicates in data_raw
 #'
-#' @return
+#' @return data frame of exterior lines (not ordered)
 #' @export
 #'
 #' @examples
 delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
-  # runs all analysis to get dataframe with regular lines
-  #  part of the approach in "Computing Polygonal Surfaces from Unions of Balls"
-  #  by Tam and Heidrich
-  # 
-  # special format for data_raw expected (if using remove_duplicates)
-  
-  # getting into 
+
   
   if (remove_duplicates) {
     data_raw <- remove_duplicates_func(data_raw)
@@ -308,7 +327,8 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   lines_info <- get_lines(dtri_data_edges, data_raw, delta, n_steps = 100)
   
   desired_lines <- lines_info$lines_mat
-  keep <- desired_lines %>% apply(MARGIN = 1, function(row) sum(is.na(row)) == 0) 
+  keep <- desired_lines %>% apply(MARGIN = 1, 
+                                  function(row) sum(is.na(row)) == 0) 
   desired_lines <- desired_lines[keep,]
   
   removed_mat <- lines_info$removed_mat
@@ -344,22 +364,25 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   
   # what type of edge are you?
   
-  num_tri <- edge_mat %>% left_join(tuples_of_tri,by = c("X1" = "X1", "X2" = "X2"))  %>%
+  num_tri <- edge_mat %>% left_join(tuples_of_tri,
+                                    by = c("X1" = "X1", "X2" = "X2"))  %>%
     group_by(id) %>% summarize(idx_tri = paste0(idx_tri,collapse = ","),
                                X1 = unique(X1),
                                X2 = unique(X2),
                                count = n())
-  ## Some checks
-  # table(num_tri$X1 == num_tri$X2) ## all false
-  # table(num_tri$count) # want just 1s and 2s (1s are important)
   
+  # merging & getting regular lines --------------------
   
-  # merging & getting regular lines:
   index_mapping <- data.frame(dl = sort(unique(desired_lines$idx)),
                               nt = sort(unique(num_tri$id)))
   
-  select_lines <- (num_tri[num_tri$count == 1, c("id")] %>% left_join(index_mapping, by = c("id" = "nt")))$dl
+  select_lines <- (num_tri[num_tri$count == 1, c("id")] %>% 
+                     left_join(index_mapping, by = c("id" = "nt")))$dl
   
   output_lines <- desired_lines %>% filter(idx %in% select_lines)
+  names(output_lines)[1:2] = c("lat","lon")
   return(output_lines)
 }
+
+
+

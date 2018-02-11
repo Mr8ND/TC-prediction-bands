@@ -414,20 +414,35 @@ inverse_map =function(distance_projection,projection_locs,old_locs, new_p_loc,K 
 # Train to Train (Standard) #
 #############################
 
-distMatrixPath_innersq = function(path_mat_list, output_length="nautical mile", 
-                                    longlat=TRUE){
+distMatrixPath_innersq = function(path_mat_list, 
+                                  output_length = "nautical mile", 
+                                  longlat = TRUE,
+                                  verbose = TRUE){
   # this function is similar to the one above - but we get the sum of square 
   # differences - which I think we should have got before anyway
   #
   #
-
+  
   n_mat = length(path_mat_list)
-  output_mat = matrix(, nrow=n_mat, ncol=n_mat)
+  
+  if (verbose) {
+    pb <- progress_bar$new(
+      format = "Creating Distance Matrix [:bar] :percent eta: :eta",
+      total = n_mat^2, clear = FALSE, width = 51)
+  }
 
-  for (i in c(1:n_mat)){
-    for (j in c(i:n_mat)){
-      output_mat[i,j] = sum(distBetweenP(path_mat_list[[i]], path_mat_list[[j]],longlat=longlat)^2)
+  output_mat = matrix(0, nrow = n_mat, ncol = n_mat)
+
+  for (i in c(1:n_mat)) {
+    for (j in c(i:n_mat)) {
+      output_mat[i,j] = sum(distBetweenP(path_mat_list[[i]], 
+                                         path_mat_list[[j]],
+                                         longlat = longlat)^2)
       output_mat[j,i] = output_mat[i,j]
+      
+      if (verbose) {
+        pb$tick()
+      }
     }
   }
 
