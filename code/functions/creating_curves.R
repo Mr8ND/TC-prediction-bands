@@ -199,24 +199,32 @@ update_curve_inner <- function(curve_df){
 #' specifies whether to use block-specific death regressions or draws from overall 
 #' kernel density to model death of TC (death_regs_ind = T or F).
 #'
-#' @param curve_df Initial 2 (auto_ind = F) or 3 (auto_ind = T) rows of the TC path
-#' @param bearing_regs List of block-specific change in bearing regressions
-#' @param speed_regs List of block-specific change in speed regressions
-#' @param death_regs List of block-specific death regressions
-#' @param max_length Max length of TCs in training data
-#' @param bad_locations Names of blocks containing <= 1 TC death
-#' @param death_rate 1 / mean length of TCs in train data
-#' @param death_dens Kernel density estimate of TC death times
+#' @param path Initial 2 or 3 (auto_ind = F or T, respectively) observations
+#' of TC upon which to generate path
+#' @param train_models List of trained models, generated from get_train_models
 #' @param death_regs_ind Indicator, whether to use death regressions
 #' @param auto_ind Indicator, whether bearing/speed regs are autoregressive
 #'
 #' @return Full, simulated path of TC as a column of longitudinal
 #' coordinates and a column of latitudinal coordinates.
 #' @export
-generate_curve <- function(curve_df, bearing_regs, speed_regs, death_regs,
-                           max_length, bad_locations, death_rate, death_dens, 
-                           death_regs_ind, auto_ind){
+generate_curve <- function(path, train_models, death_regs_ind, auto_ind){
 
+  # Extract training model parameters
+  if(auto_ind){
+    bearing_regs <- train_models$bearing_regs_auto
+    speed_regs <- train_models$speed_regs_auto
+  } else {
+    bearing_regs <- train_models$bearing_regs_nonauto
+    speed_regs <- train_models$speed_regs_nonauto
+  }
+  
+  death_regs <- train_models$death_regs
+  death_dens <- train_models$death_dens
+  death_rate <- train_models$death_rate
+  max_length <- train_models$max_length
+  bad_locations <- train_models$bad_locations
+  
   # If death_regs_ind = T, is_dead_inner simulates if TC dies at current time.
   # If death_regs_ind = F, is_dead is always FALSE. Then the (upper bound on) 
   # number of TC timesteps is drawn from kernel density of length of training TCs.
@@ -271,8 +279,15 @@ generate_curve <- function(curve_df, bearing_regs, speed_regs, death_regs,
 #' used in the paper. Models are trained using the training TCs. Then TC paths
 #' are simulated from the starting paths of the test TCs.
 #'
+#' @param train List of train TCs on which to train simulations
+#' @param test List of test TCs from which to simulate new paths
+#' @param remove_length_2 Boolean for whether to remove test TCs of length <= 2.
+#' AR models need >= 3 observations to start simulation. (In train/test split
+#' of the paper, the only TC of length 2 has been assigned to training.)
 #' @param number_paths Number of paths to simulate for each test TC start
-#' @param seed Seed value for replicable results
+#' @param replicate Boolean for whether to replicate simulations of paper.
+#' This reads in the train/test data from raw_data.Rdata, sets number_paths = 1000,
+#' and sets a seed value.
 #' @param verbose Boolean for whether to output progress
 #'
 #' @return List of simulated TC paths. The list length equals the number of test
@@ -281,23 +296,26 @@ generate_curve <- function(curve_df, bearing_regs, speed_regs, death_regs,
 #' simulations, number_paths "Auto_NoDeathRegs" simulations, number_paths 
 #' "NoAuto_DeathRegs" simulations, and number_paths "NoAuto_NoDeathRegs" simulations.
 #' @export
-generate_all <- function(number_paths = 1000, seed = 1, verbose = T){
+generate_all <- function(train = NA, test = NA, remove_length_2 = T, 
+                         number_paths = 1000, replicate = T, verbose = T){
   
-  # Read in data --------------------------------------------
+  # Read in data and set parameters if replicating paper
+  if(replicate){
+    load("data/raw_data.Rdata")
+    train <- train_data
+    test <- test_data
+    number_paths <- 1000
+    set.seed(1)
+  }
   
-  # Pull data from HURDAT website
-  tc_list <- pull_data()
+  # if(remove_length_2), remove test TCs with length <= 2
+  if(remove_length_2){
+    test <- test[unlist(lapply(test, nrow)) > 2]
+  }
   
-  # Split data into train and test sets
-  train_test <- split_train_test(tc_list, train_prop = 0.7, reproduce = T)
-  train <- train_test[[1]]
-  test <- train_test[[2]]
+  # Train models on training data
+  train_models <- get_train_models(train)
   
-  # Create objects to store simulations on test TCs --------------------- 
-
-  # Append path regression variables to training data (auto = T for most general)
-  train <- lapply(train, FUN = get_reg_df, auto = T)
-
   # Create empty list of length 4 to store simulations for individual TC
   sim_setup <- vector("list", 4)
   names(sim_setup) <- c("Auto_DeathRegs", "Auto_NoDeathRegs", 
@@ -306,52 +324,17 @@ generate_all <- function(number_paths = 1000, seed = 1, verbose = T){
   # Create list to store test simulations for all TCs
   test_sims <- vector("list", length(test))
 
+  # Name test_sims after test TCs
+  names(test_sims) <- names(test)
+  
   # Set each element of test_sims equal to sim_setup
   test_sims <- lapply(test_sims, FUN = function(x) x = sim_setup)
-
-  # MAIN LOOP for auto/non-auto and speed/non-speed combos ----------------
-
-  set.seed(seed)
   
+  # MAIN LOOP for auto/non-auto and speed/non-speed combos ----------------
   tf <- c(T, F)
 
   # Loop over whether autoregressive terms are used in bearing/speed regs
   for(auto_ind in tf){
-      
-    # Block-specific bearing/speed regressions ------------------
-    
-    train_unlist <- do.call("rbind", train) 
-    bearing_speed_regs <- get_bearing_speed_regs(train_unlist, auto = auto_ind)
-    bearing_regs <- bearing_speed_regs[[1]]
-    speed_regs <- bearing_speed_regs[[2]]
-    
-    # Block-specific lysis (death) models -----------------------
-    
-    # Since death rates are block-specific, remove obs w/o block
-    unlist_death <- subset(train_unlist, !is.na(block))
-    
-    # Get block specific lysis regressions 
-    train_blocks <- split(unlist_death, f = unlist_death$block)
-    death_regs <- lapply(train_blocks, 
-                         FUN = function(x) return(glm(death ~ lat + long + 
-                                                        bearing_prev + speed_prev + 
-                                                        timestep,
-                                                      family = binomial, data = x)))  
-  
-    # Fit kernel density to TC death times
-    death_times <- sapply(train, FUN = function(x) nrow(x))
-    death_dens <- density(death_times, bw = bw.nrd(death_times), kernel = "gaussian")
-  
-    # Get max observed tropical cyclone length
-    lengths <- unlist(lapply(train, FUN = nrow))
-    death_rate <- 1 / mean(lengths)
-    max_length <- max(lengths)
-    
-    # Store blocks with <= 1 death. We will use overall death rate (instead of regs)
-    # to model death in these blocks.
-    bad_locations <- which(sapply(train_blocks,function(x) sum(x$death)<=1))
-    
-    # Generate curves -----------------------------------------
     
     # Store starting points and set up regression variables
     # auto = F requires first two rows to get initial change in bearing/speed
@@ -393,10 +376,7 @@ generate_all <- function(number_paths = 1000, seed = 1, verbose = T){
       
         # Generate number_paths curves from starting observations
         paths <- lapply(paths, 
-                        FUN = function(path) generate_curve(path, bearing_regs, 
-                                                            speed_regs, death_regs, 
-                                                            max_length, bad_locations, 
-                                                            death_rate, death_dens, 
+                        FUN = function(path) generate_curve(path, train_models, 
                                                             death_regs_ind, auto_ind))
       
         # Round to closest tenth to match NOAA format

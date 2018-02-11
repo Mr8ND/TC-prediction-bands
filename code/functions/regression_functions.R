@@ -1,3 +1,7 @@
+library(lubridate) 
+library(plyr)
+library(geosphere)
+
 #' Sanitize TC data for analysis
 #' 
 #' @description This function takes in an original TC data frame. It saves
@@ -400,6 +404,81 @@ get_bearing_speed_regs <- function(dflist_unlist, auto){
   }
   
   return(list(bearing_regs, speed_regs))
+}
+
+#' Train models for TC simulations
+#' 
+#' @description ...
+#' 
+#' @details Models fit on training TC data: 
+#' \texttt{bearing_regs_auto}: block-specific AR models for bearing
+#' \texttt{speed_regs_auto}: block-specific AR models for speed
+#' \texttt{bearing_regs_nonauto}: block-specific non-AR models for bearing
+#' \texttt{speed_regs_nonauto}: block-specific non-AR models for speed
+#' \texttt{death_regs}: block-specific logistic reg models for TC death
+#' \texttt{death_dens}: kernel density for TC death times
+#' \texttt{death_rate}: 1/mean(train TC lengths). This is the MLE assuming an
+#' exponential distribution on TC length. 
+#' \texttt{max_length}: max length of training TCs
+#' \texttt{bad_locations}: blocks with <= 1 death. Will use death_rate instead
+#' of death_regs in these blocks.
+#' 
+#' @param train List of train TCs
+#'
+#' @return List containing the following trained models: bearing_regs_auto, 
+#' speed_regs_auto, bearing_regs_nonauto, speed_regs_nonauto, death_regs, 
+#' death_dens, death_rate, max_length, bad_locations. (See details section.)
+#' @export
+get_train_models <- function(train){
+  
+  # Append path regression variables to training data (auto = T for most general)
+  train <- lapply(train, FUN = get_reg_df, auto = T)
+  
+  # Put training data in a single data frame
+  train_unlist <- do.call("rbind", train) 
+  
+  # Fit block-specific bearing and speed regs for AR models
+  bearing_speed_regs_auto <- get_bearing_speed_regs(train_unlist, auto = T)
+  bearing_regs_auto <- bearing_speed_regs_auto[[1]]
+  speed_regs_auto <- bearing_speed_regs_auto[[2]]
+  
+  # Fit block-specific bearing and speed regs for AR models
+  bearing_speed_regs_nonauto <- get_bearing_speed_regs(train_unlist, auto = F)
+  bearing_regs_nonauto <- bearing_speed_regs_nonauto[[1]]
+  speed_regs_nonauto <- bearing_speed_regs_nonauto[[2]]
+    
+  # Get block specific lysis regressions 
+  train_blocks <- split(train_unlist, f = train_unlist$block)
+  death_regs <- lapply(train_blocks, 
+                       FUN = function(x) return(glm(death ~ lat + long + 
+                                                    bearing_prev + speed_prev + 
+                                                    timestep,
+                                                    family = binomial, data = x)))  
+  
+  # Fit kernel density to TC death times
+  death_times <- sapply(train, FUN = function(x) nrow(x))
+  death_dens <- density(death_times, bw = bw.nrd(death_times), kernel = "gaussian")
+  
+  # Get death rate and max observed tropical cyclone length
+  lengths <- unlist(lapply(train, FUN = nrow))
+  death_rate <- 1 / mean(lengths)
+  max_length <- max(lengths)
+    
+  # Store blocks with <= 1 death. We will use overall death rate (instead of regs)
+  # to model death in these blocks.
+  bad_locations <- which(sapply(train_blocks, function(x) sum(x$death) <= 1))
+  
+  # Store train_models as a named list
+  train_models <- list(bearing_regs_auto, speed_regs_auto, bearing_regs_nonauto,
+                       speed_regs_nonauto, death_regs, death_dens, death_rate,
+                       max_length, bad_locations)
+  
+  names(train_models) <- c("bearing_regs_auto", "speed_regs_auto", 
+                           "bearing_regs_nonauto", "speed_regs_nonauto", 
+                           "death_regs", "death_dens", "death_rate",
+                           "max_length", "bad_locations")
+    
+  return(train_models)
 }
 
 #' Set up initial TC starting points
