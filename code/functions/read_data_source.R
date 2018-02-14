@@ -1,6 +1,5 @@
-
-library(stringr)
-library(splitstackshape)
+suppressMessages(suppressWarnings(library(stringr)))
+suppressMessages(suppressWarnings(library(splitstackshape)))
 
 #' Convert latitude hemispheres to pos/neg
 #' 

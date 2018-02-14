@@ -1,3 +1,5 @@
+suppressMessages(suppressWarnings(library(progress))) 
+
 #' Simulate whether to stop growing TC
 #' 
 #' @description For regression approach to TC deaths, this function simulates
@@ -12,28 +14,28 @@
 #' Decision of whether to stop TC depends on a draw from a Bernoulli distribution
 #' with probability equal to the predicted death probability.
 #'
-#' @param curve_df TC data frame, containing obs thus far in simulation
+#' @param path TC data frame, containing obs thus far in simulation
 #' @param death_regs List of block-specific death regressions
 #' @param bad_locations Names of blocks containing <= 1 TC death
 #' @param death_rate 1 / mean length of TCs in train data
 #'
 #' @return Boolean for whether to stop growing TC
-is_dead_inner <- function(curve_df, death_regs, bad_locations, death_rate){
+is_dead_inner <- function(path, death_regs, bad_locations, death_rate){
   
   # Number of TC observations at current point
-  n_row <- nrow(curve_df)
+  n_row <- nrow(path)
   
   # Current block, longitude, and latitude
-  block <- curve_df[n_row, ]$block
-  current_long <- curve_df$long[n_row]
-  current_lat <- curve_df$lat[n_row]
+  block <- path[n_row, ]$block
+  current_long <- path$long[n_row]
+  current_lat <- path$lat[n_row]
 
   # Predict probability of TC death at current point
   if(block %in% bad_locations){
   	prob <- death_rate
   } else {
   	prob <- predict(death_regs[[block]], type = "response",
-  	                newdata = data.frame(curve_df[n_row, ]))
+  	                newdata = data.frame(path[n_row, ]))
   }
   
   # Simulate whether TC dies at current observation
@@ -52,47 +54,47 @@ is_dead_inner <- function(curve_df, death_regs, bad_locations, death_rate){
 #' bearing. The new bearing is determined by adding the old bearing and the
 #' change in bearing.
 #'
-#' @param curve_df TC data frame, containing obs thus far in simulation
+#' @param path TC data frame, containing obs thus far in simulation
 #' @param bearing_regs List of block-specific change in bearing regressions
 #'
 #' @return TC data frame, w/ simulated new bearing at current observation
-bearing_inner <- function(curve_df, bearing_regs){
+bearing_inner <- function(path, bearing_regs){
   
   # Number of TC observations at current point
-  n_row <- nrow(curve_df)
+  n_row <- nrow(path)
   
   # Block of current observation
-  block <- curve_df[n_row, ]$block
+  block <- path[n_row, ]$block
 
   # Use block-specific regression to predict change in bearing at current obs
   bearing_change <- predict(bearing_regs[[block]], 
-                            newdata = data.frame(curve_df[n_row, ]),
+                            newdata = data.frame(path[n_row, ]),
                             se.fit = T)
   
   # Add normal randomness to change in bearing
-  curve_df[n_row,'bearing_change'] <- bearing_change$fit +
+  path[n_row,'bearing_change'] <- bearing_change$fit +
   	 	                                rnorm(n = 1, sd = bearing_change$se.fit)
   
   # Determine new bearing, based on old bearing and change in bearing
-  curve_df[n_row,'bearing'] <- curve_df[(n_row-1), 'bearing'] + 
-  		                         curve_df[n_row, 'bearing_change']
+  path[n_row,'bearing'] <- path[(n_row-1), 'bearing'] + 
+  		                         path[n_row, 'bearing_change']
   
   # Ensure 0 <= bearing < 360
-  while(curve_df[n_row, 'bearing'] < 0){
-    curve_df[n_row, 'bearing'] <- curve_df[n_row, 'bearing'] + 360
+  while(path[n_row, 'bearing'] < 0){
+    path[n_row, 'bearing'] <- path[n_row, 'bearing'] + 360
   }
-  while(curve_df[n_row, 'bearing'] >= 360){
-    curve_df[n_row, 'bearing'] <- curve_df[n_row, 'bearing'] - 360
+  while(path[n_row, 'bearing'] >= 360){
+    path[n_row, 'bearing'] <- path[n_row, 'bearing'] - 360
   }
   
   # Ensure -180 < bearing_change <= 180
-  while(curve_df[n_row, 'bearing_change'] <= -180){
-    curve_df[n_row, 'bearing_change'] <- curve_df[n_row, 'bearing_change'] + 360
+  while(path[n_row, 'bearing_change'] <= -180){
+    path[n_row, 'bearing_change'] <- path[n_row, 'bearing_change'] + 360
   }
-  while(curve_df[n_row, ]['bearing_change'] > 180){
-    curve_df[n_row, 'bearing_change'] <- curve_df[n_row, 'bearing_change'] - 360
+  while(path[n_row, ]['bearing_change'] > 180){
+    path[n_row, 'bearing_change'] <- path[n_row, 'bearing_change'] - 360
   }
-  return(curve_df)
+  return(path)
 }
 
 #' Simulate change in speed and speed
@@ -106,32 +108,32 @@ bearing_inner <- function(curve_df, bearing_regs){
 #' speed. The new speed is determined by adding the old speed and the
 #' change in speed.
 #'
-#' @param curve_df TC data frame, containing obs thus far in simulation
+#' @param path TC data frame, containing obs thus far in simulation
 #' @param speed_regs List of block-specific change in speed regressions
 #'
 #' @return TC data frame, w/ simulated new speed at current observation
-speed_inner <- function(curve_df, speed_regs){
+speed_inner <- function(path, speed_regs){
   
   # Number of TC observations at current point
-  n_row <- nrow(curve_df)
+  n_row <- nrow(path)
   
   # Block of current observation
-  block <- curve_df[n_row, ]$block
+  block <- path[n_row, ]$block
 
   # Use block-specific regression to predict change in speed at current obs
   speed_change <- predict(speed_regs[[block]], 
-                          newdata = data.frame(curve_df[n_row, ]),
+                          newdata = data.frame(path[n_row, ]),
                           se.fit = T)
   
   # Add normal randomness to change in speed
-  curve_df[n_row, 'speed_change'] <- speed_change$fit + 
+  path[n_row, 'speed_change'] <- speed_change$fit + 
   	                                 rnorm(n = 1, sd = speed_change$se.fit)
   
   # Determine new speed, based on old speed and change in speed
-  curve_df[n_row, 'speed'] <- curve_df[(n_row-1), 'speed'] + 
-  	                          curve_df[n_row, 'speed_change']
+  path[n_row, 'speed'] <- path[(n_row-1), 'speed'] + 
+  	                          path[n_row, 'speed_change']
   
-  return(curve_df)
+  return(path)
 }
 
 #' Project forward to new point
@@ -139,51 +141,51 @@ speed_inner <- function(curve_df, speed_regs){
 #' @description After simulating a new bearing and new speed, this function
 #' projects forward to the new point.
 #'
-#' @details This function takes curve_df with the simulated new bearing
+#' @details This function takes path with the simulated new bearing
 #' and simulated new speed. It projects forward to the next point, assuming
 #' that the TC maintains that bearing and speed for the next 6 hours.
 #' Then it fills in the regression variables on the new point.
 #'
-#' @param curve_df TC data frame, containing obs thus far in simulation, 
+#' @param path TC data frame, containing obs thus far in simulation, 
 #' as well as bearing and speed on current obs
 #'
 #' @return TC data frame, with simulated position of next observation
-update_curve_inner <- function(curve_df){
+update_curve_inner <- function(path){
   
   # Number of TC observations at current point
-  n_row <- nrow(curve_df)
+  n_row <- nrow(path)
   
-  # Append empty new row to curve_df
-  curve_df <- rbind(curve_df, rep(NA, ncol(curve_df)))
+  # Append empty new row to path
+  path <- rbind(path, rep(NA, ncol(path)))
   
-  # Project forward to new point. Append to curve_df.
-  new_point <- destPoint(p = c(curve_df$long[n_row], curve_df$lat[n_row]), 
-                         b = curve_df$bearing[n_row], 
-                         d = curve_df$speed[n_row]*6) # for 6 hours
+  # Project forward to new point. Append to .
+  new_point <- destPoint(p = c(path$long[n_row], path$lat[n_row]), 
+                         b = path$bearing[n_row], 
+                         d = path$speed[n_row]*6) # for 6 hours
   
   # Insert projected longitude/latitude as new point
-  curve_df[n_row + 1, 'long'] <- new_point[1, 'lon']
-  curve_df[n_row + 1, 'lat'] <- new_point[1, 'lat']
+  path[n_row + 1, 'long'] <- new_point[1, 'lon']
+  path[n_row + 1, 'lat'] <- new_point[1, 'lat']
   
   # Append regression variables to new observation
-  curve_df[n_row + 1, 'bearing_prev'] <- curve_df[n_row, 'bearing']
-  curve_df[n_row + 1, 'speed_prev'] <- curve_df[n_row, 'speed']
+  path[n_row + 1, 'bearing_prev'] <- path[n_row, 'bearing']
+  path[n_row + 1, 'speed_prev'] <- path[n_row, 'speed']
   
-  if(curve_df[n_row + 1, 'bearing_prev'] < 180){
-    curve_df[n_row + 1, 'east_west_prev'] <- "E"
+  if(path[n_row + 1, 'bearing_prev'] < 180){
+    path[n_row + 1, 'east_west_prev'] <- "E"
   } else {
-    curve_df[n_row + 1, 'east_west_prev'] <- "W"
+    path[n_row + 1, 'east_west_prev'] <- "W"
   }
   
-  curve_df[n_row + 1, 'bearing_change_lag1'] <- curve_df[n_row, 'bearing_change']
-  curve_df[n_row + 1, 'speed_change_lag1'] <- curve_df[n_row, 'speed_change']
+  path[n_row + 1, 'bearing_change_lag1'] <- path[n_row, 'bearing_change']
+  path[n_row + 1, 'speed_change_lag1'] <- path[n_row, 'speed_change']
   
-  curve_df[n_row + 1, 'block'] <- get_block(curve_df[n_row + 1, 'long'], 
-                                            curve_df[n_row + 1, 'lat'],
-                                            curve_df[n_row + 1, 'east_west_prev'])
-  curve_df[n_row + 1, 'timestep'] <- curve_df[n_row, 'timestep'] + 1
+  path[n_row + 1, 'block'] <- get_block(path[n_row + 1, 'long'], 
+                                            path[n_row + 1, 'lat'],
+                                            path[n_row + 1, 'east_west_prev'])
+  path[n_row + 1, 'timestep'] <- path[n_row, 'timestep'] + 1
 
-  return(curve_df)
+  return(path)
 }
 
 
@@ -230,7 +232,7 @@ generate_curve <- function(path, train_models, death_regs_ind, auto_ind){
   # number of TC timesteps is drawn from kernel density of length of training TCs.
   # This is an upper bound because TC immediately dies if it goes out of bounds.
   if(death_regs_ind){
-    is_dead <- is_dead_inner(curve_df, death_regs, bad_locations, death_rate)
+    is_dead <- is_dead_inner(path, death_regs, bad_locations, death_rate)
   } else {
     is_dead <- FALSE
     max_length <- round(sample(death_dens$x, size = 1, prob = death_dens$y))
@@ -244,19 +246,19 @@ generate_curve <- function(path, train_models, death_regs_ind, auto_ind){
 	while(!is_dead & timestep <= max_length){
 		
 	  # Simulate new bearing and new speed. Project forward to new point.
-	  curve_df <- bearing_inner(curve_df, bearing_regs)
-		curve_df <- speed_inner(curve_df, speed_regs)
-		curve_df <- update_curve_inner(curve_df)
+	  path <- bearing_inner(path, bearing_regs)
+		path <- speed_inner(path, speed_regs)
+		path <- update_curve_inner(path)
 
 		# For death_regs_ind = T, use is_dead_inner to simulate if TC dies at
 		# current point.
 		if(death_regs_ind){
-		  is_dead <- is_dead_inner(curve_df, death_regs, bad_locations, death_rate)
+		  is_dead <- is_dead_inner(path, death_regs, bad_locations, death_rate)
 		}
 		
 		# End TC if it goes into range w/o sufficient training data
-		current_long <- curve_df[nrow(curve_df), ]$long
-		current_lat <- curve_df[nrow(curve_df), ]$lat
+		current_long <- path[nrow(path), ]$long
+		current_lat <- path[nrow(path), ]$lat
 		
 		if(current_long < -107.3 | current_long > 10 | current_lat < 8 | 
 		   current_lat > 60 | (current_long < -90 & current_lat > 40)){
@@ -268,7 +270,7 @@ generate_curve <- function(path, train_models, death_regs_ind, auto_ind){
 	}
 
   # Save curve as a table with a longitude column and a latitude column
-	sim_df <- cbind(curve_df$long, curve_df$lat) 
+	sim_df <- cbind(path$long, path$lat) 
 	 
 	return(sim_df)
 }
@@ -330,7 +332,7 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
   # Set each element of test_sims equal to sim_setup
   test_sims <- lapply(test_sims, FUN = function(x) x = sim_setup)
   
-  # MAIN LOOP for auto/non-auto and speed/non-speed combos ----------------
+  # MAIN LOOP for auto/non-auto and speed/non-speed combos
   tf <- c(T, F)
 
   # Loop over whether autoregressive terms are used in bearing/speed regs
@@ -344,32 +346,57 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
     # Loop over whether logistic regressions are used to model lysis (death)
     for(death_regs_ind in tf){
     
-      # Set index for storage of simulations based on parameters
+      # Set index for storage of simulations based on parameters.
+      # Set up progress bar if verbose = T.
       if(auto_ind & death_regs_ind){
+        
         param_index <- 1
-        if(verbose){ 
-          cat("\nAR, death regs: generating paths for", length(test), "TCs\n") 
+        if(verbose){
+          pb <- progress_bar$new(
+            format = "generating AR, death reg TCs [:bar] :current / :total", 
+            total = length(test), clear = F, show_after = 0)
+          invisible(pb$tick(0))
         }
+        
       } else if(auto_ind & !death_regs_ind){
+       
         param_index <- 2 
-        if(verbose){ 
-          cat("\nAR, no death regs: generating paths for", length(test), "TCs\n") 
+        if(verbose){
+          pb <- progress_bar$new(
+            format = "generating AR, no death reg TCs [:bar] :current / :total", 
+            total = length(test), clear = F, show_after = 0)
+          invisible(pb$tick(0))
         }
+        
       } else if(!auto_ind & death_regs_ind){
+        
         param_index <- 3
-        if(verbose){ 
-          cat("\nNon-AR, death regs: generating paths for", length(test), "TCs\n") 
+        if(verbose){
+          pb <- progress_bar$new(
+            format = "generating non-AR, death reg TCs [:bar] :current / :total", 
+            total = length(test), clear = F, show_after = 0)
+          invisible(pb$tick(0))
         }
+        
       } else if(!auto_ind & !death_regs_ind){
+        
         param_index <- 4 
-        if(verbose){ 
-          cat("\nNon-AR, no death regs: generating paths for", length(test), "TCs\n") 
+        if(verbose){
+          pb <- progress_bar$new(
+            format = "generating non-AR, no death reg TCs [:bar] :current / :total", 
+            total = length(test), clear = F, show_after = 0)
+          invisible(pb$tick(0))
         }
+        
       }
 
       for(test_index in 1:length(test)){
-      
-        paths <- vector("list", number_paths) # to make number_paths curves
+        
+        # Update progress bar
+        if(verbose){ pb$tick() } 
+        
+        # Empty list of length number_paths, to make number_paths curves
+        paths <- vector("list", number_paths)
 
         # Get starting observations for all test TCs
         paths <- lapply(paths, FUN = function(x) return(starts[[test_index]]))
@@ -388,7 +415,6 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
         # Store simulations in test_sims
         test_sims[[test_index]][[param_index]] <- paths
       
-        if(verbose){ cat(test_index) } 
       }
     
     }

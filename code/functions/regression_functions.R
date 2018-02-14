@@ -1,6 +1,6 @@
-library(lubridate) 
-library(plyr)
-library(geosphere)
+suppressMessages(suppressWarnings(library(lubridate))) 
+suppressMessages(suppressWarnings(library(plyr)))
+suppressMessages(suppressWarnings(library(geosphere)))
 
 #' Sanitize TC data for analysis
 #' 
