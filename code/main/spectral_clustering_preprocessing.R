@@ -19,8 +19,8 @@ load(paste0(data_loc,"raw_data.Rdata"))
 load(paste0(data_loc,"loocv_optimal.Rdata"))
 load(file = paste0(data_loc,"sca_training_structure.Rdata"))
 
-K = loocv_optimal["K"]
-t = loocv_optimal["t"]
+K = loocv_optimal[["K"]]
+t = loocv_optimal[["t"]]
 dim = 5
 
 
