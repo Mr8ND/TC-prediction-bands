@@ -88,13 +88,11 @@ col_idx <- ceiling(mat_idx/n_K)
 row_idx <- mat_idx - (ceiling(mat_idx/n_K) - 1) * n_K
 
 loocv_optimal <- list()
-loocv_optimal["K"] <- K_range[row_idx]
-loocv_optimal["t"] <- t_range[col_idx]
-
-print("Optimal values;",
-	  "K:", loocv_optimal["K"],
-	  "t:", loocv_optimal["t"])
+loocv_optimal[["K"]] <- K_range[row_idx]
+loocv_optimal[["t"]] <- t_range[col_idx]
 
 save(loocv_optimal, file = paste0(data_loc,"loocv_optimal.Rdata"))
 
-
+print(paste0("Optimal values;",
+	  "K:", as.character(loocv_optimal[["K"]]),
+	  ", t:", as.character(loocv_optimal[["t"]])))
