@@ -6,6 +6,3 @@ data/*
 __pycache__/
 !spec/*__pycache__/
 
-# Removing old function files for Bubble CI and KDE functions to be pushed
-code/functions/bubble_points_functions.R
-code/functions/kde_approach_confint.R
