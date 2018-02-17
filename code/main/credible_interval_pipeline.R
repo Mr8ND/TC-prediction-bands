@@ -156,10 +156,6 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
 
 
-
-
-
-
 #' Execution --------------------------------------------------------
 
 # Data import step as dflist - list of lists of TCs
@@ -168,9 +164,11 @@ tc_full_sim_list <- NULL
 # Data import step for true TCs DF - test ones
 tc_true_path_list <- NULL
 
-
+alpha_level <- 0.1
 output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
-												tc_true_path_list = tc_true_path_list)
+												tc_true_path_list = tc_true_path_list,
+												alpha_level = alpha_level)
 
-save(output_pipeline, file = 'data/output_pipeline.Rdata')
+out_filename <- paste0('data/output_pipeline_alpha', as.character(alpha_level), '_', Sys.Date(), '.Rdata')
+save(output_pipeline, file = out_filename)
 
