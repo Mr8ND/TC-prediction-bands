@@ -256,8 +256,9 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 #
 #' @return Contour at the specified level
 #' @return Contour area
-#'
-kde_contour_from_tclist <- function(dflist, level, h_band = NULL, long = 1, lat = 2,
+#' @return Full KDE Object
+#' 
+kde_from_tclist <- function(dflist, level, h_band = NULL, long = 1, lat = 2,
                                     grid_size = 1000) {
 
   dfmat <- flatten_tc_list(dflist)
@@ -266,5 +267,5 @@ kde_contour_from_tclist <- function(dflist, level, h_band = NULL, long = 1, lat 
   cont <- extract_countour(kde_object, level = level)
   area_cont <- kde_contour_area(cont)
 
-  return(list('contour' = cont, 'area' = area_cont))
+  return(list('contour' = cont, 'area' = area_cont, 'kde_object' = kde_object))
 }
