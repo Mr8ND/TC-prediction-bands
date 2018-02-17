@@ -172,5 +172,5 @@ tc_true_path_list <- NULL
 output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
 												tc_true_path_list = tc_true_path_list)
 
-save('data/output_pipeline.Rdata')
+save(output_pipeline, file = 'data/output_pipeline.Rdata')
 
