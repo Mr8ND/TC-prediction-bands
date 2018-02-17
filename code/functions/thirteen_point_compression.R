@@ -103,9 +103,6 @@ thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat = TRUE,
       format = "Compressing [:bar] :percent eta: :eta",
       total = n_tc, clear = FALSE, width = 38)
   }
-
-
-  
   
   for (path_name in names(list_df)) {
     df_pulled_out <- list_df[[path_name]][,c_position]
