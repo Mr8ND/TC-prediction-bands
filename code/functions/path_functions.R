@@ -1,6 +1,6 @@
 library(geosphere)
 library(datamart)
-
+library(progress)
 swap2DfCols = function(data.df){
 	return(data.frame(cbind(data.df[,2],data.df[,1])))
 }

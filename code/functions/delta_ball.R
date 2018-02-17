@@ -8,12 +8,15 @@ library(sp)
 #' at least one other point.
 #'
 #' @param data continuous data frame of individual points (in each row)
+#' @param dist_mat distance matrix, calculated otherwise via euclidean distance
 #'
 #' @return dist_mat distance matrix between points
 #' @return mm_delta the minimum distance (delta)
 #' @export
-get_delta <- function(data){
-  dist_mat <- data %>% dist %>% as.matrix
+get_delta <- function(data, dist_mat = NULL){
+  if (is.null(dist_mat)){
+      dist_mat <- data %>% dist %>% as.matrix
+  }
   diag(dist_mat) <- max(dist_mat)
   mm_delta <- apply(dist_mat,MARGIN = 1, min ) %>% max
   
