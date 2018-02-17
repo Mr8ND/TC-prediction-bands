@@ -1,9 +1,5 @@
-library(geosphere)
-library(plyr)
-library(lubridate)
-
 functions_loc = "code/functions/"
-source(paste0(functions_loc, "Regression_functions.R")) 
+source(paste0(functions_loc, "regression_functions.R")) 
 source(paste0(functions_loc, "creating_curves.R"))
 source(paste0(functions_loc, "read_data_source.R"))
 

@@ -1,6 +1,5 @@
-
-library(stringr)
-library(splitstackshape)
+suppressMessages(suppressWarnings(library(stringr)))
+suppressMessages(suppressWarnings(library(splitstackshape)))
 
 #' Convert latitude hemispheres to pos/neg
 #' 
@@ -95,44 +94,3 @@ pull_data <- function(){
   return(tc_list)
 }
 
-#' Split TC data into training and testing
-#'
-#' @description This function splits the list of TC data frames into training
-#' and test data. It reproduces the splits from the paper if reproduce = T.
-#'
-#' @param tc_list List of TC data frames
-#' @param train_prop Proportion of TC to use as training data
-#' @param reproduce Boolean. If TRUE, splits data into same train/test files as 
-#' paper, to make paper reproducible.
-#'
-#' @return List of length 2. First element is list of all training TCs.
-#' Second element is list of all test TCs.
-#' @export
-split_train_test <- function(tc_list, train_prop = 0.7, reproduce = T){
-  # Require 0 < train_prop < 1
-  if(train_prop <= 0 | train_prop >= 1){stop("Must have 0 < train_prop < 1")}
-  
-  # Set seed and train_prop to reproduce results from paper
-  if(reproduce){ 
-    set.seed(1) 
-    train_prop <- 0.7
-  }
-  
-  # Compute proportion of test TCs
-  test_prop <- 1 - train_prop
-  
-  # Select training TCs, stratified by year
-  df <- data.frame(names(tc_list), substr(names(tc_list), 5, 8))
-  colnames(df) <- c("name", "year")
-  train_sel <- stratified(df, group = "year", size = train_prop)
-  
-  # Get training and test TC names
-  train_names <- train_sel$name
-  test_names <- setdiff(df$name, train_sel$name)
-  
-  # Get training and test TC data
-  train <- tc_list[train_names]
-  test <- tc_list[test_names]
-
-  return(list(train, test))
-}

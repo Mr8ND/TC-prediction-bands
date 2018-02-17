@@ -139,7 +139,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL, long = 1
 #' Only works for some levels that the kde object calculated originally.
 #'
 #' @param kde_obj kde object
-#' @param level contour level which needs to be extracted. Integer from 1 to 99.
+#' @param alpha_level contour level which needs to be extracted. Integer from 1 to 99.
 #
 #' @return Countour at (100-level) for the kde object.
 #' 
@@ -153,8 +153,8 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL, long = 1
 #' 
 #' cont <- extract_countour(kde_object, 5)
 #'
-extract_countour <- function(kde_obj, level) {
-  alpha <- (100 - level)
+extract_countour <- function(kde_obj, alpha_level) {
+  alpha <- (100 - alpha_level)
   cont_level <- paste0(as.character(alpha), "%")
   cont <- with(kde_obj, contourLines(x = eval.points[[1]],y = eval.points[[2]],
                                       z = estimate,levels = cont[cont_level])[[1]]) # needs to be 1-\alpha
@@ -245,7 +245,7 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 #' This function calculates contour points and area from list of generated TC.
 #'
 #' @param dflist list of TC dataframes
-#' @param level contour level, an integer from 1 to 99. A level 5 gives back
+#' @param alpha_level contour level, an integer from 1 to 99. A level 5 gives back
 #' 95% contour
 #' @param h_band optional argument for the bandwidth of the kde object. If NULL, the
 #' optimal band would be selected through the @kde function. Default is NULL.
@@ -254,16 +254,18 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 #' @param grid_size size of the grid which is going to be used for the evaluation of kde
 #' object. Can be reduced to speed-up computation.
 #
-#' @return Contour at the specified level and contour area.
-#'
-kde_contour_from_tclist <- function(dflist, level, h_band = NULL, long = 1, lat = 2,
+#' @return Contour at the specified level
+#' @return Contour area
+#' @return Full KDE Object
+#' 
+kde_from_tclist <- function(dflist, alpha_level, h_band = NULL, long = 1, lat = 2,
                                     grid_size = 1000) {
 
   dfmat <- flatten_tc_list(dflist)
   kde_object <- fit_kde_object(dfmat, h_band = h_band, grid_size = grid_size, 
                                 long = long, lat = lat)
-  cont <- extract_countour(kde_object, level = level)
+  cont <- extract_countour(kde_object, level = alpha_level)
   area_cont <- kde_contour_area(cont)
 
-  return(list('contour' = cont, 'area' = area_cont))
+  return(list('contour' = cont, 'area' = area_cont, 'kde_object' = kde_object))
 }

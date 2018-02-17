@@ -1,7 +1,12 @@
+#' Library --------------------------
+
 library(tidyverse) # this library is needed here
+
+#' Functions --------------------------
 
 #' Depth calculation
 #' 
+#' @description
 #' calculates a depth vector using a distance matrix
 #'
 #' @param dist_matrix  a n x n square positive symmetric matrix
