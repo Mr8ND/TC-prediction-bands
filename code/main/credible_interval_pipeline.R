@@ -38,13 +38,14 @@ source(paste0(functions_loc, 'path_functions.R'))
 #' @param long Column index of the longitude
 #' @param lat Column index of the latitude
 #' @param unit_measure Unit of measure used for distance
+#' @param verbose If TRUE update messages will be displayed
 #' 
 #' @return 1 list with 4 arguments, once for each of the 4 methods, which all 
 #' have an 'area' and 'in_vec' argument to determine the area value and a 
 #' boolean vector which reported whether the point of the true TC was inside the
 #' TC or not.
 credible_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
-                                        long = 1, lat = 2, 
+                                        long = 1, lat = 2, verbose = FALSE,
                                         unit_measure = 'nautical mile'){
 
     # KDE CI
@@ -62,10 +63,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     # Distance Matrix calculation
     dflist_13pointsreduction <- thirteen_points_listable(dflist, 
                                                         c_position = 1:2)
-    dist_matrix_13pointsreduction <- distMatrixPath_innersq(
-                                            dflist_13pointsreduction
-                                            )
-
+    dist_matrix_13pointsreduction <- distMatrixPath_innersq(dflist_13pointsreduction)
     depth_vector <- depth_function(dist_matrix_13pointsreduction)
     depth_vector_idx <- which(depth_vector == max(depth_vector))
 
@@ -94,7 +92,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     dist_mat = dist_matrix_13pointsreduction, 
                                     c_position = 1:2,
                                     depth_vector = depth_vector,
-                                    verbose = FALSE)
+                                    verbose = verbose)
 
     # Convex Hull CI
     out_delta_ball_list <- delta_structure(data_list = dflist, 
@@ -104,8 +102,8 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     depth_vector = depth_vector,
                                     c_position = 1:2,
                                     area_ci_n = 2000, 
-                                    area_ci_alpha = .05, 
-                                    verbose = FALSE)
+                                    area_ci_alpha = alpha_level, 
+                                    verbose = verbose)
 
     # Delta Ball CI
     out_convex_hull_list <- convex_hull_structure(data_list = dflist, 
@@ -114,9 +112,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
                                     c_position = 1:2,
-                                    verbose = FALSE)
-
-
+                                    verbose = verbose)
 
 
     return(list('kde' = out_kde_list, 
@@ -158,6 +154,20 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
                                         curve_type_vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')) {
     output = list()
 
+    # Setting starting and ending index
+    if (!is.null(start_idx)){
+        start_idx <- 1
+    }
+    if (!is.null(end_idx)){
+        end_idx <- length(tc_true_path_list_curve)
+    }
+
+  	if (verbose) {
+	    pb <- progress_bar$new(
+	      format = "Creating Distance Matrix [:bar] :percent eta: :eta",
+	      total = length(c(start_idx:end_idx))*4, clear = FALSE, width = 51)
+  	}
+
     for (curve_type in curve_type_vec) {
 
         # Retrieving simulated and true curves
@@ -165,24 +175,17 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
         tc_sim_list_curve <- tc_full_sim_list[[curve_type]]
         tc_true_path_list_curve <- tc_true_path_list[[tc_true_path_list]]
 
-        # Setting starting and ending index
-        if (!is.null(start_idx)){
-            start_idx <- 1
-        }
-        if (!is.null(end_idx)){
-            end_idx <- length(tc_true_path_list_curve)
-        }
-
         # Calculating the CI for each of the simulated CI
         for (j in c(start_idx:end_idx)) {
             output_curve[[j]] <- credible_interval_single_tc(dflist = tc_sim_list_curve[[j]], 
                                                               test_true_path = tc_true_path_list_curve[[j]],
                                                               alpha_level = alpha_level,
                                                               long = long, lat = lat, 
-                                                              unit_measure = unit_measure)
-            if (verbose == TRUE) {
-                print(paste("TC number", j, "done - ", curve_type, "type of curves."))
-            }
+                                                              unit_measure = unit_measure,
+                                                              verbose = FALSE)
+            if (verbose) {
+		        pb$tick()
+		    }
         }
         output[[curve_type]] <- output_curve
     }

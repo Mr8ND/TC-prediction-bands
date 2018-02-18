@@ -1,19 +1,3 @@
-#bubble_steps_CI_np = bubbleCI(dflist, tc.weight.vec, level = alpha.value, direct_sel = TRUE, direct_sel_idx = depth_vector_idx[1])
-#NSWE.lists.np = calculateErrorBandsBubble(bubble_steps_CI_np, conversion=TRUE)
-#error.NS.np = NSWE.lists.np[[1]]
-#error.EW.np = NSWE.lists.np[[2]]
-#center.radius.np = NSWE.lists.np[[3]]
-
-#center.radius.df.np = c()
-#for (i in c(1:length(center.radius.np))){
-#  center.radius.df.np = c(center.radius.df.np, center.radius.np[[i]][c(1,2,3)])
-#}
-#center.radius.df.np = data.frame(t(matrix(center.radius.df.np, nrow=3)))
-
-#in.vec.np = checkPointsInBands(true.curve,center.radius.df.np)
-#result.mat[idx, 3] = sum(in.vec.np)/length(in.vec.np)
-
-
 #' Library --------------------------------
 library(datamart)
 library(geosphere)
