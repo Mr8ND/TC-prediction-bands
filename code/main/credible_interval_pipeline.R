@@ -153,13 +153,14 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
                                         unit_measure = 'nautical mile', verbose = TRUE,
                                         curve_type_vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')) {
     output = list()
+    list_tc_names = names(tc_full_sim_list)
 
     # Setting starting and ending index
-    if (!is.null(start_idx)){
+    if (is.null(start_idx)){
         start_idx <- 1
     }
-    if (!is.null(end_idx)){
-        end_idx <- length(tc_true_path_list_curve)
+    if (is.null(end_idx)){
+        end_idx <- length(tc_true_path_list)
     }
 
   	if (verbose) {
@@ -168,27 +169,27 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 	      total = length(c(start_idx:end_idx))*4, clear = FALSE, width = 51)
   	}
 
-    for (curve_type in curve_type_vec) {
-
-        # Retrieving simulated and true curves
-        output_curve <- list()
-        tc_sim_list_curve <- tc_full_sim_list[[curve_type]]
-        tc_true_path_list_curve <- tc_true_path_list[[tc_true_path_list]]
-
-        # Calculating the CI for each of the simulated CI
-        for (j in c(start_idx:end_idx)) {
-            output_curve[[j]] <- credible_interval_single_tc(dflist = tc_sim_list_curve[[j]], 
-                                                              test_true_path = tc_true_path_list_curve[[j]],
-                                                              alpha_level = alpha_level,
-                                                              long = long, lat = lat, 
-                                                              unit_measure = unit_measure,
-                                                              verbose = FALSE)
-            if (verbose) {
-		        pb$tick()
-		    }
+    for (j in c(start_idx:end_idx)) {
+      
+      # Retrieving simulated and true curves
+      output_tc <- list()
+      tc_sim_list_curve <- tc_full_sim_list[[list_tc_names[j]]]
+      tc_true_path_curve <- tc_true_path_list[[list_tc_names[j]]]
+      
+      for (curve_type in curve_type_vec) {
+        output_tc[[curve_type]] <- credible_interval_single_tc(dflist = tc_sim_list_curve[[curve_type]], 
+                                                         test_true_path = tc_true_path_curve,
+                                                         alpha_level = alpha_level,
+                                                         long = long, lat = lat, 
+                                                         unit_measure = unit_measure,
+                                                         verbose = FALSE)
+        if (verbose){
+          pb$tick()
         }
-        output[[curve_type]] <- output_curve
+      }
+      output[[j]] <- output_tc
     }
+    
     return(output)
 }
 
@@ -196,11 +197,14 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
 #' Execution --------------------------------------------------------
 
+load('data/sample/Test_Sims_1000.Rdata')
+
 # Data import step as dflist - list of lists of TCs
-tc_full_sim_list <- NULL
+tc_full_sim_list <- test_env
 
 # Data import step for true TCs DF - test ones
-tc_true_path_list <- NULL
+tc_true_path_list <- list("AL031951" = test_env$AL031951$Auto_DeathRegs[[1]],
+                          "AL011951" = test_env$AL011951$Auto_DeathRegs[[1]])
 
 alpha_level <- 0.1
 output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,

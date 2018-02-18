@@ -122,7 +122,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL, long = 1
   # kde_obj$cont vector and store it for comparison.
   if (!is.null(alpha_level)) {
     contour_alpha_level <- as.numeric(kde_obj$cont[paste(as.character((1-alpha_level) * 100), "%", sep = "")])
-    in_alpha_vec <- as.numeric(predict_ve >= contour_alpha_level)
+    in_alpha_vec <- as.numeric(predict_vec >= contour_alpha_level)
     out_mat <- cbind(out_mat, in_alpha_vec)
   }
   
@@ -154,7 +154,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL, long = 1
 #' cont <- extract_countour(kde_object, 5)
 #'
 extract_countour <- function(kde_obj, alpha_level) {
-  alpha <- (100 - alpha_level)
+  alpha <- (100 - (alpha_level*100))
   cont_level <- paste0(as.character(alpha), "%")
   cont <- with(kde_obj, contourLines(x = eval.points[[1]],y = eval.points[[2]],
                                       z = estimate,levels = cont[cont_level])[[1]]) # needs to be 1-\alpha
@@ -264,7 +264,7 @@ kde_from_tclist <- function(dflist, alpha_level, h_band = NULL, long = 1, lat = 
   dfmat <- flatten_tc_list(dflist)
   kde_object <- fit_kde_object(dfmat, h_band = h_band, grid_size = grid_size, 
                                 long = long, lat = lat)
-  cont <- extract_countour(kde_object, level = alpha_level)
+  cont <- extract_countour(kde_object, alpha_level = alpha_level)
   area_cont <- kde_contour_area(cont)
 
   return(list('contour' = cont, 'area' = area_cont, 'kde_object' = kde_object))
