@@ -46,7 +46,7 @@ get_area_c <- function(data){
   c_points <- data_points[c_out,]
   
   poly <- rbind(c_points,c_points[1,])    # polygon needs to be closed...
-  spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)),ID = 1)))
+  spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)), ID = 1)))
   return(list(poly_df = poly, size = gArea(spPoly), spPoly = spPoly))
 }
 
@@ -58,12 +58,12 @@ get_area_c <- function(data){
 #' polygon or not
 #'
 #' @param spPoly polygon object.
-#' @param predict_mat matrix with the points to be determined in terms of position
-#' with respect to the contour.
+#' @param predict_mat matrix with the points to be determined in terms of 
+#' position with respect to the contour.
 #' @param long index of the column referring to "longitude". Default is 1.
 #' @param lat index of the column referring to "latitude". Default is 2.
 #
-#' @return Vector of binary values, 1 if the point is inside the polygon, 0 is not.
+#' @return Vector of boolean values, if the point is inside the polygon, 
 #' Dimensionality is the same as the number of rows in predict_mat
 #' 
 #' @examples
@@ -73,8 +73,9 @@ get_area_c <- function(data){
 #' y1 <- rnorm(100)
 #' dfmat <- cbind(x1,y1)
 #' kde_object <- kde(dfmat)
-#' cont <- with(kde_object, contourLines(x = eval.points[[1]],y = eval.points[[2]],
-#'                                    z = estimate,levels = cont["5%"])[[1]])
+#' cont <- with(kde_object, contourLines(x = eval.points[[1]],
+#'                                       y = eval.points[[2]],
+#'                                       z = estimate,levels = cont["5%"])[[1]])
 #' 
 #' poly <- with(cont, data.frame(x,y))
 #' poly <- rbind(poly, poly[1, ])    # polygon needs to be closed
@@ -86,13 +87,13 @@ get_area_c <- function(data){
 #' 
 #' position_wrt_contour <- points_in_spatial_polygon(spPoly, predict_mat)
 #'
-points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2) {
+points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 
   points_in_poly <- point.in.polygon(predict_mat[, long], predict_mat[, lat],
-                                    spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
-                                    spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
+                                spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
+                                spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
 
-  return(points_in_poly)
+  return(points_in_poly == 1)
 }
 
 
@@ -109,7 +110,7 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2) {
 #' `distMatrixPath_innersq`
 #'
 #' @return poly data frame of structural contour
-#' @return size area of contour
+#' @return area area of contour
 #' @export
 #'
 #' @examples

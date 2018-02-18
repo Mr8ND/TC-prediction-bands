@@ -62,8 +62,10 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 
     # Distance Matrix calculation
     dflist_13pointsreduction <- thirteen_points_listable(dflist, 
-                                                        c_position = 1:2)
-    dist_matrix_13pointsreduction <- distMatrixPath_innersq(dflist_13pointsreduction)
+                                                    c_position = c(long,lat))
+    dist_matrix_13pointsreduction <- distMatrixPath_innersq(
+                                                dflist_13pointsreduction
+                                                )
     depth_vector <- depth_function(dist_matrix_13pointsreduction)
     depth_vector_idx <- which(depth_vector == max(depth_vector))
 
@@ -79,7 +81,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                             radius_df = bubble_ci_list$radius, 
                                             long = long, lat = lat)
 
-    out_bubble_ci_list <- list(
+    out_bubble_list <- list(
                         'bubble_structure' = bubble_ci_list$bubble_CI_object,
                         'area' = bubble_ci_list$area,
                         'area_vector' = bubble_ci_list$area_vector,
@@ -90,35 +92,60 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     data_deep_points <- depth_curves_to_points(data_list = dflist,
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction, 
-                                    c_position = 1:2,
+                                    c_position = c(long,lat),
                                     depth_vector = depth_vector,
                                     verbose = verbose)
 
     # Convex Hull CI
-    out_delta_ball_list <- delta_structure(data_list = dflist, 
+    delta_ball_structure <- delta_structure(data_list = dflist, 
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    c_position = 1:2,
+                                    c_position = c(long,lat),
                                     area_ci_n = 2000, 
                                     area_ci_alpha = alpha_level, 
                                     verbose = verbose)
 
+    delta_ball_inclusion_vec <- delta_ball_prop_interior(data_deep_points, 
+                                                    test_true_path, 
+                                                    out_convex_hull_list$delta)
+
+    out_delta_ball_list <- list(
+        'structure' = delta_ball_structure$structure,
+        'area' = delta_ball_structure$area,
+        'area_ci' =  delta_ball_structure$area_ci,
+        'delta' = delta_ball_structure$delta,
+        'in_vec' = delta_ball_inclusion_vec
+        )
+
+
     # Delta Ball CI
-    out_convex_hull_list <- convex_hull_structure(data_list = dflist, 
+    convex_hull_structure <- convex_hull_structure(data_list = dflist, 
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    c_position = 1:2,
+                                    c_position = c(long,lat),
                                     verbose = verbose)
+
+    convex_hull_inclusion_vec <- points_in_spatial_polygon(
+                            convex_hull_structure$spPoly, 
+                            as.matrix(test_true_path), 
+                            long = long, lat = lat)
+
+    out_convex_hull_list <- list(
+        'structure' = convex_hull_structure$poly_df, 
+        'area' = convex_hull_structure$area, 
+        'spPoly' = convex_hull_structure$spPoly
+        'in_vec' = convex_hull_inclusion_vec
+        )
 
 
     return(list('kde' = out_kde_list, 
-                'bubble_ci' = out_bubble_ci_list,
-                'delta_ball' = out_delta_ball_ci, 
-                'convex_hull' = out_delta_ball_ci))
+                'bubble_ci' = out_bubble_list,
+                'delta_ball' = out_delta_ball_list, 
+                'convex_hull' = out_convex_hull_list))
 
 }
 
