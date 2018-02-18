@@ -82,7 +82,7 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
       total = n_desired, clear = FALSE, width = 51)
   }
   
-  df_out <- data_list[[1]][1,] %>% mutate(curve = 0)
+  df_out <- data_list[[1]][1,] %>% dplyr::mutate(curve = 0)
   
   for(good_curve_idx in desired_index){
     df_out <- rbind(df_out, 
@@ -135,7 +135,7 @@ depth_curves_to_points <- function(data_list, alpha, dist_mat = NULL,
     depth_vector <- depth_function(dist_mat)
   }
   
-  deep_idx <- which(depth > quantile(depth,probs = alpha))
+  deep_idx <- which(depth_vector > quantile(depth_vector, probs = alpha))
   
   data_deep_df <- selected_paths_to_df(data_list, deep_idx, verbose = verbose)
   data_deep_points <- data_deep_df[, -which(names(data_deep_df) == "curve")]

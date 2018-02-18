@@ -428,7 +428,7 @@ distMatrixPath_innersq = function(path_mat_list,
   if (verbose) {
     pb <- progress_bar$new(
       format = "Creating Distance Matrix [:bar] :percent eta: :eta",
-      total = n_mat^2, clear = FALSE, width = 51)
+      total = ((n_mat)*(n_mat+1))/2, clear = FALSE, width = 51)
   }
 
   output_mat = matrix(0, nrow = n_mat, ncol = n_mat)

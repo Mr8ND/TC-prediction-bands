@@ -31,8 +31,8 @@ rearrange_dflist_bubble <- function(dflist, center_idx, long = 1, lat = 2) {
   for (j in c(1:n_df)) {
 
     for (i in c(1:n)) {
-      output_mat[j, (2*i - 1)] <- dflist[[i]][j, long]
-      output_mat[j, (2*i)] <- dflist[[i]][j, lat]
+      output_mat[j, (2*i - 1)] <- ifelse(dim(dflist[[i]])[1] >= j, dflist[[i]][j, long], NA)
+      output_mat[j, (2*i)] <- ifelse(dim(dflist[[i]])[1] >= j, dflist[[i]][j, lat], NA)
     }
 
     output_list[[j]] <- data.frame(t(matrix(output_mat[j, ], ncol = n)))
@@ -207,7 +207,7 @@ error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2,
   centers <- sapply(bubble_steps_CI,function(df) df[1,]) %>% 
                         t() %>%
                         data.frame() %>% 
-                        select(long,lat) %>%
+                        dplyr::select(long,lat) %>%
                         sapply(function(x) matrix(x, ncol = 1))
 
   centers <- data.frame(long = as.numeric(centers[, long_col]),
@@ -335,7 +335,7 @@ bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1,
 
     area_list <- max_cumulative_area(bubble_ci_structure)
 
-    return(list('bubble_CI_object' = bubble_ci_structure, 'area' = area_list[[2]], 'area_vector' = area[[1]]))
+    return(list('bubble_CI_object' = bubble_ci_structure, 'area' = area_list[[2]], 'area_vector' = area_list[[1]]))
 } 
 
 

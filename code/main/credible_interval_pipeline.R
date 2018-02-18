@@ -62,9 +62,12 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 
     # Distance Matrix calculation
     dflist_13pointsreduction <- thirteen_points_listable(dflist, 
-                                                    c_position = c(long,lat))
+                                                    c_position = c(long,lat),
+                                                    verbose = verbose)
     dist_matrix_13pointsreduction <- distMatrixPath_innersq(
-                                                dflist_13pointsreduction
+                                                dflist_13pointsreduction,
+                                                output_length = unit_measure,
+                                                verbose = verbose
                                                 )
     depth_vector <- depth_function(dist_matrix_13pointsreduction)
     depth_vector_idx <- which(depth_vector == max(depth_vector))
@@ -77,8 +80,8 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                       unit_measure = unit_measure)
     bubble_ci_inclusion_vec <- check_points_in_bubbleCI(
                                             df_points = test_true_path, 
-                                            center_df = bubble_ci_list$centers, 
-                                            radius_df = bubble_ci_list$radius, 
+                                            center_df = bubble_ci_list$bubble_CI_object$centers, 
+                                            radius_df = bubble_ci_list$bubble_CI_object$radius, 
                                             long = long, lat = lat)
 
     out_bubble_list <- list(
@@ -137,7 +140,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     out_convex_hull_list <- list(
         'structure' = convex_hull_structure$poly_df, 
         'area' = convex_hull_structure$area, 
-        'spPoly' = convex_hull_structure$spPoly
+        'spPoly' = convex_hull_structure$spPoly,
         'in_vec' = convex_hull_inclusion_vec
         )
 
@@ -226,8 +229,26 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
 load('data/sample/Test_Sims_1000.Rdata')
 
+reduced_test_env <- list("AL031951" = list("Auto_DeathRegs"= list(),
+                                           "Auto_NoDeathRegs" = list(),
+                                           "NoAuto_DeathRegs" = list(),
+                                           "NoAuto_NoDeathRegs" = list()),
+                         "AL011951" = list("Auto_DeathRegs"= list(),
+                                           "Auto_NoDeathRegs" = list(),
+                                           "NoAuto_DeathRegs" = list(),
+                                           "NoAuto_NoDeathRegs" = list()))
+
+for (name_tc in names(reduced_test_env)){
+  for (curve_type in names(reduced_test_env[[name_tc]])){
+    for (i in c(1:100)){
+      reduced_test_env[[name_tc]][[curve_type]][[i]] <- test_env[[name_tc]][[curve_type]][[i]]
+    }
+  }
+}
+
+
 # Data import step as dflist - list of lists of TCs
-tc_full_sim_list <- test_env
+tc_full_sim_list <- reduced_test_env
 
 # Data import step for true TCs DF - test ones
 tc_true_path_list <- list("AL031951" = test_env$AL031951$Auto_DeathRegs[[1]],
