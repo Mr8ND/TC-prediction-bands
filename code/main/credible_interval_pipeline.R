@@ -198,7 +198,7 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
   	if (verbose) {
 	    pb <- progress_bar$new(
-	      format = "Creating Distance Matrix [:bar] :percent eta: :eta",
+	      format = "Creadible Interval Pipeline [:bar] :percent eta: :eta",
 	      total = length(c(start_idx:end_idx))*4, clear = FALSE, width = 51)
   	}
 
@@ -210,15 +210,15 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
       tc_true_path_curve <- tc_true_path_list[[list_tc_names[j]]]
       
       for (curve_type in curve_type_vec) {
-        output_tc[[curve_type]] <- credible_interval_single_tc(dflist = tc_sim_list_curve[[curve_type]], 
-                                                         test_true_path = tc_true_path_curve,
+        output_tc[[curve_type]] <- credible_interval_single_tc(dflist = lapply(tc_sim_list_curve[[curve_type]], data.frame), 
+                                                         test_true_path = data.frame(tc_true_path_curve),
                                                          alpha_level = alpha_level,
                                                          long = long, lat = lat, 
                                                          unit_measure = unit_measure,
                                                          verbose = FALSE)
-        if (verbose){
-          pb$tick()
-        }
+      }
+      if (verbose){
+        pb$tick()
       }
       output[[j]] <- output_tc
     }
