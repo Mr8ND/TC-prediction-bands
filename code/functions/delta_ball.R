@@ -290,7 +290,7 @@ remove_duplicates_func <- function(data_raw){
   data_raw$connectors <- apply(data_raw,1, function(row) paste0(row[1],",",row[2]))
   
   data_out <- data_raw %>% group_by(connectors) %>%
-    summarize(lat = unique(lat),
+    dplyr::summarize(lat = unique(lat),
               long = unique(long))
   data_out <- data.frame(data_out %>% dplyr::select(lat, long))
   
