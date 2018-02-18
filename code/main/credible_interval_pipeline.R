@@ -13,7 +13,7 @@ require(gtools)
 
 #' Sourcing external functions ----------------------------------------
 
-functions_loc = '../functions/'
+functions_loc = 'code/functions/'
 source(paste0(functions_loc, 'kde_functions.R'))
 source(paste0(functions_loc, 'bubble_functions.R'))
 source(paste0(functions_loc, 'convex_hull.R'))
@@ -21,16 +21,16 @@ source(paste0(functions_loc, 'delta_ball.R'))
 source(paste0(functions_loc, 'thirteen_point_compression.R'))
 source(paste0(functions_loc, 'path_functions.R'))
 
-
 #' Functions ---------------------------------------------------------
 
 
 #' Extract credible intervals of 4 methods from a single test TC
 #' 
 #' @description
-#' This function extracts the KDE, Bubble CI, delta-ball and convex hull credible
-#' intervals from the simulations of a single TC. It then checks the coverage
-#' of such CI as number of points included in the CI for each of the methods
+#' This function extracts the KDE, Bubble CI, delta-ball and convex hull 
+#' credible intervals from the simulations of a single TC. It then checks the 
+#' coverage of such CI as number of points included in the CI for each of the 
+#' methods
 #' 
 #' @param dflist List of simulated TCs
 #' @param test_true_path Dataframe with the true TC path to be tested
@@ -39,55 +39,90 @@ source(paste0(functions_loc, 'path_functions.R'))
 #' @param lat Column index of the latitude
 #' @param unit_measure Unit of measure used for distance
 #' 
-#' @return 1 list with 4 arguments, once for each of the 4 methods, which all have
-#' an 'area' and 'in_vec' argument to determine the area value and a boolean vector
-#' which reported whether the point of the true TC was inside the TC or not.
+#' @return 1 list with 4 arguments, once for each of the 4 methods, which all 
+#' have an 'area' and 'in_vec' argument to determine the area value and a 
+#' boolean vector which reported whether the point of the true TC was inside the
+#' TC or not.
 credible_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
-										long = 1, lat = 2, unit_measure = 'nautical mile'){
+                                        long = 1, lat = 2, 
+                                        unit_measure = 'nautical mile'){
 
-	# KDE CI
-	kde_ci_list <- kde_from_tclist(dflist = dflist, 
-									alpha_level = alpha_level)
-	kde_predict_mat <- predict_kde_object(kde_obj = kde_ci_list$kde_object, 
-						predict_mat = test_true_path, 
-						alpha_level = alpha_level, 
-						long = long, lat = lat)
+    # KDE CI
+    kde_ci_list <- kde_from_tclist(dflist = dflist, 
+                                    alpha_level = alpha_level)
+    kde_predict_mat <- predict_kde_object(kde_obj = kde_ci_list$kde_object, 
+                        predict_mat = test_true_path, 
+                        alpha_level = alpha_level, 
+                        long = long, lat = lat)
 
-	out_kde_list <- list('contour' = kde_ci_list$contour, 
-						  'area' = kde_ci_list$area,
-						  'in_vec' = kde_predict_mat[, 4])
+    out_kde_list <- list('contour' = kde_ci_list$contour, 
+                          'area' = kde_ci_list$area,
+                          'in_vec' = kde_predict_mat[, 4])
 
-	# Distance Matrix calculation
-	dflist_13pointsreduction = thirteen_points_listable(dflist, c_position = 1:2)
-    dist_matrix_13pointsreduction = distMatrixPath(dflist_13pointsreduction)
-    depth_vector = depth_function(dist_matrix_13pointsreduction)
-    depth_vector_idx = which(depth_vector==max(depth_vector))
+    # Distance Matrix calculation
+    dflist_13pointsreduction <- thirteen_points_listable(dflist, 
+                                                        c_position = 1:2)
+    dist_matrix_13pointsreduction <- distMatrixPath_innersq(
+                                            dflist_13pointsreduction
+                                            )
+
+    depth_vector <- depth_function(dist_matrix_13pointsreduction)
+    depth_vector_idx <- which(depth_vector == max(depth_vector))
 
     # Bubble CI
     bubble_ci_list <- bubble_ci_from_tclist(dflist = dflist, 
-    								  center_idx = depth_vector_idx, 
-    								  alpha_level = alpha_level,
-    								  long = long, lat = lat, 
-    								  unit_measure = unit_measure)
-    bubble_ci_inclusion_vec <- check_points_in_bubbleCI(df_points = test_true_path, 
-							    						  center_df = bubble_ci_list$centers, 
-							    						  radius_df = bubble_ci_list$radius, 
-							    						  long = long, lat = lat)
+                                      center_idx = depth_vector_idx, 
+                                      alpha_level = alpha_level,
+                                      long = long, lat = lat, 
+                                      unit_measure = unit_measure)
+    bubble_ci_inclusion_vec <- check_points_in_bubbleCI(
+                                            df_points = test_true_path, 
+                                            center_df = bubble_ci_list$centers, 
+                                            radius_df = bubble_ci_list$radius, 
+                                            long = long, lat = lat)
 
-    out_bubble_ci_list <- list('bubble_structure' = bubble_ci_list$bubble_CI_object,
-    							'area' = bubble_ci_list$area,
-    							'area_vector' = bubble_ci_list$area_vector,
-    							'in_vec' = bubble_ci_inclusion_vec)
+    out_bubble_ci_list <- list(
+                        'bubble_structure' = bubble_ci_list$bubble_CI_object,
+                        'area' = bubble_ci_list$area,
+                        'area_vector' = bubble_ci_list$area_vector,
+                        'in_vec' = bubble_ci_inclusion_vec
+                        )
     
-    # Delta Ball CI
-    out_delta_ball_list <- NULL
-
+    # deep points calculation
+    data_deep_points <- depth_curves_to_points(data_list = dflist,
+                                    alpha = alpha_level, 
+                                    dist_mat = dist_matrix_13pointsreduction, 
+                                    c_position = 1:2,
+                                    depth_vector = depth_vector,
+                                    verbose = FALSE)
 
     # Convex Hull CI
-    out_convex_hull_list <- NULL
+    out_delta_ball_list <- delta_structure(data_list = dflist, 
+                                    alpha = alpha_level, 
+                                    dist_mat = dist_matrix_13pointsreduction,
+                                    data_deep_points = data_deep_points, 
+                                    depth_vector = depth_vector,
+                                    c_position = 1:2,
+                                    area_ci_n = 2000, 
+                                    area_ci_alpha = .05, 
+                                    verbose = FALSE)
 
-    return(list('kde' = out_kde_list, 'bubble_ci' = out_bubble_ci_list,
-    			'delta_ball' = out_delta_ball_ci, 'convex_hull' = out_delta_ball_ci))
+    # Delta Ball CI
+    out_convex_hull_list <- convex_hull_structure(data_list = dflist, 
+                                    alpha = alpha_level, 
+                                    dist_mat = dist_matrix_13pointsreduction,
+                                    data_deep_points = data_deep_points, 
+                                    depth_vector = depth_vector,
+                                    c_position = 1:2,
+                                    verbose = FALSE)
+
+
+
+
+    return(list('kde' = out_kde_list, 
+                'bubble_ci' = out_bubble_ci_list,
+                'delta_ball' = out_delta_ball_ci, 
+                'convex_hull' = out_delta_ball_ci))
 
 }
 
@@ -118,40 +153,40 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' @return A list in which each sublist is a curve type and each sublist has for each element
 #' a TC with the 4 different calculated credible intervals.
 credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
-										start_idx = NULL, end_idx = NULL, long = 1, lat = 2, 
-										unit_measure = 'nautical mile', verbose = TRUE,
-										curve_type_vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')) {
-	output = list()
+                                        start_idx = NULL, end_idx = NULL, long = 1, lat = 2, 
+                                        unit_measure = 'nautical mile', verbose = TRUE,
+                                        curve_type_vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')) {
+    output = list()
 
-	for (curve_type in curve_type_vec) {
+    for (curve_type in curve_type_vec) {
 
-		# Retrieving simulated and true curves
-		output_curve <- list()
-		tc_sim_list_curve <- tc_full_sim_list[[curve_type]]
-		tc_true_path_list_curve <- tc_true_path_list[[tc_true_path_list]]
+        # Retrieving simulated and true curves
+        output_curve <- list()
+        tc_sim_list_curve <- tc_full_sim_list[[curve_type]]
+        tc_true_path_list_curve <- tc_true_path_list[[tc_true_path_list]]
 
-		# Setting starting and ending index
-		if (!is.null(start_idx)){
-			start_idx <- 1
-		}
-		if (!is.null(end_idx)){
-			end_idx <- length(tc_true_path_list_curve)
-		}
+        # Setting starting and ending index
+        if (!is.null(start_idx)){
+            start_idx <- 1
+        }
+        if (!is.null(end_idx)){
+            end_idx <- length(tc_true_path_list_curve)
+        }
 
-		# Calculating the CI for each of the simulated CI
-		for (j in c(start_idx:end_idx)) {
-			output_curve[[j]] <- credible_interval_single_tc(dflist = tc_sim_list_curve[[j]], 
-															  test_true_path = tc_true_path_list_curve[[j]],
-															  alpha_level = alpha_level,
-															  long = long, lat = lat, 
-															  unit_measure = unit_measure)
-			if (verbose == TRUE) {
-				print(paste("TC number", j, "done - ", curve_type, "type of curves."))
-			}
-		}
-		output[[curve_type]] <- output_curve
-	}
-	return(output)
+        # Calculating the CI for each of the simulated CI
+        for (j in c(start_idx:end_idx)) {
+            output_curve[[j]] <- credible_interval_single_tc(dflist = tc_sim_list_curve[[j]], 
+                                                              test_true_path = tc_true_path_list_curve[[j]],
+                                                              alpha_level = alpha_level,
+                                                              long = long, lat = lat, 
+                                                              unit_measure = unit_measure)
+            if (verbose == TRUE) {
+                print(paste("TC number", j, "done - ", curve_type, "type of curves."))
+            }
+        }
+        output[[curve_type]] <- output_curve
+    }
+    return(output)
 }
 
 
@@ -166,8 +201,8 @@ tc_true_path_list <- NULL
 
 alpha_level <- 0.1
 output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
-												tc_true_path_list = tc_true_path_list,
-												alpha_level = alpha_level)
+                                                tc_true_path_list = tc_true_path_list,
+                                                alpha_level = alpha_level)
 
 out_filename <- paste0('data/output_pipeline_alpha', as.character(alpha_level), '_', Sys.Date(), '.Rdata')
 save(output_pipeline, file = out_filename)

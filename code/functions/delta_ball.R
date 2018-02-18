@@ -4,16 +4,21 @@ library(RANN)
 library(rgeos)
 library(sp)
 
+source("code/functions/depth_function.R")
+
 #' Find the minimum distance (delta) such that all points are within delta of
 #' at least one other point.
 #'
 #' @param data continuous data frame of individual points (in each row)
+#' @param dist_mat distance matrix, calculated otherwise via euclidean distance
 #'
 #' @return dist_mat distance matrix between points
 #' @return mm_delta the minimum distance (delta)
 #' @export
-get_delta <- function(data){
-  dist_mat <- data %>% dist %>% as.matrix
+get_delta <- function(data, dist_mat = NULL){
+  if (is.null(dist_mat)){
+      dist_mat <- data %>% dist %>% as.matrix
+  }
   diag(dist_mat) <- max(dist_mat)
   mm_delta <- apply(dist_mat,MARGIN = 1, min ) %>% max
   
@@ -385,4 +390,67 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 }
 
 
+
+
+
+
+#' Preforms delta ball approach
+#'
+#' @param data_list list of hurricanes
+#' @param alpha for credible band (related to depth)
+#' @param dist_mat distance matrix (otherwise is calculated)
+#' @param data_deep_points data deep points from depth function 
+#' (otherwise calculated)
+#' @param area_ci_n number of observations to estimate area of covering
+#' @param area_ci_alpha alpha level for confidence interval of area of covering
+#' @param verbose if the distance matrix is verbose
+#' @param ... other parameters in distance calculation through 
+#' `distMatrixPath_innersq`
+#'
+#' @return structure data frame of non-ordered lines of contour
+#' @return area estimated error of contour area (float)
+#' @return area_ci area confidence interval (vector)
+#' @return delta optimal delta for covering
+#' @export
+#'
+#' @examples
+delta_structure <- function(data_list, alpha, dist_mat = NULL, 
+                            data_deep_points = NULL,
+                            c_position = 1:2,
+                            depth_vector = NULL,
+                            area_ci_n = 2000, 
+                            area_ci_alpha = .05, verbose = FALSE, ...){
+  if (is.null(data_deep_points)) {
+    # depth approach ---------------
+    data_deep_points <- depth_curves_to_points(data_list, 
+                                               alpha, 
+                                               dist_mat = dist_mat,
+                                               verbose = verbose,
+                                               c_position = c_position,
+                                               depth_vector = depth_vector,
+                                               ...)
+  }
+  # getting the minimum delta ---------------
+  
+  d_out <- get_delta(data_deep_points)
+  delta = d_out$mm_delta
+  
+  # area calculation ----------------
+  area_info = get_area(data_deep_points, 
+                       delta, n = area_ci_n, 
+                       alpha = area_ci_alpha)
+  
+  # structure creation -----------------
+  
+  structure_df <- delta_ball_wrapper(data_deep, remove_duplications = TRUE)
+  
+  out <- list()
+  out["structure"] <- structure_df
+  out["area"] <- area_info$area
+  out["area_ci"] <- area_info$area_ci
+  out["delta"] <- delta
+  # maybe also return depths?
+  
+  return(out)
+}
 

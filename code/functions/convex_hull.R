@@ -7,6 +7,9 @@ library(rgeos)
 library(geosphere)
 library(progress) 
 
+
+source("code/functions/depth_function.R")
+
 #' Get area of convex hull
 #'
 #' @param data points to find a convex hull over (assumed n x 2)
@@ -93,66 +96,42 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2) {
 }
 
 
-# 
-# n    <- 3000
-# data <- data.frame(
-#    tt = sort(runif(min = 0,max = 2*pi,n = n))
-# )
-#    
-# data <- mutate(data,
-#  xx = cos(tt) + rnorm(n = n,mean = 0,sd = .1) + 1*(tt > pi),
-#  yy = sin(tt) + rnorm(n = n,mean = 0,sd = .1),
-#  zz = cos(sqrt(tt)) + rnorm(n = n, mean = 0, sd = .1),
-#  ww = yy * tt + rnorm(n = n, mean = 0, sd = .1)
-#  )
-#  
-# data_points <- data %>% select(xx, yy)
-#  # covex hull example
-#  
-#  chull_out <- get_area_c(data_points)
-#  c_points <- chull_out$poly
-#  ggplot(data_points) + geom_point(aes(x = xx, y = yy)) +
-#    geom_path(data = c_points, 
-#              aes(x = xx, y = yy), color = "red")
-# 
-# D_mat <- as.matrix(dist(data_points))
-# diag(D_mat) <- max(D_mat)
-# delta <- max(apply(D_mat,1, min))
-# 
-# ##kernel2dsmooth requires the full space in a matrix
-# 
-# one_vs_more2d <- function(x, xx){
-#   apply(xx, 1, function(y) sqrt(sum((y - x)^2)))
-# }
-# 
-# map2d_disk <- function(data, radius = 1, nx = 100, ny = 100,
-#                        verbose = T){
-#   if (verbose) {
-#     pb <- progress_bar$new(
-#       format = "  Processing [:bar] :percent eta: :eta",
-#       total = 1000, clear = FALSE, width = 40)
-#   }
-#   
-#   grid <- matrix(nrow = ny, ncol = nx)
-# 
-#   x_range <- range(data[,1])
-#   xx      <- seq(x_range[1], x_range[2], length.out = nx)
-#   y_range <- range(data[,2])
-#   yy      <- seq(y_range[1], y_range[2], length.out = ny)
-# 
-#   for (x_index in 1:nx) {
-#     for (y_index in 1:ny) {
-#       grid[x_index, y_index] <- 1*any(
-#         one_vs_more2d(c(xx[x_index],yy[y_index]), data) < radius
-#         )
-#     }
-#     
-#     if (verbose) {
-#       pb$tick()
-#     }
-#   }
-# 
-#   return(list(grid = grid, x = xx, y = yy))
-# }
-# 
-# grid <- map2d_disk(data_points, radius = delta/2)
+
+#' Convex Hull creation
+#'
+#' @param data_list list of hurricanes
+#' @param alpha for credible band (related to depth)
+#' @param dist_mat distance matrix (otherwise is calculated)
+#' @param data_deep_points data deep points from depth function 
+#' (otherwise calculated)
+#' @param verbose if the distance matrix is verbose
+#' @param ... other parameters in distance calculation through 
+#' `distMatrixPath_innersq`
+#'
+#' @return poly data frame of structural contour
+#' @return size area of contour
+#' @export
+#'
+#' @examples
+convex_hull_structure <- function(data_list, alpha, dist_mat = NULL,
+                                  data_deep_points = NULL, 
+                                  depth_vector = NULL,
+                                  c_position = 1:2,
+                                  verbose = FALSE, ...){
+  if (is.null(data_deep_points)) {
+    # depth approach ---------------
+    data_deep_points <- depth_curves_to_points(data_list, 
+                                               alpha, 
+                                               dist_mat = dist_mat,
+                                               verbose = verbose,
+                                               c_position = c_position,
+                                               depth_vector = depth_vector,
+                                               ...)
+    
+  }
+  # getting convex hull structure and area -----------------
+  
+  chull_out <-  get_area_c(data_deep_points)
+
+  return(chull_out)
+}
