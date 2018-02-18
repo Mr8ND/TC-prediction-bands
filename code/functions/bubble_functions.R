@@ -295,6 +295,7 @@ max_cumulative_area <- function(tc_bubble_structure) {
 check_points_in_bubbleCI <- function(df_points, center_df, radius_df, long = 1, lat = 2){
 
   radius_df[is.na(radius_df)] <- 0
+  center_df[is.na(center_df)] <- 0
   center_radius_df <- cbind(center_df[, c(long,lat)], radius_df)
   n_df <- dim(df_points)[1]
   in_vec <- numeric(n_df)
