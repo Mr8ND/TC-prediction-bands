@@ -292,7 +292,7 @@ remove_duplicates_func <- function(data_raw){
   data_out <- data_raw %>% group_by(connectors) %>%
     summarize(lat = unique(lat),
               long = unique(long))
- data_out <- data.frame(data_out %>% select(lat, long))
+  data_out <- data.frame(data_out %>% dplyr::select(lat, long))
   
   return(data_out)
 }
@@ -344,7 +344,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
                        nodes[seq(from = 2,to = length(nodes),by = 2)]),
                      ncol = 2) %>% 
     data.frame() %>% 
-    mutate(X1 = as.character(X1),
+    dplyr::mutate(X1 = as.character(X1),
            X2 = as.character(X2),
            id = desired_lines$idx[seq(from = 1,to = length(nodes),by = 2)])
   
@@ -371,7 +371,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   
   num_tri <- edge_mat %>% left_join(tuples_of_tri,
                                     by = c("X1" = "X1", "X2" = "X2"))  %>%
-    group_by(id) %>% summarize(idx_tri = paste0(idx_tri,collapse = ","),
+    group_by(id) %>% dplyr::summarize(idx_tri = paste0(idx_tri,collapse = ","),
                                X1 = unique(X1),
                                X2 = unique(X2),
                                count = n())
@@ -442,13 +442,13 @@ delta_structure <- function(data_list, alpha, dist_mat = NULL,
   
   # structure creation -----------------
   
-  structure_df <- delta_ball_wrapper(data_deep, remove_duplications = TRUE)
+  structure_df <- delta_ball_wrapper(data_deep_points, remove_duplicates = TRUE)
   
   out <- list()
-  out["structure"] <- structure_df
-  out["area"] <- area_info$area
-  out["area_ci"] <- area_info$area_ci
-  out["delta"] <- delta
+  out[["structure"]] <- structure_df
+  out[["area"]] <- area_info$area
+  out[["area_ci"]] <- area_info$area_ci
+  out[["delta"]] <- delta
   # maybe also return depths?
   
   return(out)

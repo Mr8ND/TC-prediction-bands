@@ -154,7 +154,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL, long = 1
 #' cont <- extract_countour(kde_object, 5)
 #'
 extract_countour <- function(kde_obj, alpha_level) {
-  alpha <- (100 - (alpha_level*100))
+  alpha <- alpha_level*100
   cont_level <- paste0(as.character(alpha), "%")
   cont <- with(kde_obj, contourLines(x = eval.points[[1]],y = eval.points[[2]],
                                       z = estimate,levels = cont[cont_level])[[1]]) # needs to be 1-\alpha

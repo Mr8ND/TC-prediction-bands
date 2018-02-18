@@ -81,7 +81,8 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
       format = "Convert List to Data Frame [:bar] :percent eta: :eta",
       total = n_desired, clear = FALSE, width = 51)
   }
-  
+
+  data_list <- lapply(data_list, as.data.frame)
   df_out <- data_list[[1]][1,] %>% dplyr::mutate(curve = 0)
   
   for(good_curve_idx in desired_index){

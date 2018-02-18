@@ -8,7 +8,8 @@ library(plyr)
 library(rworldmap)
 library(caret)
 library(ks)
-require(gtools)
+library(gtools)
+library(RANN)
 
 
 #' Sourcing external functions ----------------------------------------
@@ -20,6 +21,7 @@ source(paste0(functions_loc, 'convex_hull.R'))
 source(paste0(functions_loc, 'delta_ball.R'))
 source(paste0(functions_loc, 'thirteen_point_compression.R'))
 source(paste0(functions_loc, 'path_functions.R'))
+source(paste0(functions_loc, 'depth_function.R'))
 
 #' Functions ---------------------------------------------------------
 
@@ -112,14 +114,14 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 
     delta_ball_inclusion_vec <- delta_ball_prop_interior(data_deep_points, 
                                                     test_true_path, 
-                                                    out_convex_hull_list$delta)
+                                                    delta_ball_structure$delta)
 
     out_delta_ball_list <- list(
         'structure' = delta_ball_structure$structure,
         'area' = delta_ball_structure$area,
         'area_ci' =  delta_ball_structure$area_ci,
         'delta' = delta_ball_structure$delta,
-        'in_vec' = delta_ball_inclusion_vec
+        'in_vec' = as.numeric(delta_ball_inclusion_vec[,1])
         )
 
 
@@ -141,7 +143,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
         'structure' = convex_hull_structure$poly_df, 
         'area' = convex_hull_structure$area, 
         'spPoly' = convex_hull_structure$spPoly,
-        'in_vec' = convex_hull_inclusion_vec
+        'in_vec' = as.numeric(convex_hull_inclusion_vec)
         )
 
 
@@ -181,7 +183,8 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
                                         start_idx = NULL, end_idx = NULL, long = 1, lat = 2, 
                                         unit_measure = 'nautical mile', verbose = TRUE,
-                                        curve_type_vec = c('auto_d', 'auto_nd', 'no_auto_d', 'no_auto_nd')) {
+                                        curve_type_vec = c('Auto_DeathRegs', 'Auto_NoDeathRegs', 
+                                                           'NoAuto_DeathRegs', 'NoAuto_NoDeathRegs')) {
     output = list()
     list_tc_names = names(tc_full_sim_list)
 

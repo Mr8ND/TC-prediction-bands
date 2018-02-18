@@ -42,12 +42,12 @@ source("code/functions/depth_function.R")
 #'             aes(x = xx, y = yy), color = "red")
 #' 
 get_area_c <- function(data){
-  c_out <- chull(data_points)
-  c_points <- data_points[c_out,]
+  c_out <- chull(data)
+  c_points <- data[c_out,]
   
   poly <- rbind(c_points,c_points[1,])    # polygon needs to be closed...
   spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)), ID = 1)))
-  return(list(poly_df = poly, size = gArea(spPoly), spPoly = spPoly))
+  return(list(poly_df = poly, area = gArea(spPoly), spPoly = spPoly))
 }
 
 
