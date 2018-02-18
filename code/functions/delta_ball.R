@@ -454,3 +454,23 @@ delta_structure <- function(data_list, alpha, dist_mat = NULL,
   return(out)
 }
 
+
+
+#' Proportion of true TC steps within delta of delta-ball CB
+#'
+#' @param raw_data_points data continuous data frame of individual points 
+#' (in each row)
+#' @param truth_points data frame of true points
+#' @param delta radius of each ball inside the union
+#'
+#' @return in_out_vec boolean vector if point is within delta of raw points
+#'
+#' @examples
+delta_ball_prop_interior <- function(raw_data_points, truth_points, delta){
+  neighbor <- nn2(data = raw_data_points, query = truth_points,
+                  k = 1, treetype = "kd")
+  in_out_vec <- (neighbor$nn.dists < delta)
+  
+  return(in_out_vec)
+}
+

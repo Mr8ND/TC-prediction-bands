@@ -104,7 +104,13 @@ thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat = TRUE,
       total = n_tc, clear = FALSE, width = 38)
   }
   
-  for (path_name in names(list_df)) {
+  if (is.null(names(list_df))){
+    iterator_names <- 1:length(list_df)
+  } else{
+    iterator_names <- names(list_df)
+  }
+
+  for (path_name in iterator_names) {
     df_pulled_out <- list_df[[path_name]][,c_position]
     out_list[[path_name]] <- thirteen_points(df_pulled_out, lonlat)
     if (verbose) {
