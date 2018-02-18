@@ -59,24 +59,14 @@ rearrange_dflist_bubble <- function(dflist, center_idx, long = 1, lat = 2) {
 #' 
 create_CI_bubble_step_track <- function(df_points_step_track, center_idx, alpha_level = .10, 
                                         output_length = "nautical mile"){
-  #This function is the engine between a dataframe of points and probabilities and calculating the points in
-  # alpha-level bubble.
-  
-  #The input is a df which should be the collection of all k^th point of n paths with the associated probability of the 
-  #path. In other words, we have n pair of points (longitude, latitude) and the probability associated to the path
-  #at each row of the dataframe.
-  #The level for the CI is supposed to be 95, but it can be tuned.
-  
-  #The output is a single dataframe, in which the closest points around the point of the maximum likely path  
-  #such that the sum of their probability is above the level requested are output.
-  
   level <- 1 - alpha_level
   n_df <- dim(df_points_step_track)[1]
 
   # Calculating distance
   distance_vec <- numeric(n_df)
   for (j in c(1:n_df)) {
-    distance_vec[j] <- uconv(distGeo(df_points_step_track[center_idx, ], df_points_step_track[j, ]), "m", output_length, "Length")
+    temp_center_idx <- which(row.names(df_points_step_track) == center_idx)
+    distance_vec[j] <- uconv(distGeo(df_points_step_track[temp_center_idx, ], df_points_step_track[j, ]), "m", output_length, "Length")
   }
   
   # In order to select the level, we select the closest (1-alpha)% of them
