@@ -12,9 +12,10 @@ library(gridExtra)
 project_location      <- ""
 functions_loc         <- "code/functions/"
 
-desired_functions <- c("path_functions.R","thirteen_point_compression.R",
-                       "projection_map.R","visualizing_color_gradient.R",
-                       "depth_function.R","bubble_points_functions2.R")
+desired_functions <- c("path_functions.R",
+                       "thirteen_point_compression.R",
+                       "projection_map.R",
+                       "depth_function.R")
 
 # Loading functions ------------------------
 
