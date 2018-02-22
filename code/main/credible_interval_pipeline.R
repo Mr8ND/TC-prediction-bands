@@ -2,8 +2,6 @@
 
 library(datamart)
 library(geosphere)
-library(datamart)
-library(geosphere)
 library(plyr)
 library(rworldmap)
 library(caret)
@@ -72,7 +70,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                                 verbose = verbose
                                                 )
     depth_vector <- depth_function(dist_matrix_13pointsreduction)
-    depth_vector_idx <- which(depth_vector == max(depth_vector))
+    depth_vector_idx <- which(depth_vector == max(depth_vector))[1]
 
     # Bubble CI
     bubble_ci_list <- bubble_ci_from_tclist(dflist = dflist, 
@@ -198,7 +196,7 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
   	if (verbose) {
 	    pb <- progress_bar$new(
-	      format = "Creadible Interval Pipeline [:bar] :percent eta: :eta",
+	      format = "Credible Interval Pipeline [:bar] :percent eta: :eta",
 	      total = length(c(start_idx:end_idx))*4, clear = FALSE, width = 51)
   	}
 
@@ -232,6 +230,11 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
 load('data/sample/Test_Sims_1000.Rdata')
 
+#complexity_mat_results <- matrix(rep(NA,16), ncol=2, nrow=8)
+#num_samples_vec <- c(50, 100, 150, 250, 350, 500, 750, 1000)
+
+
+#for (idx_sim in c(1:8)) {
 reduced_test_env <- list("AL031951" = list("Auto_DeathRegs"= list(),
                                            "Auto_NoDeathRegs" = list(),
                                            "NoAuto_DeathRegs" = list(),
@@ -243,11 +246,12 @@ reduced_test_env <- list("AL031951" = list("Auto_DeathRegs"= list(),
 
 for (name_tc in names(reduced_test_env)){
   for (curve_type in names(reduced_test_env[[name_tc]])){
-    for (i in c(1:100)){
+    for (i in c(1:num_samples_vec[idx_sim])){
       reduced_test_env[[name_tc]][[curve_type]][[i]] <- test_env[[name_tc]][[curve_type]][[i]]
     }
   }
 }
+
 
 
 # Data import step as dflist - list of lists of TCs
@@ -256,11 +260,22 @@ tc_full_sim_list <- reduced_test_env
 # Data import step for true TCs DF - test ones
 tc_true_path_list <- list("AL031951" = test_env$AL031951$Auto_DeathRegs[[1]],
                           "AL011951" = test_env$AL011951$Auto_DeathRegs[[1]])
-
 alpha_level <- 0.1
+
+start.time <- Sys.time()
 output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
                                                 tc_true_path_list = tc_true_path_list,
                                                 alpha_level = alpha_level)
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+
+print(c(idx_sim, as.numeric(time.taken)))
+
+complexity_mat_results[idx_sim,] <- c(num_samples_vec[idx_sim], as.numeric(time.taken)/2)
+#}
+
+#save(complexity_mat_results, file = 'data/complexit_mat_results.Rdata')
+
 
 out_filename <- paste0('data/output_pipeline_alpha', as.character(alpha_level), '_', Sys.Date(), '.Rdata')
 save(output_pipeline, file = out_filename)
