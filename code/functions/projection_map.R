@@ -22,7 +22,7 @@ library(ggplot2) #needed
 #' @export
 #'
 #' @examples
-right_eigenvector_compression = function(P, nu = 100, nv = 100, 
+right_eigenvector_compression <- function(P, nu = 100, nv = 100, 
                                          plot_n = 0, t = 5){
 
   out <- svd(P, nu = nu,nv = nu) # need to make P centered as scaled?
@@ -35,7 +35,7 @@ right_eigenvector_compression = function(P, nu = 100, nv = 100,
   
   if (plot_n != 0) {
     ggplot() + 
-      geom_bar(data = data.frame(y = lambda_original[1:plot_n]), 
+      ggplot2::geom_bar(data = data.frame(y = lambda_original[1:plot_n]), 
                aes(x = 1:plot_n,y = y), stat = "identity")
   }
   
@@ -64,7 +64,7 @@ right_eigenvector_compression = function(P, nu = 100, nv = 100,
 #' @export
 #'
 #' @examples
-new_points_projection = function(P_test,psi_map_train,lambda_train){
+new_points_projection <- function(P_test, psi_map_train, lambda_train){
 
   psi_over_lambda <- psi_map_train %*% diag(1/lambda_train) 
   psi_map_estimated <- P_test %*% psi_over_lambda
@@ -84,8 +84,8 @@ new_points_projection = function(P_test,psi_map_train,lambda_train){
 #' @export
 #'
 #' @examples
-kernel_estimate = function(train,test,k){
-  dists <- kknn.dist(train, test, k = k, distance = 3)    
+kernel_estimate <- function(train,test,k){
+  dists <- kknn::kknn.dist(train, test, k = k, distance = 3)    
   dists_desired <- dists[[2]][,k]
   
   d <- ncol(train)
@@ -94,7 +94,7 @@ kernel_estimate = function(train,test,k){
   
   p <- d/(n * c_d * dists_desired^d)
   
-  return(list(p = p,dists_desired = dists_desired))
+  return(list(p = p, dists_desired = dists_desired))
 }
 
 

@@ -110,7 +110,7 @@ data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
 }
 
 
-#' Visualize the TC paths
+#' Visualize the TC paths with weights colored
 #'
 #'	Note / TODO: 
 #'	1. Function currently uses geom_path - assumed euclidean space for map :/
@@ -129,7 +129,7 @@ data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
 #' @export
 #'
 #' @examples
-ggvis_paths <- function(data_out, zoom = 4,
+ggvis_paths_sca_weight <- function(data_out, zoom = 4,
 						test_color_power = 1/3, 
 						test_color_low = "white",
 						test_color_high = "red",
@@ -141,9 +141,9 @@ ggvis_paths <- function(data_out, zoom = 4,
 
 		ocean <- c(left = lonrange[1], bottom = latrange[1],
 					right = lonrange[2], top = latrange[2])
-		map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+		map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 		
-		base_graph <- ggmap(map)
+		base_graph <- ggmap::ggmap(map)
 
 	} 
 
@@ -159,10 +159,12 @@ ggvis_paths <- function(data_out, zoom = 4,
 
 	# final map:
 
-	ggout <- base_graph + geom_path(data = data_out, aes(x = long, y = lat, 
-							  color = weight_discrete, group = curve)) +
-				scale_color_manual(values = colors_rw) +
-				labs(color = paste0("weights^(",round(test_color_power,2),")"))
+	ggout <- base_graph + ggplot2::geom_path(data = data_out, 
+	                                         aes(x = long, y = lat, 
+	                                             color = weight_discrete, 
+	                                             group = curve)) +
+				ggplot2::scale_color_manual(values = colors_rw) +
+				ggplot2::labs(color = paste0("weights^(",round(test_color_power,2),")"))
 
 	return(ggout)
 }
@@ -179,7 +181,7 @@ ggvis_paths <- function(data_out, zoom = 4,
 data_projection <- function(scp_output){
 	n <- dim(scp_output$test_projected)[1]
 	test_df <- scp_output$test_projected %>% data.frame %>% 
-				mutate(prob = scp_output$test_p_estimate,
+				dpylr::mutate(prob = scp_output$test_p_estimate,
 					   weight = scp_output$test_weight,
 					   curve = 1:n)
 	train_df <- scp_output$train_projected %>% data.frame
@@ -208,8 +210,9 @@ color_function <- function(weights_in,
 
 	w_func <- function(x){return(x^test_color_power)}
 
-	breaks <- cut(w_func(weights_in),breaks = c(0, 1:10/10))
-	colors_rw <- colorRampPalette(c(test_color_low, test_color_high))(10)
+	breaks <- cut(w_func(weights_in), breaks = c(0, 1:10/10))
+	colors_rw <- grDevices::colorRampPalette(c(test_color_low, 
+	                                           test_color_high))(10)
 
 	return(list(breaks = breaks, colors_rw = colors_rw))
 }
@@ -247,18 +250,18 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
 							test_color_low = test_color_low,
 							test_color_high = test_color_high)
 
-	test_df <- test_df %>% mutate(weight_discrete = color_out$breaks)
+	test_df <- test_df %>% dplyr::mutate(weight_discrete = color_out$breaks)
 	colors_rw <- color_out$colors_rw
 
 
-	ggout <- ggplot() +
-				geom_point(data = train_df, aes(x = X1, y = X2),
+	ggout <- ggplot2::ggplot() +
+				ggplot2::geom_point(data = train_df, aes(x = X1, y = X2),
 						   alpha = train_alpha, color = 'black') +
-				geom_point(data = test_df, 
+	      ggplot2::geom_point(data = test_df, 
 						   aes(x = X1, y = X2, fill = weight_discrete),
 						   shape = 21, color = "black") +
-				scale_fill_manual(values = colors_rw) + 
-				labs(fill = paste0("weights^(",round(test_color_power,2),")"))
+	      ggplot2::scale_fill_manual(values = colors_rw) + 
+	      ggplot2::labs(fill = paste0("weights^(",round(test_color_power,2),")"))
 
 
     return(ggout)
@@ -309,9 +312,9 @@ ggvis_all <- function(scp_output, test_list,
 							 test_color_low = test_color_low,
 							 test_color_high = test_color_high)
 
-	grid.arrange(gg_proj, gg_path, nrow = 1)
+	gridExtra::grid.arrange(gg_proj, gg_path, nrow = 1)
 
-	return(list(gg_path = gg_path,gg_proj = gg_proj))
+	return(list(gg_path = gg_path, gg_proj = gg_proj))
 
 }
 

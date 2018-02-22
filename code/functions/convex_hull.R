@@ -42,11 +42,11 @@ source("code/functions/depth_function.R")
 #'             aes(x = xx, y = yy), color = "red")
 #' 
 get_area_c <- function(data){
-  c_out <- chull(data)
+  c_out <- grDevices::chull(data)
   c_points <- data[c_out,]
   
   poly <- rbind(c_points,c_points[1,])    # polygon needs to be closed...
-  spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)), ID = 1)))
+  spPoly <- sp::SpatialPolygons(list(Polygons(list(Polygon(poly)), ID = 1)))
   return(list(poly_df = poly, area = gArea(spPoly), spPoly = spPoly))
 }
 
@@ -89,7 +89,8 @@ get_area_c <- function(data){
 #'
 points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 
-  points_in_poly <- point.in.polygon(predict_mat[, long], predict_mat[, lat],
+  points_in_poly <- sp::point.in.polygon(predict_mat[, long], 
+                                         predict_mat[, lat],
                                 spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
                                 spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
 
