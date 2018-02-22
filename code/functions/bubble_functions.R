@@ -205,7 +205,7 @@ error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2,
   radius <- sapply(bubble_steps_CI,function(df) max(df$distance_vec))
   
   # Calculating positive and negative diretions
-  out_mat <- distAlongP(data.df = centers)
+  out_mat <- distAlongP(data_df = centers)
   bearing <- out_mat[[2]]
   bearing_orthog <- bearing + 90
   

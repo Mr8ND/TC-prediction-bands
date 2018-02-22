@@ -12,7 +12,7 @@ library(RANN)
 
 #' Sourcing external functions ----------------------------------------
 
-functions_loc = 'code/functions/'
+functions_loc <- 'code/functions/'
 source(paste0(functions_loc, 'kde_functions.R'))
 source(paste0(functions_loc, 'bubble_functions.R'))
 source(paste0(functions_loc, 'convex_hull.R'))
@@ -46,10 +46,12 @@ source(paste0(functions_loc, 'depth_function.R'))
 #' TC or not.
 credible_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
                                         long = 1, lat = 2, verbose = FALSE,
+                                        kde_grid_size = rep(1000,2),
                                         unit_measure = 'nautical mile'){
 
     # KDE CI
     kde_ci_list <- kde_from_tclist(dflist = dflist, 
+    								grid_size = kde_grid_size,
                                     alpha_level = alpha_level)
     kde_predict_mat <- predict_kde_object(kde_obj = kde_ci_list$kde_object, 
                         predict_mat = test_true_path, 
@@ -181,6 +183,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
                                         start_idx = NULL, end_idx = NULL, long = 1, lat = 2, 
                                         unit_measure = 'nautical mile', verbose = TRUE,
+                                        kde_grid_size = rep(1000,2),
                                         curve_type_vec = c('Auto_DeathRegs', 'Auto_NoDeathRegs', 
                                                            'NoAuto_DeathRegs', 'NoAuto_NoDeathRegs')) {
     output = list()
@@ -213,7 +216,8 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
                                                          alpha_level = alpha_level,
                                                          long = long, lat = lat, 
                                                          unit_measure = unit_measure,
-                                                         verbose = FALSE)
+                                                         verbose = FALSE,
+                                                         kde_grid_size = kde_grid_size)
       }
       if (verbose) {
         pb$tick()
