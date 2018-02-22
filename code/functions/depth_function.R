@@ -36,8 +36,8 @@ depth_function <- function(dist_matrix){
     obs_column <- dist_matrix[-obs_index,obs_index]
     obs_row    <- dist_matrix[obs_index,-obs_index]
     
-    obs_column_matrix <- matrix(rep(obs_column, N - 1),nrow = N - 1)
-    obs_row_matrix    <- matrix(rep(obs_row, N - 1),nrow = N - 1, byrow = T)
+    obs_column_matrix <- matrix(rep(obs_column, N - 1), nrow = N - 1)
+    obs_row_matrix    <- matrix(rep(obs_row, N - 1), nrow = N - 1, byrow = T)
         
     obs_combo_array <- array(0, dim = c(N - 1, N - 1, 2))
     obs_combo_array[,,1] <- matrix(rep(obs_column, N - 1), nrow = N - 1)
@@ -71,13 +71,13 @@ depth_function <- function(dist_matrix){
 #' @examples
 selected_paths_to_df <- function(data_list, desired_index = NULL, 
                                  verbose = TRUE){
-  if (is.null(desired_index)){
+  if (is.null(desired_index)) {
     desired_index = 1:length(data_list)
   }
   
   if (verbose) {
     n_desired = length(desired_index)
-    pb <- progress_bar$new(
+    pb <- progress::progress_bar$new(
       format = "Convert List to Data Frame [:bar] :percent eta: :eta",
       total = n_desired, clear = FALSE, width = 51)
   }
@@ -85,7 +85,7 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
   data_list <- lapply(data_list, as.data.frame)
   df_out <- data_list[[1]][1,] %>% dplyr::mutate(curve = 0)
   
-  for(good_curve_idx in desired_index){
+  for (good_curve_idx in desired_index) {
     df_out <- rbind(df_out, 
                     data_list[[good_curve_idx]] %>%
                       mutate(curve = good_curve_idx))

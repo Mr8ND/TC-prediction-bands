@@ -16,7 +16,7 @@ source("code/functions/depth_function.R")
 #' @return mm_delta the minimum distance (delta)
 #' @export
 get_delta <- function(data, dist_mat = NULL){
-  if (is.null(dist_mat)){
+  if (is.null(dist_mat)) {
       dist_mat <- data %>% dist %>% as.matrix
   }
   diag(dist_mat) <- max(dist_mat)
@@ -39,7 +39,7 @@ get_delta <- function(data, dist_mat = NULL){
 #' @examples
 get_box_points <- function(data, n = 10000){
   # get uniform box of
-  ranges <- sapply(data,range)
+  ranges <- sapply(data, range)
   
   box_points <- data.frame(x = runif(n = n,
                                      min = ranges[1,1],
@@ -68,7 +68,7 @@ get_box_points <- function(data, n = 10000){
 #' @examples
 get_area_inner <- function(data, query, size, delta, alpha = .05){
   n = nrow(query)
-  neighbor <- nn2(data = data, query = query,
+  neighbor <- RANN::nn2(data = data, query = query,
                   k = 1, treetype = "kd")
   
   prop <- mean(neighbor$nn.dists < delta)
@@ -146,7 +146,7 @@ remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
                                function(row) paste0(row[1],"~",row[2]))
   
   removed_values_dat <- removed_mat %>%
-    group_by(idx) %>% summarize(first = paste0("(",x[1],",", y[1],")"),
+    group_by(idx) %>% dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
                                 second = paste0("(",x[2],",", y[2],")"),
                                 combo = paste0(first,"~",second),
                                 combo2 = paste0(second,"~",first))
@@ -289,7 +289,7 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
 remove_duplicates_func <- function(data_raw){
   data_raw$connectors <- apply(data_raw,1, function(row) paste0(row[1],",",row[2]))
   
-  data_out <- data_raw %>% group_by(connectors) %>%
+  data_out <- data_raw %>% dplyr::group_by(connectors) %>%
     dplyr::summarize(lat = unique(lat),
               long = unique(long))
   data_out <- data.frame(data_out %>% dplyr::select(lat, long))
@@ -369,7 +369,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   
   # what type of edge are you?
   
-  num_tri <- edge_mat %>% left_join(tuples_of_tri,
+  num_tri <- edge_mat %>% dplyr::left_join(tuples_of_tri,
                                     by = c("X1" = "X1", "X2" = "X2"))  %>%
     group_by(id) %>% dplyr::summarize(idx_tri = paste0(idx_tri,collapse = ","),
                                X1 = unique(X1),
@@ -382,7 +382,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
                               nt = sort(unique(num_tri$id)))
   
   select_lines <- (num_tri[num_tri$count == 1, c("id")] %>% 
-                     left_join(index_mapping, by = c("id" = "nt")))$dl
+                     dplyr::left_join(index_mapping, by = c("id" = "nt")))$dl
   
   output_lines <- desired_lines %>% filter(idx %in% select_lines)
   names(output_lines)[1:2] = c("lat","lon")

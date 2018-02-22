@@ -57,18 +57,18 @@ thirteen_points <- function(df2, lonlat = TRUE,
   
   new_13compression <- data.frame(matrix(0, nrow = 13, ncol = 2))
   index <- 2
-  for (step in 1:length(cum_steps)){
+  for (step in 1:length(cum_steps)) {
     step_full_dist <- cum_steps[step]
     start <- sum(cum_dist <= step_full_dist) + 1
     start_point <- df2[start,]
     start_bearing <- (bearing[start])
     if (start != 1) {
       step_dist <- step_full_dist - cum_dist[start - 1]
-    }else{# if no points other than the first is correct
+    }else{ # if no points other than the first is correct
       step_dist <- step_full_dist
     }    
-    new_point <- destPoint(start_point, start_bearing,
-                           uconv(step_dist, output_length,
+    new_point <- geosphere::destPoint(start_point, start_bearing,
+                           datamart::uconv(step_dist, output_length,
                                  "m", "Length"))
     new_13compression[index,] <- new_point
     index <- index + 1
@@ -99,12 +99,12 @@ thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat = TRUE,
   n_tc = length(list_df)
   
   if (verbose) {
-    pb <- progress_bar$new(
+    pb <- progress::progress_bar$new(
       format = "Compressing [:bar] :percent eta: :eta",
       total = n_tc, clear = FALSE, width = 38)
   }
   
-  if (is.null(names(list_df))){
+  if (is.null(names(list_df))) {
     iterator_names <- 1:length(list_df)
   } else{
     iterator_names <- names(list_df)

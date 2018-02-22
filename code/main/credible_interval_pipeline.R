@@ -99,7 +99,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     depth_vector = depth_vector,
                                     verbose = verbose)
 
-    # Convex Hull CI
+    # Delta Ball CI
     delta_ball_structure <- delta_structure(data_list = dflist, 
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction,
@@ -123,7 +123,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
         )
 
 
-    # Delta Ball CI
+    # Convex Hull CI
     convex_hull_structure <- convex_hull_structure(data_list = dflist, 
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction,
@@ -190,13 +190,13 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
     if (is.null(start_idx)){
         start_idx <- 1
     }
-    if (is.null(end_idx)){
+    if (is.null(end_idx)) {
         end_idx <- length(tc_true_path_list)
     }
 
   	if (verbose) {
-	    pb <- progress_bar$new(
-	      format = "Credible Interval Pipeline [:bar] :percent eta: :eta",
+	    pb <- progress::progress_bar$new(
+	      format = "Creadible Interval Pipeline [:bar] :percent eta: :eta",
 	      total = length(c(start_idx:end_idx))*4, clear = FALSE, width = 51)
   	}
 
@@ -215,7 +215,7 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
                                                          unit_measure = unit_measure,
                                                          verbose = FALSE)
       }
-      if (verbose){
+      if (verbose) {
         pb$tick()
       }
       output[[j]] <- output_tc
@@ -239,14 +239,14 @@ reduced_test_env <- list("AL031951" = list("Auto_DeathRegs"= list(),
                                            "Auto_NoDeathRegs" = list(),
                                            "NoAuto_DeathRegs" = list(),
                                            "NoAuto_NoDeathRegs" = list()),
-                         "AL011951" = list("Auto_DeathRegs"= list(),
+                         "AL011951" = list("Auto_DeathRegs" = list(),
                                            "Auto_NoDeathRegs" = list(),
                                            "NoAuto_DeathRegs" = list(),
                                            "NoAuto_NoDeathRegs" = list()))
 
-for (name_tc in names(reduced_test_env)){
-  for (curve_type in names(reduced_test_env[[name_tc]])){
-    for (i in c(1:num_samples_vec[idx_sim])){
+for (name_tc in names(reduced_test_env)) {
+  for (curve_type in names(reduced_test_env[[name_tc]])) {
+    for (i in c(1:100)) { # or num_samples_vec[idx_sim] if we are testing for complexity
       reduced_test_env[[name_tc]][[curve_type]][[i]] <- test_env[[name_tc]][[curve_type]][[i]]
     }
   }
