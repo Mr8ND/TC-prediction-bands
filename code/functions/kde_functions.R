@@ -69,13 +69,13 @@ flatten_tc_list = function(dflist) {
 #' 
 #' kde_object <- fit_kde_object(dfmat)
 #'
-fit_kde_object = function(dfmat, h_band = NULL, long = 1, lat = 2, grid_size = 1000) {
+fit_kde_object = function(dfmat, h_band = NULL, long = 1, lat = 2, grid_size = rep(1000,2)) {
   
   if (!is.null(h_band)) {
     h.mat <- diag(2)*h_band
-    kde_obj <- kde(dfmat[ ,c(long,lat)], gridsize = c(grid_size), H = h.mat)
+    kde_obj <- ks::kde(dfmat[ ,c(long,lat)], gridsize = c(grid_size), H = h.mat)
   } else {
-    kde_obj <- kde(dfmat[ ,c(long,lat)], gridsize = c(grid_size))
+    kde_obj <- ks::kde(dfmat[ ,c(long,lat)], gridsize = c(grid_size))
   }
   return(kde_obj)
 }
@@ -259,7 +259,7 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 #' @return Full KDE Object
 #' 
 kde_from_tclist <- function(dflist, alpha_level, h_band = NULL, long = 1, lat = 2,
-                                    grid_size = 1000) {
+                                    grid_size = rep(1000,2)) {
 
   dfmat <- flatten_tc_list(dflist)
   kde_object <- fit_kde_object(dfmat, h_band = h_band, grid_size = grid_size, 
