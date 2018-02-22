@@ -3,8 +3,6 @@ library(geosphere)
 library(ggmap)
 library(tidyverse)
 library(ks)
-library(GGally)
-library(gridExtra)
 
 
 # Locations ------------------------
@@ -80,13 +78,13 @@ ggvis_paths <- function(data_out, zoom = 4,
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
-    map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+    map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
-    base_graph <- ggmap(map)
+    base_graph <- ggmap::ggmap(map)
   } 
   
   # final map ---------------
-  ggout <- base_graph + geom_path(data = data_out, 
+  ggout <- base_graph + ggplot2::geom_path(data = data_out, 
                                   aes(x = long, y = lat, group = curve),
                                   alpha = alpha) 
   
@@ -135,14 +133,14 @@ ggvis_kde_contour <- function(level_contour_df, data_plot, base_graph = NULL){
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
-    map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+    map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
-    base_graph <- ggmap(map)
+    base_graph <- ggmap::ggmap(map)
   } 
   
   ggout <- base_graph  +
-    geom_point(data_plot, aes(x = long, y = lat)) +
-    geom_path(aes(x, y), data = level_contour_df)
+    ggplot2::geom_point(data_plot, aes(x = long, y = lat)) +
+    ggplot2::geom_path(aes(x, y), data = level_contour_df)
   
   return(ggout)
 }
@@ -168,13 +166,13 @@ gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL){
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
-    map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+    map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
-    base_graph <- ggmap(map)
+    base_graph <- ggmap::ggmap(map)
   } 
   
   ggout <- base_graph + 
-    geom_line(data = output_lines, aes(x = lat, y = lon, group = idx))
+    ggplot2::geom_line(data = output_lines, aes(x = lat, y = lon, group = idx))
   
   return(ggout)
 }
@@ -229,7 +227,7 @@ bubble_data_plot_prep <- function(bubble_step){
 bubble_data_plot_lines <- function(bubble_plot_data,gg_add = NULL,
                                    color = "pink", linewidth = 1, ...){
   data_plot_lower <- bubble_plot_data$lower
-  names(data_plot_lower)[1:2] <- c("lat", "lo")
+  names(data_plot_lower)[1:2] <- c("lat", "lon")
   data_plot_upper <- bubble_plot_data$upper
   names(data_plot_upper)[1:2] <- c("lat", "lon")
   
@@ -241,16 +239,16 @@ bubble_data_plot_lines <- function(bubble_plot_data,gg_add = NULL,
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
-    map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+    map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
-    gg_add <- ggmap(map)
+    gg_add <- ggmap::ggmap(map)
     
   } 
   
   out <- gg_add + 
-    geom_path(data = data_plot_lower, aes(x = lat, y = lon), 
+    ggplot2::geom_path(data = data_plot_lower, aes(x = lat, y = lon), 
               color = color, linewidth = linewidth, ...) +
-    geom_path(data = data_plot_upper, aes(x = lat, y = lon), 
+    ggplot2::geom_path(data = data_plot_upper, aes(x = lat, y = lon), 
               color = color, linewidth = linewidth, ...) 
   
   return(out)
@@ -280,13 +278,13 @@ bubble_data_plot_prep_center <- function(bubble_plot_data, gg_add = NULL,
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
-    map   <- get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+    map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
-    gg_add <- ggmap(map)
+    gg_add <- ggmap::ggmap(map)
   } 
   
   out <- gg_add + 
-    geom_point(data = center, aes(x = lat, y = lon),
+    ggplot2::geom_point(data = center, aes(x = lat, y = lon),
                color = color, ...)
 }
 
