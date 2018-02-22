@@ -1,5 +1,4 @@
 suppressMessages(suppressWarnings(library(lubridate))) 
-suppressMessages(suppressWarnings(library(plyr)))
 suppressMessages(suppressWarnings(library(geosphere)))
 
 #' Sanitize TC data for analysis
@@ -20,8 +19,8 @@ data_sanitize <- function(df){
   
   # Give an error if obs not all six hours apart
   Sys.setenv(TZ = "UTC")
-  dates <- ymd(df$date)
-  hour(dates) <- df$time / 100
+  dates <- lubridate::ymd(df$date)
+  lubridate::hour(dates) <- df$time / 100
   stopifnot(identical(as.numeric(diff(dates)), rep(6, length(dates) - 1)))
   
   # Data frame containing only lat and long of six hour obs
@@ -75,8 +74,8 @@ get_bearing <- function(lat, long){
   n <- length(long)
   
   # Compute bearings of all consecutive observations, from 1:2 to n-1:n
-  bear <- bearing(cbind(long[1:(n-1)], lat[1:(n-1)]),
-                  cbind(long[2:n], lat[2:n]))
+  bear <- geosphere::bearing(cbind(long[1:(n-1)], lat[1:(n-1)]),
+                             cbind(long[2:n], lat[2:n]))
   
   # Ensure 0 <= bearing < 360
   bear[bear < 0] <- bear[bear < 0] + 360
@@ -150,8 +149,8 @@ get_speed <- function(lat, long){
   n <- length(lat)
   
   # Distance between consecutive TC observations 
-  dist <- distGeo(cbind(long[1:(n-1)], lat[1:(n-1)]),
-                  cbind(long[2:n], lat[2:n]))
+  dist <- geosphere::distGeo(cbind(long[1:(n-1)], lat[1:(n-1)]),
+                             cbind(long[2:n], lat[2:n]))
   dist <- c(dist, NA)
   
   # Compute/append estimate of speed as distance (in meters) divided by 6 (hours)
@@ -408,7 +407,7 @@ get_bearing_speed_regs <- function(dflist_unlist, auto){
 
 #' Train models for TC simulations
 #' 
-#' @description ...
+#' @description Fit bearing, speed, and death models for TC simulations
 #' 
 #' @details Models fit on training TC data: 
 #' \texttt{bearing_regs_auto}: block-specific AR models for bearing

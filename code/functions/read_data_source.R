@@ -45,10 +45,10 @@ pull_data <- function(){
   hurdat <- readLines('http://www.aoml.noaa.gov/hrd/hurdat/hurdat2-1851-2016-apr2017.txt')
 
   # Get entries w/ 3 commas in line (signifying a TC title)
-  tc_indices <- which(str_count(hurdat, ",") == 3)
+  tc_indices <- which(stringr::str_count(hurdat, ",") == 3)
 
   # Get names of TCs
-  tc_names <- str_extract(hurdat[tc_indices], "[^,]+")
+  tc_names <- stringr::str_extract(hurdat[tc_indices], "[^,]+")
 
   # Get order of first TC in year >= 1951
   first_tc <- which(substr(tc_names, 5, 8) >= 1951)[1]
@@ -60,7 +60,7 @@ pull_data <- function(){
   tc_indices <- which(str_count(hurdat, ",") == 3)
   
   # Get names of TCs in years >= 1951
-  tc_names <- str_extract(hurdat[tc_indices], "[^,]+")
+  tc_names <- stringr::str_extract(hurdat[tc_indices], "[^,]+")
 
   # Split data into list with one entry for each TC's data, named by TC
   tc_list <- split(hurdat, findInterval(1:length(hurdat), tc_indices))
@@ -71,7 +71,7 @@ pull_data <- function(){
 
   # Modify TC vectors into data frames
   tc_list <- lapply(tc_list, 
-                    FUN = function(x) cSplit(data.frame(x), 
+                    FUN = function(x) splitstackshape::cSplit(data.frame(x), 
                                              splitCols = colnames(data.frame(x)), 
                                              sep = ","))
 

@@ -1,4 +1,5 @@
 suppressMessages(suppressWarnings(library(progress))) 
+suppressMessages(suppressWarnings(library(geosphere)))
 
 #' Simulate whether to stop growing TC
 #' 
@@ -158,10 +159,10 @@ update_curve_inner <- function(path){
   # Append empty new row to path
   path <- rbind(path, rep(NA, ncol(path)))
   
-  # Project forward to new point. Append to .
-  new_point <- destPoint(p = c(path$long[n_row], path$lat[n_row]), 
-                         b = path$bearing[n_row], 
-                         d = path$speed[n_row]*6) # for 6 hours
+  # Project forward to new point. Append to path
+  new_point <- geosphere::destPoint(p = c(path$long[n_row], path$lat[n_row]), 
+                                    b = path$bearing[n_row], 
+                                    d = path$speed[n_row]*6) # for 6 hours
   
   # Insert projected longitude/latitude as new point
   path[n_row + 1, 'long'] <- new_point[1, 'lon']
@@ -352,7 +353,7 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
         
         param_index <- 1
         if(verbose){
-          pb <- progress_bar$new(
+          pb <- progress::progress_bar$new(
             format = "generating AR, death reg TCs [:bar] :current / :total", 
             total = length(test), clear = F, show_after = 0)
           invisible(pb$tick(0))
@@ -362,7 +363,7 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
        
         param_index <- 2 
         if(verbose){
-          pb <- progress_bar$new(
+          pb <- progress::progress_bar$new(
             format = "generating AR, no death reg TCs [:bar] :current / :total", 
             total = length(test), clear = F, show_after = 0)
           invisible(pb$tick(0))
@@ -372,7 +373,7 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
         
         param_index <- 3
         if(verbose){
-          pb <- progress_bar$new(
+          pb <- progress::progress_bar$new(
             format = "generating non-AR, death reg TCs [:bar] :current / :total", 
             total = length(test), clear = F, show_after = 0)
           invisible(pb$tick(0))
@@ -382,7 +383,7 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
         
         param_index <- 4 
         if(verbose){
-          pb <- progress_bar$new(
+          pb <- progress::progress_bar$new(
             format = "generating non-AR, no death reg TCs [:bar] :current / :total", 
             total = length(test), clear = F, show_after = 0)
           invisible(pb$tick(0))
