@@ -23,6 +23,7 @@
 #' @return Resulting dataframe from a row-wise addition of all TC dataframes.
 #' 
 #' @examples
+#' \dontrun{
 #' set.seed(8192)
 #' dflist <- list()
 #' for (i in c(1:10)) {
@@ -33,7 +34,7 @@
 #' 
 #' flatten_df <- flatten_tc_list(dflist)
 #' dim(flatten_df)
-#' 
+#' }
 flatten_tc_list = function(dflist) {
 
   dfmat <- dflist[[1]]
@@ -63,13 +64,14 @@ flatten_tc_list = function(dflist) {
 #' @return KDE object fitted to the dfmat dataframe.
 #' 
 #' @examples
+#' \dontrun{
 #' set.seed(8192)
 #' x <- 2^rnorm(100)
 #' y <- rnorm(100)
 #' dfmat <- cbind(x,y)
 #' 
 #' kde_object <- fit_kde_object(dfmat)
-#'
+#'}
 fit_kde_object = function(dfmat, h_band = NULL, long = 1, lat = 2, 
                           grid_size = rep(1000,2)) {
   
@@ -103,6 +105,7 @@ fit_kde_object = function(dfmat, h_band = NULL, long = 1, lat = 2,
 #' on whether the point is within a specific 1-alpha_level countour.
 #'
 #' @examples
+#' \dontrun{
 #' set.seed(8192)
 #' 
 #' x1 <- 2^rnorm(100)
@@ -115,13 +118,13 @@ fit_kde_object = function(dfmat, h_band = NULL, long = 1, lat = 2,
 #' predict_mat <- cbind(x1,y1)
 #' 
 #' out_mat <- predict_kde_object(kde_object, predict_mat)
-#' 
+#' }
 predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL, 
                               long = 1, lat = 2) {
   
   # The prediction mat is formatted and the prediction is performed
   predict_mat_kdefit <- predict_mat[ ,c(long,lat)]
-  predict_vec <- predict(kde_obj, x = predict_mat_kdefit, zero.flag = TRUE)
+  predict_vec <- stats::predict(kde_obj, x = predict_mat_kdefit, zero.flag = TRUE)
   out_mat <- cbind(predict_mat, predict_vec)
   
   # If the alpha level is selected, then the function will select the right 
@@ -152,6 +155,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
 #' @return Countour at (100-level) for the kde object.
 #' 
 #' @examples
+#' \dontrun{
 #' set.seed(8192)
 #' 
 #' x1 <- 2^rnorm(100)
@@ -160,6 +164,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
 #' kde_object <- ks::kde(dfmat)
 #' 
 #' cont <- extract_countour(kde_object, 5)
+#' }
 #' @export
 extract_countour <- function(kde_obj, alpha_level) {
   alpha <- alpha_level*100
@@ -182,6 +187,7 @@ extract_countour <- function(kde_obj, alpha_level) {
 #' @return Area of the kde contour object.
 #' 
 #' @examples
+#' \dontrun{
 #' set.seed(8192)
 #' 
 #' x1 <- 2^rnorm(100)
@@ -193,7 +199,7 @@ extract_countour <- function(kde_obj, alpha_level) {
 #'                                    z = estimate,levels = cont["5%"])[[1]])
 #' 
 #' cont_area <- kde_contour_area(cont)
-#'
+#'}
 kde_contour_area <- function(cont) {
   poly <- with(cont, data.frame(x,y))
   poly <- rbind(poly, poly[1, ])    # polygon needs to be closed
@@ -221,6 +227,7 @@ kde_contour_area <- function(cont) {
 #' 0 is not. Dimensionality is the same as the number of rows in predict_mat
 #' 
 #' @examples
+#' \dontrun{
 #' set.seed(8192)
 #' 
 #' x1 <- 2^rnorm(100)
@@ -235,7 +242,7 @@ kde_contour_area <- function(cont) {
 #' predict_mat <- cbind(x1,y1)
 #' 
 #' position_wrt_contour <- points_in_contour(cont, predict_mat)
-#'
+#'}
 points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 
   poly <- with(cont, data.frame(x,y))
@@ -254,12 +261,12 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 
 #' Contour and area from TC list
 #' 
-#' @description 
+#' @description
 #' This function calculates contour points and area from list of generated TC.
 #'
 #' @param dflist list of TC dataframes
 #' @param alpha_level contour level, an integer from 1 to 99. For example, a
-#' level 5 gives back 95% contour
+#' level 5\% gives back 95\% contour
 #' @param h_band optional argument for the bandwidth of the kde object. If NULL, 
 #' the optimal band would be selected through the \code{\link[ks]{kde}} 
 #' function. Default is NULL.

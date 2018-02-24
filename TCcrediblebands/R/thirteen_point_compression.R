@@ -19,6 +19,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df2 <-data.frame(matrix(
 #'                  c(27.5, -87.5,
 #'                  27.6, -87.9,
@@ -41,6 +42,7 @@
 #' lines(df2[,2], df2[,1], col = "red")
 #' news_df2 <- thirteen_points(df2, lonlat = F)
 #' points(news_df2[,1], news_df2[,2], col = "red")
+#' }
 thirteen_points <- function(df2, lonlat = TRUE,
                             output_length = "nautical mile"){
  

@@ -16,6 +16,7 @@ Resulting dataframe from a row-wise addition of all TC dataframes.
 Converts list of dataframes to single dataframes row-wise
 }
 \examples{
+\dontrun{
 set.seed(8192)
 dflist <- list()
 for (i in c(1:10)) {
@@ -26,5 +27,5 @@ for (i in c(1:10)) {
 
 flatten_df <- flatten_tc_list(dflist)
 dim(flatten_df)
-
+}
 }

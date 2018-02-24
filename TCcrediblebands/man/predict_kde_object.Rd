@@ -31,6 +31,7 @@ This function evaluates a matrix of geographical points with respect to a KDE
 object.
 }
 \examples{
+\dontrun{
 set.seed(8192)
 
 x1 <- 2^rnorm(100)
@@ -43,5 +44,5 @@ y1 <- rnorm(100)
 predict_mat <- cbind(x1,y1)
 
 out_mat <- predict_kde_object(kde_object, predict_mat)
-
+}
 }

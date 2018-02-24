@@ -19,7 +19,7 @@
 #' @export
 get_delta <- function(data, dist_mat = NULL){
   if (is.null(dist_mat)) {
-      dist_mat <- data %>% dist %>% as.matrix
+      dist_mat <- data %>% stats::dist %>% as.matrix
   }
   diag(dist_mat) <- max(dist_mat)
   mm_delta <- apply(dist_mat,MARGIN = 1, min ) %>% max
@@ -44,10 +44,10 @@ get_box_points <- function(data, n = 10000){
   # get points drawn uniformly from box around data points
   ranges <- sapply(data, range)
   
-  box_points <- data.frame(x = runif(n = n,
+  box_points <- data.frame(x = stats::runif(n = n,
                                      min = ranges[1,1],
                                      max = ranges[2,1]),
-                           y = runif(n = n,
+                           y = stats::runif(n = n,
                                      min = ranges[1,2],
                                      max = ranges[2,2])
   )
@@ -75,7 +75,7 @@ get_area_inner <- function(data, query, size, delta, alpha = .05){
                   k = 1, treetype = "kd")
   
   prop <- mean(neighbor$nn.dists < delta)
-  prop_ci <- prop + c(-1,1) * qnorm(1 - alpha/2) * sqrt( (1 - prop) * prop / n )
+  prop_ci <- prop + c(-1,1) * stats::qnorm(1 - alpha/2) * sqrt( (1 - prop) * prop / n )
   
   area <- prop * size 
   area_ci <- prop_ci * size
@@ -145,6 +145,10 @@ get_tri_matrix <- function(dtri_data_tri){
 #'
 #' @return data frame with tuples of triangle not removed
 remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
+
+  # Hack to make R CMD check not fail
+  x <- y <- first <- second <- idx <- NULL
+
   # removes triangles for tuples data frame that have an edge removed 
   removed_mat <- removed_mat[apply(removed_mat, 1, 
                                    function(row) sum(is.na(row)) == 0), ]
@@ -153,7 +157,7 @@ remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
                                function(row) paste0(row[1],"~",row[2]))
   
   removed_values_dat <- removed_mat %>%
-    group_by(idx) %>% dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
+    dplyr::group_by(idx) %>% dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
                                 second = paste0("(",x[2],",", y[2],")"),
                                 combo = paste0(first,"~",second),
                                 combo2 = paste0(second,"~",first))
@@ -207,7 +211,7 @@ remove_delta_off_line <- function(line, delta){
 #' @return n x 2 matrix with points on path
 steps_along_2d_line <- function(line, n_steps = 1000){
   # (inner function) finds equidistance points along a line
-  len   <- dist(line)
+  len   <- stats::dist(line)
   diffs <- diff(line)
   
   if (diffs[1] == 0) {
@@ -247,7 +251,7 @@ steps_along_2d_line <- function(line, n_steps = 1000){
 get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
   ## this function gets lines that are included within the balls
   
-  assert_that(class(delaunay_tri_data) == "SpatialLines")
+  #assert_that(class(delaunay_tri_data) == "SpatialLines")
   
   idv_lines <- delaunay_tri_data@lines[[1]]@Lines
   n <- length(idv_lines)
@@ -259,7 +263,7 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
   for (idx in 1:n) {
     l <- idv_lines[[idx]]@coords
     
-    if (dist(l) > delta * 2) {
+    if (stats::dist(l) > delta * 2) {
       l_inner <- remove_delta_off_line(l, delta)
       points_along <- steps_along_2d_line(l_inner,n_steps)
       neighbor <- RANN::nn2(data = data_raw, query = points_along,
@@ -296,6 +300,10 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
 #'
 #' @return data without duplicates
 remove_duplicates_func <- function(data_raw){
+
+  # Hack to make R CMD Check not fail
+  connectors <- lat <- long <- NULL
+
   data_raw$connectors <- apply(data_raw,1, function(row) paste0(row[1],",",row[2]))
   
   data_out <- data_raw %>% dplyr::group_by(connectors) %>%
@@ -324,16 +332,19 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   if (remove_duplicates) {
     data_raw <- remove_duplicates_func(data_raw)
   }
+
+  #Hack to set variables equal to NULL so that R CMD check does not flag them
+  X1 <- X2 <- id <- idx <- idx_tri <- n <- NULL
   
   data <- data_raw[,1:2]
-  coordinates(data) <- names(data_raw)[1:2]
+  sp::coordinates(data) <- names(data_raw)[1:2]
     
   # get delta value
   d <- get_delta(data_raw)
   delta <- d$mm_delta/2
   
   # create correct edges 
-  dtri_data_edges <- gDelaunayTriangulation(data, onlyEdges = T,tolerance = 0)
+  dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,tolerance = 0)
   
   lines_info <- get_lines(dtri_data_edges, data_raw, delta, n_steps = 100)
   
@@ -355,7 +366,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
            id = desired_lines$idx[seq(from = 1,to = length(nodes),by = 2)])
   
   # get DT triangles
-  dtri_data_tri <- gDelaunayTriangulation(data,tolerance = 0)
+  dtri_data_tri <- rgeos::gDelaunayTriangulation(data,tolerance = 0)
   tri_matrix <- get_tri_matrix(dtri_data_tri)
   
   tuples_of_tri <- data.frame(rbind(tri_matrix[,c(1,2)],
@@ -367,7 +378,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
                                     tri_matrix[,c(3,2)]),
                               stringsAsFactors = F 
   ) %>%
-    mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
+    dplyr::mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
   
   
   tuples_of_tri <- remove_lines_from_tri(tuples_of_tri = tuples_of_tri,
@@ -377,7 +388,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   
   num_tri <- edge_mat %>% dplyr::left_join(tuples_of_tri,
                                     by = c("X1" = "X1", "X2" = "X2"))  %>%
-    group_by(id) %>% dplyr::summarize(idx_tri = paste0(idx_tri,collapse = ","),
+    dplyr::group_by(id) %>% dplyr::summarise(idx_tri = paste0(idx_tri,collapse = ","),
                                X1 = unique(X1),
                                X2 = unique(X2),
                                count = n())
@@ -390,7 +401,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   select_lines <- (num_tri[num_tri$count == 1, c("id")] %>% 
                      dplyr::left_join(index_mapping, by = c("id" = "nt")))$dl
   
-  output_lines <- desired_lines %>% filter(idx %in% select_lines)
+  output_lines <- desired_lines %>% dplyr::filter(idx %in% select_lines)
   names(output_lines)[1:2] = c("lat","lon")
   return(output_lines)
 }
@@ -402,6 +413,8 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param data_deep_points data deep points from depth function 
 #' (otherwise calculated)
+#' @param c_position Columns position of long/lat pair
+#' @param depth_vector Vector with depth values
 #' @param area_ci_n number of observations to estimate area of covering
 #' @param area_ci_alpha alpha level for confidence interval of area of covering
 #' @param verbose if the distance matrix is verbose

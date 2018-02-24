@@ -13,9 +13,13 @@
 #' @return Sanitized TC data frame, w/ six-hour latitude/longitude observations
 #' @export
 data_sanitize <- function(df){
+
+  time <- NULL #Hack to set time equal to NULL so that R CMD check does not
+               #flag it as undefined variable
   
   # Save obs collected on six-hour marks
-  df <- subset(df, time %in% c("0", "600", "1200", "1800"))
+  df <- df[df$time %in% c("0", "600", "1200", "1800"), ]
+  #data.table::subset(df, time %in% c("0", "600", "1200", "1800"))
   
   # Give an error if obs not all six hours apart
   Sys.setenv(TZ = "UTC")
@@ -412,6 +416,9 @@ get_reg_df <- function(df, auto = T){
 #' \item{speed_regs}{Block-specific regressions for change in speed}
 #' @export
 get_bearing_speed_regs <- function(dflist_unlist, auto){
+
+  #Hack to set variables equal to NULL so that R CMD check does not flag them
+  bearing_change_lag1 <- bearing_change <- NULL
   
   if (auto) {
     # Remove obs w/o lag change in bearing (or speed)
@@ -422,13 +429,13 @@ get_bearing_speed_regs <- function(dflist_unlist, auto){
     
     # Block-specific change in bearing regs
     bearing_regs <- lapply(dflist_blocks, FUN = function(x) 
-      return(lm(bearing_change ~ lat + long + bearing_prev + speed_prev
+      return(stats::lm(bearing_change ~ lat + long + bearing_prev + speed_prev
                 + bearing_change_lag1, 
                 data = x)))
     
     # Block-specific change in speed regs
     speed_regs <- lapply(dflist_blocks, FUN = function(x) 
-      return(lm(speed_change ~ lat + long + bearing_prev + speed_prev
+      return(stats::lm(speed_change ~ lat + long + bearing_prev + speed_prev
                 + speed_change_lag1, 
                 data = x)))
     
@@ -441,12 +448,12 @@ get_bearing_speed_regs <- function(dflist_unlist, auto){
     
     # Block-specific change in bearing regs
     bearing_regs <- lapply(dflist_blocks, FUN = function(x) 
-      return(lm(bearing_change ~ lat + long + bearing_prev + speed_prev, 
+      return(stats::lm(bearing_change ~ lat + long + bearing_prev + speed_prev, 
                 data = x)))
     
     # Block-specific change in speed regs
     speed_regs <- lapply(dflist_blocks, FUN = function(x) 
-      return(lm(speed_change ~ lat + long + bearing_prev + speed_prev, 
+      return(stats::lm(speed_change ~ lat + long + bearing_prev + speed_prev, 
                 data = x)))
   }
   
@@ -479,6 +486,8 @@ get_bearing_speed_regs <- function(dflist_unlist, auto){
 #' \code{bad_locations}. (See details section.)
 #' @export
 get_train_models <- function(train){
+
+  # Hack not to make
   
   # Append path regression variables to training data (auto=T for most general)
   train <- lapply(train, FUN = get_reg_df, auto = T)
@@ -499,14 +508,14 @@ get_train_models <- function(train){
   # Get block specific lysis regressions 
   train_blocks <- split(train_unlist, f = train_unlist$block)
   death_regs <- lapply(train_blocks, 
-                       FUN = function(x) return(glm(death ~ lat + long + 
+                       FUN = function(x) return(stats::glm(death ~ lat + long + 
                                                   bearing_prev + speed_prev + 
                                                   timestep,
-                                                  family = binomial, data = x)))  
+                                                  family = stats::binomial, data = x)))  
   
   # Fit kernel density to TC death times
   death_times <- sapply(train, FUN = function(x) nrow(x))
-  death_dens <- density(death_times, bw = bw.nrd(death_times), 
+  death_dens <- stats::density(death_times, bw = stats::bw.nrd(death_times), 
                         kernel = "gaussian")
   
   # Get death rate and max observed tropical cyclone length
@@ -546,10 +555,13 @@ get_train_models <- function(train){
 #' @export
 get_starting_points <- function(dfval, auto = T){
   
+  # Hack to make R CMD check not fail
+  time <- NULL
+
   # Sanitize data frame into six-hour increment lat/long pairs
   dfval <- lapply(dfval, 
-                  FUN = function(x) 
-                    subset(x, time %in% c("0", "600", "1200", "1800")))
+                  FUN = function(x) x[x$time %in% c("0", "600", "1200", "1800"), ])
+  #data.table::subset(x, time %in% c("0", "600", "1200", "1800")))
 
   # Save first 3 observations for AR, first 2 observations for non-AR
   if (auto) {

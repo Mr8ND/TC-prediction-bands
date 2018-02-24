@@ -114,7 +114,7 @@ depth_curves_to_points <- function(data_list, alpha, dist_mat = NULL,
     
     if (is.null(dist_mat)) {
       # distance matrix ----------------
-      dflist_13pointsreduction = thirteen_points_listable(dflist, 
+      dflist_13pointsreduction = thirteen_points_listable(data_list, 
                                                         c_position = c_position,
                                                         verbose = verbose)
       
@@ -125,7 +125,7 @@ depth_curves_to_points <- function(data_list, alpha, dist_mat = NULL,
     depth_vector <- depth_function(dist_mat)
   }
   
-  deep_idx <- which(depth_vector > quantile(depth_vector, probs = alpha))
+  deep_idx <- which(depth_vector > stats::quantile(depth_vector, probs = alpha))
   
   data_deep_df <- selected_paths_to_df(data_list, deep_idx, verbose = verbose)
   data_deep_points <- data_deep_df[, -which(names(data_deep_df) == "curve")]

@@ -25,6 +25,7 @@ This function calculates whether a series of points are inside a given
 contour or not.
 }
 \examples{
+\dontrun{
 set.seed(8192)
 
 x1 <- 2^rnorm(100)
@@ -39,5 +40,5 @@ y1 <- rnorm(100)
 predict_mat <- cbind(x1,y1)
 
 position_wrt_contour <- points_in_contour(cont, predict_mat)
-
+}
 }

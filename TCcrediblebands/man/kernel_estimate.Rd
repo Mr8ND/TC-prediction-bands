@@ -7,9 +7,9 @@
 kernel_estimate(train, test, k)
 }
 \arguments{
-\item{train}{}
+\item{train}{Training points}
 
-\item{test}{}
+\item{test}{Testing points}
 
 \item{k}{number of neighbors that matter}
 }
@@ -17,5 +17,5 @@ kernel_estimate(train, test, k)
 p density estimate for test observations
 }
 \description{
-TODO: figure out why this isn't just knn...
+KNN in Euclidean Distance
 }

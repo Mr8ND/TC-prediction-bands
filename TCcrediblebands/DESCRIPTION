@@ -11,22 +11,21 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-	caret,
     datamart,
+    dplyr,
     geosphere,
-    GGally,
     ggmap,
+    ggplot2,
     gridExtra,
-    gtools,
     kknn,
     ks,
     lubridate,
-    plyr,
+    magrittr,
     progress,
+    RANN,
     rgeos,
-    rworldmap,
     sp,
     splitstackshape,
-    stringr,
-    tidyverse
+    stats,
+    stringr
 RoxygenNote: 6.0.1

@@ -23,6 +23,8 @@ credible_interval_single_tc(dflist, test_true_path, alpha_level, long = 1,
 
 \item{verbose}{If TRUE update messages will be displayed}
 
+\item{kde_grid_size}{Two dimensional vector for the KDE grid size}
+
 \item{unit_measure}{Unit of measure used for distance}
 }
 \value{

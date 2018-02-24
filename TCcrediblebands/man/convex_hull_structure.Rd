@@ -18,6 +18,10 @@ convex_hull_structure(data_list, alpha, dist_mat = NULL,
 \item{data_deep_points}{data deep points from depth function 
 (otherwise calculated)}
 
+\item{depth_vector}{Depth vector values}
+
+\item{c_position}{Position of the longitude/latitude pair}
+
 \item{verbose}{if the distance matrix is verbose}
 
 \item{...}{other parameters in distance calculation through 

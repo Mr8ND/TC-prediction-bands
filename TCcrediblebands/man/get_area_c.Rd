@@ -18,7 +18,7 @@ get_area_c(data)
 Get area of convex hull
 }
 \examples{
-library(tidyverse)
+\dontrun{
 n    <- 3000
 data <- data.frame(
   tt = sort(runif(min = 0,max = 2*pi,n = n))
@@ -38,5 +38,5 @@ c_points <- chull_out$poly
 ggplot(data_points) + geom_point(aes(x = xx, y = yy)) +
   geom_path(data = c_points, 
             aes(x = xx, y = yy), color = "red")
-
+}
 }

@@ -5,11 +5,11 @@
 \title{Plot lines for bubble data}
 \usage{
 bubble_data_plot_lines(bubble_plot_data, base_graph = NULL, color = "pink",
-  linewidth = 1, ...)
+  linewidth = 1, zoom = 4, ...)
 }
 \arguments{
 \item{bubble_plot_data}{list of center points, lower and upper tangential 
-points from \code{\link{bubble_data_plot_prep}} function 
+points 
 (each a n x 2 data frame)}
 
 \item{base_graph}{plot to add band to}
@@ -17,6 +17,10 @@ points from \code{\link{bubble_data_plot_prep}} function
 \item{color}{color of band}
 
 \item{linewidth}{width of line}
+
+\item{zoom}{map zoom for ggmap}
+
+\item{...}{Interior ggpath parameters}
 }
 \value{
 ggplot object with curves on it

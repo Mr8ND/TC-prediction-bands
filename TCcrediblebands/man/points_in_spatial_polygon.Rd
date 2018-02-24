@@ -25,24 +25,25 @@ This function calculates whether a series of points are inside a given
 polygon or not
 }
 \examples{
+\dontrun{
 set.seed(8192)
 
 x1 <- 2^rnorm(100)
 y1 <- rnorm(100)
 dfmat <- cbind(x1,y1)
-kde_object <- kde(dfmat)
+kde_object <- ks::kde(dfmat)
 cont <- with(kde_object, contourLines(x = eval.points[[1]],
                                       y = eval.points[[2]],
                                       z = estimate,levels = cont["5\%"])[[1]])
 
 poly <- with(cont, data.frame(x,y))
 poly <- rbind(poly, poly[1, ])    # polygon needs to be closed
-spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)),ID = 1)))
+spPoly <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(poly)),ID = 1)))
 
 x1 <- 2^rnorm(100)
 y1 <- rnorm(100)
 predict_mat <- cbind(x1,y1)
 
 position_wrt_contour <- points_in_spatial_polygon(spPoly, predict_mat)
-
+}
 }

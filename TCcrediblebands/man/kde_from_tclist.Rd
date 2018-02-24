@@ -11,7 +11,7 @@ kde_from_tclist(dflist, alpha_level, h_band = NULL, long = 1, lat = 2,
 \item{dflist}{list of TC dataframes}
 
 \item{alpha_level}{contour level, an integer from 1 to 99. For example, a
-level 5 gives back 95% contour}
+level 5\% gives back 95\% contour}
 
 \item{h_band}{optional argument for the bandwidth of the kde object. If NULL, 
 the optimal band would be selected through the \code{\link[ks]{kde}} 

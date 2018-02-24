@@ -18,6 +18,10 @@ delta_structure(data_list, alpha, dist_mat = NULL, data_deep_points = NULL,
 \item{data_deep_points}{data deep points from depth function 
 (otherwise calculated)}
 
+\item{c_position}{Columns position of long/lat pair}
+
+\item{depth_vector}{Vector with depth values}
+
 \item{area_ci_n}{number of observations to estimate area of covering}
 
 \item{area_ci_alpha}{alpha level for confidence interval of area of covering}

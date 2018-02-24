@@ -18,8 +18,8 @@
 #' \item{poly}{spatial polygon object of convex hull}
 #' @export
 #'
-#' @examples 
-#' library(tidyverse)
+#' @examples
+#' \dontrun{
 #' n    <- 3000
 #' data <- data.frame(
 #'   tt = sort(runif(min = 0,max = 2*pi,n = n))
@@ -39,7 +39,7 @@
 #' ggplot(data_points) + geom_point(aes(x = xx, y = yy)) +
 #'   geom_path(data = c_points, 
 #'             aes(x = xx, y = yy), color = "red")
-#' 
+#' }
 get_area_c <- function(data){
   c_out <- grDevices::chull(data)
   c_points <- data[c_out,]
@@ -67,26 +67,27 @@ get_area_c <- function(data){
 #' Dimensionality is the same as the number of rows in predict_mat
 #' 
 #' @examples
+#' \dontrun{
 #' set.seed(8192)
 #' 
 #' x1 <- 2^rnorm(100)
 #' y1 <- rnorm(100)
 #' dfmat <- cbind(x1,y1)
-#' kde_object <- kde(dfmat)
+#' kde_object <- ks::kde(dfmat)
 #' cont <- with(kde_object, contourLines(x = eval.points[[1]],
 #'                                       y = eval.points[[2]],
 #'                                       z = estimate,levels = cont["5%"])[[1]])
 #' 
 #' poly <- with(cont, data.frame(x,y))
 #' poly <- rbind(poly, poly[1, ])    # polygon needs to be closed
-#' spPoly <- SpatialPolygons(list(Polygons(list(Polygon(poly)),ID = 1)))
+#' spPoly <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(poly)),ID = 1)))
 #' 
 #' x1 <- 2^rnorm(100)
 #' y1 <- rnorm(100)
 #' predict_mat <- cbind(x1,y1)
 #' 
 #' position_wrt_contour <- points_in_spatial_polygon(spPoly, predict_mat)
-#'
+#'}
 points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 
   points_in_poly <- sp::point.in.polygon(predict_mat[, long], 
@@ -104,6 +105,8 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 #' @param data_list list of hurricanes
 #' @param alpha for credible band (related to depth)
 #' @param dist_mat distance matrix (otherwise is calculated)
+#' @param depth_vector Depth vector values
+#' @param c_position Position of the longitude/latitude pair
 #' @param data_deep_points data deep points from depth function 
 #' (otherwise calculated)
 #' @param verbose if the distance matrix is verbose

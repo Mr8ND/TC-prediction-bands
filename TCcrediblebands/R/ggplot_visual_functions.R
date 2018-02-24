@@ -82,7 +82,7 @@ ggvis_paths <- function(data_out, zoom = 4,
   
   # final map ---------------
   ggout <- base_graph + ggplot2::geom_path(data = data_out, 
-                                  aes(x = long, y = lat, group = curve),
+                                  ggplot2::aes_string(x = 'long', y = 'lat', group = 'curve'),
                                   alpha = alpha) 
   
   return(ggout)
@@ -92,9 +92,12 @@ ggvis_paths <- function(data_out, zoom = 4,
 # KDE contour visualization functions -----------------------
 
 #' Create level set for kde
+#' 
+#' @description
+#' Returns the level set for a given kde
 #'
 #' @param kde.obj kde object 
-#' @param level string of percentage level outside the contour, ex "5%"
+#' @param level string of percentage level outside the contour
 #'
 #' @return data frame of countour (detail determined by detail level in kde.obj)
 #' @export
@@ -115,14 +118,16 @@ get_kde_contour_path <- function(kde.obj, level = "5%"){
 #' @param data_plot data frame of points
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
+#' @param zoom map zoom for ggmap
 #'
 #' @return ggplot object of contour and data points.
 #' @export
-ggvis_kde_contour <- function(level_contour_df, data_plot, base_graph = NULL){
+ggvis_kde_contour <- function(level_contour_df, data_plot, base_graph = NULL,
+                              zoom = 4){
   
   if (is.null(base_graph)) {
-    latrange <- range(data_out$lat)
-    lonrange <- range(data_out$long)
+    latrange <- range(data_plot$lat)
+    lonrange <- range(data_plot$long)
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
@@ -132,8 +137,8 @@ ggvis_kde_contour <- function(level_contour_df, data_plot, base_graph = NULL){
   } 
   
   ggout <- base_graph  +
-    ggplot2::geom_point(data_plot, aes(x = long, y = lat)) +
-    ggplot2::geom_path(aes(x, y), data = level_contour_df)
+    ggplot2::geom_point(data_plot, ggplot2::aes_string(x = 'long', y = 'lat')) +
+    ggplot2::geom_path(ggplot2::aes_string(x = 'x', y = 'y'), data = level_contour_df)
   
   return(ggout)
 }
@@ -146,11 +151,12 @@ ggvis_kde_contour <- function(level_contour_df, data_plot, base_graph = NULL){
 #' @param output_lines data frame of exterior lines (not ordered)
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
+#' @param zoom map zoom for ggmap
 #'
 #' @return ggplot object of contour and data points.
 #' @export
 #'
-gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL){
+gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4){
   
   if (is.null(base_graph)) {
     latrange <- range(output_lines$lat)
@@ -164,7 +170,7 @@ gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL){
   } 
   
   ggout <- base_graph + 
-    ggplot2::geom_line(data = output_lines, aes(x = lat, y = lon, group = idx))
+    ggplot2::geom_line(data = output_lines, ggplot2::aes_string(x = 'lat', y = 'lon', group = 'idx'))
   
   return(ggout)
 }
@@ -172,52 +178,23 @@ gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL){
 # Bubble visualization functions -------------------------
 
 
-#' Generate Bubble CB data frames
-#'
-#' @param bubble_step same input as \code{\link{calculateErrorBandsBubble}} 
-#' needs
-#'
-#' @return 
-#' \item{center}{data n x 2 points for center path of bubble}
-#' \item{lower}{data n x 2 points for "lower" tangental point a center path}
-#' \item{upper}{data n x 2 points for "upper" tangental point a center path}
-#' 
-#' @export
-bubble_data_plot_prep <- function(bubble_step){
-  
-  NSWE_lists <- calculateErrorBandsBubble(bubble_step, conversion = TRUE)
-  error_NS      <- NSWE_lists[[1]]
-  error_EW      <- NSWE_lists[[2]]
-  center_radius <- NSWE_lists[[3]]
-  
-  lower_bound_errors <- c()
-  upper_bound_errors <- c()
-  for (i in c(1:length(error.EW))) {
-    lower_bound_errors <- c(lower_bound_errors,error_EW[[i]][c(1,2)])
-    upper_bound_errors <- c(upper_bound_errors,error_EW[[i]][c(3,4)])
-  }
-  lower_bound_errors_df <- data.frame(t(matrix(lower_bound_errors, nrow = 2)))
-  upper_bound_errors_df <- data.frame(t(matrix(upper_bound_errors, nrow = 2)))
-  
-  return(list(center = center_radius,
-              lower = lower_bound_error_df,
-              upper = upper_bound_errors_df))
-}
-
 #' Plot lines for bubble data 
 #'
 #' @param bubble_plot_data list of center points, lower and upper tangential 
-#' points from \code{\link{bubble_data_plot_prep}} function 
+#' points 
 #' (each a n x 2 data frame)
 #' @param base_graph plot to add band to
 #' @param color color of band
 #' @param linewidth width of line
+#' @param zoom map zoom for ggmap
+#' @param ... Interior ggpath parameters
 #'
 #' @return ggplot object with curves on it
 #' @export
 #'
-bubble_data_plot_lines <- function(bubble_plot_data,base_graph = NULL,
-                                   color = "pink", linewidth = 1, ...){
+bubble_data_plot_lines <- function(bubble_plot_data, base_graph = NULL,
+                                   color = "pink", linewidth = 1, zoom = 4,
+                                   ...){
   data_plot_lower <- bubble_plot_data$lower
   names(data_plot_lower)[1:2] <- c("lat", "lon")
   data_plot_upper <- bubble_plot_data$upper
@@ -238,9 +215,9 @@ bubble_data_plot_lines <- function(bubble_plot_data,base_graph = NULL,
   } 
   
   ggout <- base_graph + 
-    ggplot2::geom_path(data = data_plot_lower, aes(x = lat, y = lon), 
+    ggplot2::geom_path(data = data_plot_lower, ggplot2::aes_string(x = 'lat', y = 'lon'), 
               color = color, linewidth = linewidth, ...) +
-    ggplot2::geom_path(data = data_plot_upper, aes(x = lat, y = lon), 
+    ggplot2::geom_path(data = data_plot_upper, ggplot2::aes_string(x = 'lat', y = 'lon'), 
               color = color, linewidth = linewidth, ...) 
   
   return(ggout)
@@ -250,16 +227,17 @@ bubble_data_plot_lines <- function(bubble_plot_data,base_graph = NULL,
 #' Plot centers for bubble data
 #'
 #' @param bubble_plot_data list of center points, lower and upper tangential 
-#' points from \code{\link{bubble_data_plot_prep}} function 
-#' (each a n x 2 data frame)
+#' points (each a n x 2 data frame)
 #' @param base_graph plot to add points to
 #' @param color color of points
+#' @param zoom map zoom for ggmap
+#' @param ... Interior ggpath parameters
 #'
 #' @return ggplot object with points on it
 #' @export
 #'
 bubble_data_plot_prep_center <- function(bubble_plot_data, base_graph = NULL, 
-                                         color = "pink", ...){
+                                         color = "pink", zoom = 4, ...){
   
   center <- data.frame(bubble_plot_data$center)
   names(center)[1:2] <- c("lat", "lon")
@@ -276,7 +254,7 @@ bubble_data_plot_prep_center <- function(bubble_plot_data, base_graph = NULL,
   } 
   
   ggout <- base_graph + 
-    ggplot2::geom_point(data = center, aes(x = lat, y = lon),
+    ggplot2::geom_point(data = center, ggplot2::aes_string(x = 'lat', y = 'lon'),
                color = color, ...)
   
   return(ggout)
