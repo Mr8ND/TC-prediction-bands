@@ -30,5 +30,4 @@ dfmat <- cbind(x1,y1)
 kde_object <- ks::kde(dfmat)
 
 cont <- extract_countour(kde_object, 5)
-
 }

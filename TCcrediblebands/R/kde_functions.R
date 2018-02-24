@@ -160,7 +160,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
 #' kde_object <- ks::kde(dfmat)
 #' 
 #' cont <- extract_countour(kde_object, 5)
-#'
+#' @export
 extract_countour <- function(kde_obj, alpha_level) {
   alpha <- alpha_level*100
   cont_level <- paste0(as.character(alpha), "%")
@@ -269,9 +269,9 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 #' evaluation of kde object. Can be reduced to speed-up computation.
 #
 #' @return 
-#' \list{contour}{Contour at the specified level}
-#' \list{area}{Contour area}
-#' \list{kde_object}{Full KDE Object (from \code{\link[ks]{kde}})}
+#' \item{contour}{Contour at the specified level}
+#' \item{area}{Contour area}
+#' \item{kde_object}{Full KDE Object (from \code{\link[ks]{kde}})}
 #' 
 kde_from_tclist <- function(dflist, alpha_level, h_band = NULL, 
                             long = 1, lat = 2,

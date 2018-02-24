@@ -25,9 +25,9 @@ function. Default is NULL.}
 evaluation of kde object. Can be reduced to speed-up computation.}
 }
 \value{
-\list{contour}{Contour at the specified level}
-\list{area}{Contour area}
-\list{kde_object}{Full KDE Object (from \code{\link[ks]{kde}})}
+\item{contour}{Contour at the specified level}
+\item{area}{Contour area}
+\item{kde_object}{Full KDE Object (from \code{\link[ks]{kde}})}
 }
 \description{
 This function calculates contour points and area from list of generated TC.

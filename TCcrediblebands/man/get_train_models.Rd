@@ -12,7 +12,7 @@ get_train_models(train)
 \value{
 List containing the following trained models: 
 \code{bearing_regs_auto}, \code{speed_regs_auto}, 
-\code{bearing_regs_nonauto}, \coe{speed_regs_nonauto}, \code{death_regs}, 
+\code{bearing_regs_nonauto}, \code{speed_regs_nonauto}, \code{death_regs}, 
 \code{death_dens}, \code{death_rate}, \code{max_length}, 
 \code{bad_locations}. (See details section.)
 }
@@ -21,15 +21,15 @@ Fit bearing, speed, and death models for TC simulations
 }
 \details{
 Models fit on training TC data: 
-\texttt{bearing_regs_auto}: block-specific AR models for bearing
-\texttt{speed_regs_auto}: block-specific AR models for speed
-\texttt{bearing_regs_nonauto}: block-specific non-AR models for bearing
-\texttt{speed_regs_nonauto}: block-specific non-AR models for speed
-\texttt{death_regs}: block-specific logistic reg models for TC death
-\texttt{death_dens}: kernel density for TC death times
-\texttt{death_rate}: 1/mean(train TC lengths). This is the MLE assuming an
+\code{bearing_regs_auto}: block-specific AR models for bearing
+\code{speed_regs_auto}: block-specific AR models for speed
+\code{bearing_regs_nonauto}: block-specific non-AR models for bearing
+\code{speed_regs_nonauto}: block-specific non-AR models for speed
+\code{death_regs}: block-specific logistic reg models for TC death
+\code{death_dens}: kernel density for TC death times
+\code{death_rate}: 1/mean(train TC lengths). This is the MLE assuming an
 exponential distribution on TC length. 
-\texttt{max_length}: max length of training TCs
-\texttt{bad_locations}: blocks with <= 1 death. Will use death_rate instead
+\code{max_length}: max length of training TCs
+\code{bad_locations}: blocks with <= 1 death. Will use death_rate instead
 of death_regs in these blocks.
 }

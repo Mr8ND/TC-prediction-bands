@@ -25,7 +25,7 @@
 # Install from Github ----------------------------------
 
 library(devtools)
-#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
+devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
 library(TCcrediblebands)
 
 #' Execution --------------------------------------------------------
@@ -64,7 +64,7 @@ tc_true_path_list <- list("AL031951" = test_env$AL031951$Auto_DeathRegs[[1]],
 alpha_level <- 0.1
 
 start.time <- Sys.time()
-output_pipeline <- TCcrediblebands:::credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
+output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
                                                 tc_true_path_list = tc_true_path_list,
                                                 alpha_level = alpha_level)
 end.time <- Sys.time()
