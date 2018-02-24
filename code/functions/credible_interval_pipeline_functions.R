@@ -204,9 +204,9 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
                                                          unit_measure = unit_measure,
                                                          verbose = FALSE,
                                                          kde_grid_size = kde_grid_size)
-      }
-      if (verbose) {
+        if (verbose) {
         pb$tick()
+      	}
       }
       output[[j]] <- output_tc
     }
