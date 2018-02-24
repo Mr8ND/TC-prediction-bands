@@ -138,7 +138,8 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     return(list('kde' = out_kde_list, 
                 'bubble_ci' = out_bubble_list,
                 'delta_ball' = out_delta_ball_list, 
-                'convex_hull' = out_convex_hull_list))
+                'convex_hull' = out_convex_hull_list,
+                'depth_vector' = depth_vector))
 }
 
 
