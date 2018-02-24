@@ -18,11 +18,12 @@
 #' \item{mm_delta}{the minimum distance (delta)}
 #' @export
 get_delta <- function(data, dist_mat = NULL){
+
   if (is.null(dist_mat)) {
-      dist_mat <- data %>% stats::dist %>% as.matrix
+      dist_mat <- as.matrix(stats::dist(data))
   }
   diag(dist_mat) <- max(dist_mat)
-  mm_delta <- apply(dist_mat,MARGIN = 1, min ) %>% max
+  mm_delta <- apply(dist_mat, MARGIN = 1, min ) %>% max
   
   # correct diagonals:
   diag(dist_mat) <- 0
