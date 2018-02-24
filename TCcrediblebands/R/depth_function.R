@@ -79,7 +79,7 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
   for (good_curve_idx in desired_index) {
     df_out <- rbind(df_out, 
                     data_list[[good_curve_idx]] %>%
-                      mutate(curve = good_curve_idx))
+                      dplyr::mutate(curve = good_curve_idx))
     if (verbose) {
       pb$tick()
     }
