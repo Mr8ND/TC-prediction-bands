@@ -110,8 +110,9 @@ create_CI_bubble_step_track <- function(df_points_step_track, center_idx,
 #' @param lat Column index of the latitude
 #' @param output_length Unit of measure of the output
 #
-#' @return Matrix with prediction and, if alpha_level was not NULL, extra column
-#' on whether the point is within a specific 1-alpha_level countour.
+#' @return A list of matrices, each with prediction and, if alpha_level was not 
+#' NULL, extra column on whether the point is within a specific 1-alpha_level 
+#' countour.
 #'
 bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2, 
                      output_length = "nautical mile"){
@@ -129,7 +130,6 @@ bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
                               alpha_level = alpha_level, 
                               output_length = output_length)
   }
-  
   return(output_list)
 }
 
@@ -216,7 +216,11 @@ bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
 #' @param lat_col Column index of the latitude
 #' @param unit_measure Unit measure of the distances 
 #' 
-#' @output List with centers, radius, positives and negatives dataframes
+#' @return
+#' \item{centers}{2 x n data frame of the center path used for the CB} 
+#' \item{radius}{n length vector of radius around center path for each step}
+#' \item{positive, negative}{2 x n data frames holding points \eqn{r} distance
+#' away for the center point tangent to the path of the center path}
 error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2, 
                                          unit_measure = "nautical mile") {
 
@@ -230,22 +234,22 @@ error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2,
   centers <- data.frame(long = as.numeric(centers[, long_col]),
                         lat = as.numeric(centers[, lat_col])) 
                         #^ dataframe in list column problem
-  radius <- sapply(bubble_steps_CI,function(df) max(df$distance_vec))
+  radius <- sapply(bubble_steps_CI, function(df) max(df$distance_vec))
   
   # Calculating positive and negative diretions
   out_mat <- distAlongP(data_df = centers)
   bearing <- out_mat[[2]]
   bearing_orthog <- bearing + 90
   
-  positive <- matrix(0,nrow = nrow(centers), ncol = 2 )
-  negative <- matrix(0,nrow = nrow(centers), ncol = 2 )
+  positive <- matrix(0,nrow = nrow(centers), ncol = 2)
+  negative <- matrix(0,nrow = nrow(centers), ncol = 2)
   
   for (i in 1:nrow(centers)) {
     radius_ind <- datamart::uconv(radius[i], from = unit_measure, 
                                   to = "m", "Length")
     direction <- bearing_orthog[i]
-    positive[i,] <- destPoint(centers[i,], direction, radius_ind)
-    negative[i,] <- destPoint(centers[i,], direction, -radius_ind)
+    positive[i,] <- geosphere::destPoint(centers[i,], direction, radius_ind)
+    negative[i,] <- geosphere::destPoint(centers[i,], direction, -radius_ind)
   }
   
   positive <- positive[-nrow(positive),]
@@ -264,19 +268,20 @@ error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2,
 #' Finds area of bubble CI, for each step, then takes the maximum
 #' 
 #' @details
-#' This functions uses as inputs the output of error_bands_bubbleCI_posneg.
+#' This functions uses as inputs the output of 
+#' \code{\link{error_bands_bubbleCI_posneg}}.
 #' 
 #' @param tc_bubble_structure Bubble CI list with centers, radius, positive 
 #' and negative parts
 #' 
-#' @output List with the area of the Bubble CI for each step and the 
-#' maximum of such values.
+#' @return 
+#' \item{area_vec}{area of the Bubble CI for each step}
+#' \item{max}{maximum of the area_vec values}
 #' 
 max_cumulative_area <- function(tc_bubble_structure) {
 
   # Checking whether the negative attributes are in the correct format
   # Positive are assumed to be the same as negative
-
   if (!(is.data.frame(tc_bubble_structure$negative)) & 
       !(is.matrix(tc_bubble_structure$negative))) {
     return(list(area_vec = 0, max = 0))
@@ -291,7 +296,8 @@ max_cumulative_area <- function(tc_bubble_structure) {
   for (i in 2:nrow(neg)) {
     dat_all <- rbind(pos[1:i,],
                      neg_back[(n - i):n,])
-    spPoly <- sp::SpatialPolygons(list(Polygons(list(Polygon(dat_all)),ID = 1)))
+    spPoly <- sp::SpatialPolygons(list(
+                        sp::Polygons(list(sp::Polygons(dat_all)),ID = 1)))
     area_vec <- c(area_vec, rgeos::gArea(spPoly))
   }  
   return(list(area_vec = area_vec, max = max(area_vec)))
@@ -351,6 +357,15 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' @param long Column index of the longitude
 #' @param lat Column index of the latitude
 #' @param unit_measure Unit of measure used for distance
+#' 
+#' @return
+#' \item{bubble_CI_object}{A list of matrices, each with prediction and, 
+#' if alpha_level was not NULL, extra column on whether the point is within 
+#' a specific 1-alpha_level countour, see the \code{\link{bubbleCI}} }
+#' \item{area}{maximum area vector for the CB in question, see 
+#' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
+#' \item{area_vector}{cumulative area as one steps along the CB,
+#' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
 bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1, 
                                  long = 1, lat = 2, 
                                  unit_measure = 'nautical mile') {

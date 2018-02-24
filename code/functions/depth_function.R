@@ -14,8 +14,6 @@ library(tidyverse) # this library is needed here
 #' @return depth vector length n with depth values associated with indices in 
 #' dist_matrix
 #' @export
-#'
-#' @examples
 depth_function <- function(dist_matrix){
 
   if (nrow(dist_matrix) != ncol(dist_matrix) | 
@@ -50,27 +48,20 @@ depth_function <- function(dist_matrix){
       }) %>% t
     
     depth[obs_index] <- mean(sub_matrix > max_matrix)
-
   }
-  
   return(depth)
 }
 
 
 #' Create a data frame of points in selected curves
-#' 
-#' NOTE: this functions is slightly redunant with a plotting function somewhere
 #'
 #' @param data_list list of hurricanes
 #' @param desired_index which hurricanes to be included
 #' @param verbose if progress is to be reported in creation of data frame
 #'
 #' @return data frame with points in desired curves
-#' @export
-#'
-#' @examples
 selected_paths_to_df <- function(data_list, desired_index = NULL, 
-                                 verbose = TRUE){
+                                 verbose = TRUE) {
   if (is.null(desired_index)) {
     desired_index = 1:length(data_list)
   }
@@ -115,19 +106,17 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
 #'
 #' @return data frame with points in desired curves
 #' @export
-#'
-#' @examples
 depth_curves_to_points <- function(data_list, alpha, dist_mat = NULL, 
                                    c_position = 1:2,
                                    depth_vector = NULL,
                                    verbose = FALSE, ...){
-  if (is.null(depth_vector)){
+  if (is.null(depth_vector)) {
     
-    if (is.null(dist_mat)){
+    if (is.null(dist_mat)) {
       # distance matrix ----------------
       dflist_13pointsreduction = thirteen_points_listable(dflist, 
-                                                          c_position = c_position,
-                                                          verbose = verbose)
+                                                        c_position = c_position,
+                                                        verbose = verbose)
       
       dist_mat = distMatrixPath_innersq(data_list, verbose = verbose, ...)
     }
