@@ -4,7 +4,9 @@ library(geosphere)
 #### Loading inner functions
 source(file = "code/functions/path_functions.R")
 
-#' Coverts list of point locations to 13 points equally spaced apart
+#' Thirteen point compression
+#'
+#' @description Coverts list of point locations to 13 equally spaced points
 #'
 #' @param df2 2 column data frame with all points lat/lon 
 #' @param lonlat boolean if the order of the columns is latlon 
@@ -79,7 +81,9 @@ thirteen_points <- function(df2, lonlat = TRUE,
   return(new_13compression)
 }
 
-#' Creates list of 13 point lonlat expression of each path
+#' List of 13 point compressions
+#' 
+#' @description Creates list of 13 point long/lat expression of each path
 #'
 #' @param list_df list of dfs, where the lonlat points are are in the 
 #' c_position columns 
@@ -89,10 +93,8 @@ thirteen_points <- function(df2, lonlat = TRUE,
 #' (false if they are latlon)
 #' @param verbose boolean for having a progress bar
 #'
-#' @return
+#' @return List of 13 point compression data frame for each path
 #' @export
-#'
-#' @examples
 thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat = TRUE,
                                      verbose = TRUE){
   out_list <- list()

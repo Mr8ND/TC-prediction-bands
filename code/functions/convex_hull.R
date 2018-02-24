@@ -1,5 +1,3 @@
-# TODO: figure out the commented out code - is it an example?
-# has an example of really cool progress bar --> we should use ;P
 library(tidyverse)
 library(ks)
 library(sp)
@@ -14,9 +12,10 @@ source("code/functions/depth_function.R")
 #'
 #' @param data points to find a convex hull over (assumed n x 2)
 #'
-#' @return polygon dataframe
-#' @return size area of the convex hull
-#' @return poly spatial polygon object of convex hull
+#' @return 
+#' \item{polygon}{dataframe}
+#' \item{size}{area of the convex hull}
+#' \item{poly}{spatial polygon object of convex hull}
 #' @export
 #'
 #' @examples 
@@ -45,9 +44,10 @@ get_area_c <- function(data){
   c_out <- grDevices::chull(data)
   c_points <- data[c_out,]
   
-  poly <- rbind(c_points,c_points[1,])    # polygon needs to be closed...
-  spPoly <- sp::SpatialPolygons(list(Polygons(list(Polygon(poly)), ID = 1)))
-  return(list(poly_df = poly, area = gArea(spPoly), spPoly = spPoly))
+  poly <- rbind(c_points,c_points[1,])    # to ensure polygon is closed
+  spPoly <- sp::SpatialPolygons(
+                    list(sp::Polygons(list(sp::Polygon(poly)), ID = 1)))
+  return(list(poly_df = poly, area = rgeos::gArea(spPoly), spPoly = spPoly))
 }
 
 
@@ -110,11 +110,11 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 #' @param ... other parameters in distance calculation through 
 #' `distMatrixPath_innersq`
 #'
-#' @return poly data frame of structural contour
-#' @return area area of contour
+#' @return 
+#' \item{polygon}{dataframe}
+#' \item{size}{area of the convex hull}
+#' \item{poly}{spatial polygon object of convex hull}
 #' @export
-#'
-#' @examples
 convex_hull_structure <- function(data_list, alpha, dist_mat = NULL,
                                   data_deep_points = NULL, 
                                   depth_vector = NULL,

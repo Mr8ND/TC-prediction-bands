@@ -9,8 +9,10 @@ for (f_name in desired_functions) {
 }
 
 
-#' Calculates the LOOCV error rate for a specific local smoothing of distance 
-#' $K$ and the power we raise the transition matrix to $t$
+#' LOOCV error rate
+#' 
+#' @description Calculates the LOOCV error rate for a specific local smoothing 
+#' of distance \eqn{K} and the power we raise the transition matrix to \eqn{t}
 #'
 #' @param path_mat_list list of paths to train on
 #' @param Dmat distance matrix of the paths to train on
@@ -22,13 +24,12 @@ for (f_name in desired_functions) {
 #' @param project_size dimension of projected space 
 #' @param verbose it progress bar is provided
 #'
-#' @return Dmat distance matrix of the paths to train on that was inputted
-#' @return predicted_curves list of predicted curves
-#' @return diff_curves distance between true curves and predicted curves
-#' @return K power to raise the transition matrix P (same as inputted)
-#' @return t power to raise the transition matrix P (same as inputted)
-#'
-#' @examples
+#' @return 
+#' \item{Dmat}{distance matrix of the paths to train on that was inputted}
+#' \item{predicted_curves}{list of predicted curves}
+#' \item{diff_curves}{distance between true curves and predicted curves}
+#' \item{K}{K nearest neighbors value (for localization of distance matrix)}
+#' \item{t}{power to raise the transition matrix P (same as inputted)}
 loocv_wrapper <- function(path_mat_list, Dmat,
                         K = 7, t = 1, 
                         output_length = "nautical mile",
@@ -55,7 +56,7 @@ loocv_wrapper <- function(path_mat_list, Dmat,
 
   # progress bar
   if (verbose) {
-    pb <- progress_bar$new(
+    pb <- progress::progress_bar$new(
       format = "  Processing [:bar] :percent eta: :eta",
       total = n, clear = FALSE, width = 40)
   }
