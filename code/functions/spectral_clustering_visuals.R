@@ -29,15 +29,14 @@ source("code/functions/point_reduction_with_speed.R")
 #' @param kdensity nearest neighbors for density estimate in lower dim space
 #' @param c_position nearest neighbors for density estimate in lower dim space
 #'
-#' @return test_p_estimate probability estimates for test data
-#' @return test_weight scaled probabilities estimates (by max of probs) for test
-#' @return test_13point 13 point compression for test data
-#' @return test_projected test data in projection space
-#' @return train_projected training data in projection space
+#' @return 
+#' \item{test_p_estimate}{probability estimates for test data}
+#' \item{test_weight}{scaled probabilities estimates (by max of probs) for test}
+#' \item{test_13point}{13 point compression for test data}
+#' \item{test_projected}{test data in projection space}
+#' \item{train_projected}{training data in projection space}
 #' 
 #' @export
-#'
-#' @examples
 spectral_cluster_process <- function(test_list, train_df, D_train,
 							 K = 4, t = 1, dim = 5, kdensity = 10,
 							 c_position = 1:2){
@@ -87,7 +86,7 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 #' @param scp_output spectral_cluster_process function output
 #' @param c_position positions of lat and lon columns in test_list data frames
 #'
-#' @return data_out data frame that can be used to visualize curves
+#' @return data frame that can be used to visualize curves
 #' @export
 #'
 #' @examples
@@ -156,7 +155,6 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
 	data_out <- data_out %>% mutate(weight_discrete = color_out$breaks)
 	colors_rw <- color_out$colors_rw
 
-
 	# final map:
 
 	ggout <- base_graph + ggplot2::geom_path(data = data_out, 
@@ -173,11 +171,10 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
 #'
 #' @param scp_output pectral_cluster_process function output
 #'
-#' @return test_df data frame of training points and probability weights
-#' @return train_df data frame of test points
+#' @return 
+#' \item{test_df}{data frame of training points and probability weights}
+#' \item{train_df}{data frame of test points}
 #' @export
-#'
-#' @examples
 data_projection <- function(scp_output){
 	n <- dim(scp_output$test_projected)[1]
 	test_df <- scp_output$test_projected %>% data.frame %>% 
@@ -198,9 +195,10 @@ data_projection <- function(scp_output){
 #' @param test_color_low lower color value for color range, 
 #' @param test_color_high higher color value for color range,
 #'
-#' @return breaks vector of which of the 10 breaks each weight is in 
-#' (relative to power transformation)
-#' @return colors_rw color palette ramp vector
+#' @return 
+#' \item{breaks}{vector of which of the 10 breaks each weight is in 
+#' (relative to power transformation)}
+#' \item{colors_rw}{color palette ramp vector}
 #'
 #' @examples
 color_function <- function(weights_in,
@@ -219,9 +217,9 @@ color_function <- function(weights_in,
 
 #' Creates ggplot of projections
 #'
-#' Note:
-#' 	ggplot experts are encouraged to use the output of data_projection 
-#' 	function applied to scp_output instead of this wrapper
+#' @details 
+#' ggplot experts are encouraged to use the output of data_projection 
+#' function applied to scp_output instead of this wrapper
 #'
 #' @param scp_output spectral_cluster_process function output
 #' @param train_alpha opacity level for black training points
@@ -270,10 +268,13 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
 
 
 
-#' 	Creates clean visual of weighted curves using Spectral Clustering Analysis
-#' 	Specifically, the projected points in 2d and the paths colored
+#' Creates clean visual of weighted curves using Spectral Clustering Analysis
+#' 
+#' @description
+#' Creates clean visual of weighted curves using Spectral Clustering Analysis.
+#' Specifically, the projected points in 2d and the paths colored
 #'
-#' Note:
+#' @details 
 #' ggplot experts are encouraged to use the output of this function to  
 #' instead of just running with the created plot
 #'
@@ -289,13 +290,11 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
 #' @param test_color_high high color for range of colors on test points prob
 #' (plot 1: scatter)
 #'
-#' @return gg_path ggmap based map object of colored test curves
-#' @return gg_proj ggplot scatter plot of training and colored test points
-#' 
+#' @return 
+#' \item{gg_path}{ggmap based map object of colored test curves}
+#' \item{gg_proj}{ggplot scatter plot of training and colored test points}
 #' also visualizes both graphics together using grid.arrange
 #' @export
-#'
-#' @examples
 ggvis_all <- function(scp_output, test_list, 
 				   	  c_position = 1:2,
 				   	  zoom = 4,

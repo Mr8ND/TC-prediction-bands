@@ -66,10 +66,8 @@ data_plot_paths_basic <- function(test_list, c_position = 1:2) {
 #'       (created from data_out otherwise)
 #' @param alpha opacity of curves 
 #'
-#' @return
+#' @return ggplot visualisation of the curve
 #' @export
-#'
-#' @examples
 ggvis_paths <- function(data_out, zoom = 4,
                         base_graph = NULL, alpha = .01){
   if (is.null(base_graph)) {
@@ -101,8 +99,6 @@ ggvis_paths <- function(data_out, zoom = 4,
 #'
 #' @return data frame of countour (detail determined by detail level in kde.obj)
 #' @export
-#'
-#' @examples
 get_kde_contour_path <- function(kde.obj, level = "5%"){
   level_contour <- with(kde.obj, contourLines(x = eval.points[[1]], 
                                               y = eval.points[[2]],
@@ -123,8 +119,6 @@ get_kde_contour_path <- function(kde.obj, level = "5%"){
 #'
 #' @return ggplot object of contour and data points.
 #' @export
-#'
-#' @examples
 ggvis_kde_contour <- function(level_contour_df, data_plot, base_graph = NULL){
   
   if (is.null(base_graph)) {
@@ -180,17 +174,17 @@ gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL){
 # Bubble visualization functions -------------------------
 
 
-#' Title
+#' Generate Bubble CB data frames
 #'
-#' @param bubble_step same input as cacluateErrorBandsBubble needs (TODO)
+#' @param bubble_step same input as \code{\link{calculateErrorBandsBubble}} 
+#' needs
 #'
-#' @return center data n x 2 points for center path of bubble
-#' @return lower data n x 2 points for "lower" tangental point a center path
-#' @return upper data n x 2 points for "upper" tangental point a center path
+#' @return 
+#' \item{center}{data n x 2 points for center path of bubble}
+#' \item{lower}{data n x 2 points for "lower" tangental point a center path}
+#' \item{upper}{data n x 2 points for "upper" tangental point a center path}
 #' 
 #' @export
-#'
-#' @examples
 bubble_data_plot_prep <- function(bubble_step){
   
   NSWE_lists <- calculateErrorBandsBubble(bubble_step, conversion = TRUE)
@@ -215,8 +209,9 @@ bubble_data_plot_prep <- function(bubble_step){
 #' Plot lines for bubble data 
 #'
 #' @param bubble_plot_data list of center points, lower and upper tangential 
-#' points from `bubble_data_plot_prep`` function (each a n x 2 data frame)
-#' @param gg_add plot to add band to
+#' points from \code{\link{bubble_data_plot_prep}} function 
+#' (each a n x 2 data frame)
+#' @param base_graph plot to add band to
 #' @param color color of band
 #' @param linewidth width of line
 #'
@@ -224,14 +219,14 @@ bubble_data_plot_prep <- function(bubble_step){
 #' @export
 #'
 #' @examples
-bubble_data_plot_lines <- function(bubble_plot_data,gg_add = NULL,
+bubble_data_plot_lines <- function(bubble_plot_data,base_graph = NULL,
                                    color = "pink", linewidth = 1, ...){
   data_plot_lower <- bubble_plot_data$lower
   names(data_plot_lower)[1:2] <- c("lat", "lon")
   data_plot_upper <- bubble_plot_data$upper
   names(data_plot_upper)[1:2] <- c("lat", "lon")
   
-  if (is.null(gg_add)) {
+  if (is.null(base_graph)) {
     
     data_all <- rbind(data_plot_lower, data_plot_upper)
     latrange <- range(data_all$lat)
@@ -241,38 +236,39 @@ bubble_data_plot_lines <- function(bubble_plot_data,gg_add = NULL,
                right = lonrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
-    gg_add <- ggmap::ggmap(map)
+    base_graph <- ggmap::ggmap(map)
     
   } 
   
-  out <- gg_add + 
+  ggout <- base_graph + 
     ggplot2::geom_path(data = data_plot_lower, aes(x = lat, y = lon), 
               color = color, linewidth = linewidth, ...) +
     ggplot2::geom_path(data = data_plot_upper, aes(x = lat, y = lon), 
               color = color, linewidth = linewidth, ...) 
   
-  return(out)
+  return(ggout)
 }
 
 
 #' Plot centers for bubble data
 #'
 #' @param bubble_plot_data list of center points, lower and upper tangential 
-#' points from `bubble_data_plot_prep`` function (each a n x 2 data frame)
-#' @param gg_add plot to add points to
+#' points from \code{\link{bubble_data_plot_prep}} function 
+#' (each a n x 2 data frame)
+#' @param base_graph plot to add points to
 #' @param color color of points
 #'
 #' @return ggplot object with points on it
 #' @export
 #'
 #' @examples
-bubble_data_plot_prep_center <- function(bubble_plot_data, gg_add = NULL, 
+bubble_data_plot_prep_center <- function(bubble_plot_data, base_graph = NULL, 
                                          color = "pink", ...){
   
   center <- data.frame(bubble_plot_data$center)
   names(center)[1:2] <- c("lat", "lon")
   
-  if (is.null(gg_add)) {
+  if (is.null(base_graph)) {
     latrange <- range(center$lat)
     lonrange <- range(center$long)
     
@@ -280,12 +276,14 @@ bubble_data_plot_prep_center <- function(bubble_plot_data, gg_add = NULL,
                right = lonrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
-    gg_add <- ggmap::ggmap(map)
+    base_graph <- ggmap::ggmap(map)
   } 
   
-  out <- gg_add + 
+  ggout <- base_graph + 
     ggplot2::geom_point(data = center, aes(x = lat, y = lon),
                color = color, ...)
+  
+  return(ggout)
 }
 
 

@@ -3,13 +3,13 @@ functions_loc <- "code/functions/"
 desired_functions <- c("projection_map.R","Path_functions.R")
 
 # functions
-for(f_name in desired_functions){
+for (f_name in desired_functions) {
   source(paste0(functions_loc,f_name))
 }
 
 
 
-#' Title
+#' Creates structure for SCA algorithm from training data
 #'
 #' @param D_train Distance Matrix for training points
 #' @param K K nearest neighbors value (for localization of distance matrix)
@@ -17,19 +17,20 @@ for(f_name in desired_functions){
 #' @param dim dimension of projected space 
 #' @param plot_n number of original eigenvectors to plot (if any)
 #'
-#' @return old_sigma_k distance to Kth nearest neighbor for each training point
-#' @return P_train transition matrix of training data after local scaling
-#' @return phi_map_out right eigenvector decomposition taking into account K, t
-#' @return train_projected data frame of training points in projected space
-#' @return structure parameters list (k, t, dim from inputted parameters)
+#' @return 
+#' \item{old_sigma_k}{distance to Kth nearest neighbor for each training point}
+#' \item{P_train}{transition matrix of training data after local scaling}
+#' \item{phi_map_out}{right eigenvector decomposition taking into account K, t}
+#' \item{train_projected}{data frame of training points in projected space}
+#' \item{structure}{parameters list (k, t, dim from inputted parameters)}
 #' @export 
-#'
-#' @examples
-training_structure_estimating_p <- function(D_train, K = 4, t = 1, dim = 5, plot_n = 0){
+training_structure_estimating_p <- function(D_train, K = 4, t = 1, dim = 5, 
+                                            plot_n = 0){
   old_sigma_k <- calc_k_dist(D_train,K = K)
   P_train     <- probMatrixPath_k(D_train, old_sigma_k)
   
-  phi_map_out <- right_eigenvector_compression(P = P_train,nu = dim,nv = dim,plot_n = plot_n,t = t)
+  phi_map_out <- right_eigenvector_compression(P = P_train,nu = dim,nv = dim,
+                                               plot_n = plot_n,t = t)
   phi_map_x_train <- phi_map_out$psi_map_x
   lambda_x_train <- phi_map_out$lambda
   
@@ -43,7 +44,7 @@ training_structure_estimating_p <- function(D_train, K = 4, t = 1, dim = 5, plot
 }
 
 
-#' Title
+#' Wrapper for getting structure of SCA lower dimensional projection
 #'
 #' @param training_structure_estimating_p list from 
 #' training_structure_estimating_p
@@ -51,16 +52,15 @@ training_structure_estimating_p <- function(D_train, K = 4, t = 1, dim = 5, plot
 #' (a m x n matrix)
 #' @param kdensity k for knn density caculation in projection space 
 #'
-#' @return new_sigma_k distance to Kth neighbor for test set 
-#' (of points in training set), note this K is defined within 
-#' training_structure_estimating_p parameter
-#' @return P_test transition matrix after local scaling
-#' @return test_projected data frame of projected test points
-#' @return p_estimate_test vector of probability associated with each test point
-#' (using kdensity parameter)
+#' @return 
+#' \item{new_sigma_k}{distance to Kth neighbor for test set  (of points in 
+#' training set), note this K is defined within training_structure_estimating_p 
+#' parameter}
+#' \item{P_test}{transition matrix after local scaling}
+#' \item{test_projected}{data frame of projected test points}
+#' \item{p_estimate_test}{vector of probability associated with each test point
+#' (using kdensity parameter)}
 #' @export
-#'
-#' @examples
 estimate_p_wrapper <- function(training_structure_estimating_p, D_test, 
                                kdensity = 10){
   old_sigma_k     <- training_structure_estimating_p$old_sigma_k
@@ -80,8 +80,7 @@ estimate_p_wrapper <- function(training_structure_estimating_p, D_test,
   test_projected <- new_points_projection(P_test = P_test,
                                           psi_map_train = phi_map_x_train,
                                           lambda_train = lambda_x_train)
-  test_projected <- test_projected
-  
+
   p_estimate_test <- kernel_estimate(train = train_projected,
                                      test = test_projected,
                                      k = kdensity) 

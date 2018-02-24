@@ -6,7 +6,8 @@ library(ggplot2) #needed
 
 #' Right Eigenvector Compression
 #' 
-#' Compresses P transitional matrix to approximate D^2_t matrix 
+#' @description 
+#' Compresses P transitional matrix to approximate \eqn{D^2_t} matrix 
 #' (diffusion distance at scale t)
 #'
 #' @param P transitional matrix
@@ -16,12 +17,11 @@ library(ggplot2) #needed
 #' @param t the number of steps you want to take with the transition matrix 
 #' (power you raise the transition matrix)
 #'
-#' @return psi_map_x matrix (n x nv) of rows are \Psi_t(x)
-#' @return lambda vector of original lambdas from the decomposition of P 
-#' (length nv)
+#' @return 
+#' \item{psi_map_x}{matrix (n x nv) of rows are \eqn{\Psi_t(x)}}
+#' \item{lambda}{vector of original lambdas from the decomposition of P 
+#' (length nv)}
 #' @export
-#'
-#' @examples
 right_eigenvector_compression <- function(P, nu = 100, nv = 100, 
                                          plot_n = 0, t = 5){
 
@@ -49,21 +49,20 @@ right_eigenvector_compression <- function(P, nu = 100, nv = 100,
 
 #' Project New Points with SCA
 #'
-#' creates the estimate of the projection of the test values into the Psi space
-#' of training
+#' @description 
+#' creates the estimate of the projection of the test values into the \eqn{\Psi}
+#' space of training
 #'
-#' @param P_test transition matrix, t = 1, (n x m) calculated for the new points
-#'  on the old points where n = number of new points (test), 
-#'  m is number of old points (train)        
+#' @param P_test transition matrix, \eqn{t = 1}, (n x m) calculated for the new 
+#' points on the old points where n = number of new points (test), m is number 
+#' of old points (train)        
 #' @param psi_map_train psi projection of training data (m x nv) where 
 #' nv = dimension of projected space
 #' @param lambda_train vector of lambdas of original decomposition of 
-#' transition matrix (t=1), length = nv
+#' transition matrix (\eqn{t = 1}), length is nv
 #'
 #' @return psi_map_estimated estimated psi projection of test data
 #' @export
-#'
-#' @examples
 new_points_projection <- function(P_test, psi_map_train, lambda_train){
 
   psi_over_lambda <- psi_map_train %*% diag(1/lambda_train) 
@@ -74,6 +73,7 @@ new_points_projection <- function(P_test, psi_map_train, lambda_train){
 
 #' KNN density estimate for each point 
 #'
+#' @description 
 #' TODO: figure out why this isn't just knn...
 #'
 #' @param train 
@@ -82,8 +82,6 @@ new_points_projection <- function(P_test, psi_map_train, lambda_train){
 #'
 #' @return p density estimate for test observations 
 #' @export
-#'
-#' @examples
 kernel_estimate <- function(train,test,k){
   dists <- kknn::kknn.dist(train, test, k = k, distance = 3)    
   dists_desired <- dists[[2]][,k]
