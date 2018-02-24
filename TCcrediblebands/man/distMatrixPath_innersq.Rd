@@ -19,6 +19,9 @@ datamart::uconv.}
 \item{verbose}{boolean logic if should have print outs while computing 
 distance matrix}
 }
+\value{
+distance matrix od dimension n x n
+}
 \description{
 Calculates the distance matrix Delta between n paths
 }

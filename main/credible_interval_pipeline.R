@@ -12,16 +12,21 @@
 
 #' Sourcing external functions ----------------------------------------
 
-functions_loc <- '../TCcrediblebands/R/'
-source(paste0(functions_loc, 'kde_functions.R'))
-source(paste0(functions_loc, 'bubble_functions.R'))
-source(paste0(functions_loc, 'convex_hull.R'))
-source(paste0(functions_loc, 'delta_ball.R'))
-source(paste0(functions_loc, 'thirteen_point_compression.R'))
-source(paste0(functions_loc, 'path_functions.R'))
-source(paste0(functions_loc, 'depth_function.R'))
-source(paste0(functions_loc, 'credible_interval_pipeline_functions.R'))
+#functions_loc <- '../TCcrediblebands/R/'
+#source(paste0(functions_loc, 'kde_functions.R'))
+#source(paste0(functions_loc, 'bubble_functions.R'))
+#source(paste0(functions_loc, 'convex_hull.R'))
+#source(paste0(functions_loc, 'delta_ball.R'))
+#source(paste0(functions_loc, 'thirteen_point_compression.R'))
+#source(paste0(functions_loc, 'path_functions.R'))
+#source(paste0(functions_loc, 'depth_function.R'))
+#source(paste0(functions_loc, 'credible_interval_pipeline_functions.R'))
 
+# Install from Github ----------------------------------
+
+library(devtools)
+#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
+library(TCcrediblebands)
 
 #' Execution --------------------------------------------------------
 
@@ -43,7 +48,7 @@ reduced_test_env <- list("AL031951" = list("Auto_DeathRegs"= list(),
 
 for (name_tc in names(reduced_test_env)) {
   for (curve_type in names(reduced_test_env[[name_tc]])) {
-    for (i in c(1:100)) { # or num_samples_vec[idx_sim] if we are testing for complexity
+    for (i in c(1:10)) { # or num_samples_vec[idx_sim] if we are testing for complexity
       reduced_test_env[[name_tc]][[curve_type]][[i]] <- test_env[[name_tc]][[curve_type]][[i]]
     }
   }
@@ -59,7 +64,7 @@ tc_true_path_list <- list("AL031951" = test_env$AL031951$Auto_DeathRegs[[1]],
 alpha_level <- 0.1
 
 start.time <- Sys.time()
-output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
+output_pipeline <- TCcrediblebands:::credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
                                                 tc_true_path_list = tc_true_path_list,
                                                 alpha_level = alpha_level)
 end.time <- Sys.time()

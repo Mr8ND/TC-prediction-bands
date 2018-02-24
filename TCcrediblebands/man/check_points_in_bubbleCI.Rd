@@ -17,6 +17,10 @@ check_points_in_bubbleCI(df_points, center_df, radius_df, long = 1, lat = 2)
 
 \item{lat}{column index of the latitude in the central points}
 }
+\value{
+Boolean vectors on whether the points are in any of the bubble CIs 
+or not
+}
 \description{
 Given a dataframe of points this function returns a vector of the same
 length with 1 or 0 whether the respective points is included in any of the CI

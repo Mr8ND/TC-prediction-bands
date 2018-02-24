@@ -319,7 +319,7 @@ inverse_map <- function(distance_projection, projection_locs,
 #' @param verbose boolean logic if should have print outs while computing 
 #' distance matrix
 #'
-#' @return
+#' @return distance matrix od dimension n x n
 #' @export
 distMatrixPath_innersq = function(path_mat_list, 
                                   output_length = "nautical mile", 

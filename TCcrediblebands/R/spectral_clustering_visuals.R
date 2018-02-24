@@ -89,7 +89,6 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 #' @return data frame that can be used to visualize curves
 #' @export
 #'
-#' @examples
 data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
 
 	data_out <- data.frame(lat = -360, long = -360, prob = 0, 
@@ -127,7 +126,6 @@ data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
 #' @return ggmap based map object
 #' @export
 #'
-#' @examples
 ggvis_paths_sca_weight <- function(data_out, zoom = 4,
 						test_color_power = 1/3, 
 						test_color_low = "white",
@@ -200,7 +198,6 @@ data_projection <- function(scp_output){
 #' (relative to power transformation)}
 #' \item{colors_rw}{color palette ramp vector}
 #'
-#' @examples
 color_function <- function(weights_in,
 							test_color_power = 1/3,
 							test_color_low = "white",
@@ -231,7 +228,6 @@ color_function <- function(weights_in,
 #' @return ggplot scatter plot of training and colored test points
 #' @export
 #'
-#' @examples
 ggvis_projection <- function(scp_output, train_alpha = .3, 
 							 test_color_power = 1/3, 
 							 test_color_low = "white",

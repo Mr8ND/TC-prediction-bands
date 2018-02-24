@@ -32,6 +32,7 @@
 #' have an 'area' and 'in_vec' argument to determine the area value and a 
 #' boolean vector which reported whether the point of the true TC was inside the
 #' TC or not.
+#' @export
 credible_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
                                         long = 1, lat = 2, verbose = FALSE,
                                         kde_grid_size = rep(1000,2),
@@ -167,6 +168,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' 
 #' @return A list in which each sublist is a curve type and each sublist has for each element
 #' a TC with the 4 different calculated credible intervals.
+#' @export
 credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
                                         start_idx = NULL, end_idx = NULL, long = 1, lat = 2, 
                                         unit_measure = 'nautical mile', verbose = TRUE,

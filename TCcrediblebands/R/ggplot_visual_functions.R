@@ -33,7 +33,6 @@
 #' @return single data frame with all curves (curve column with idx of curve)
 #' @export
 #'
-#' @examples
 data_plot_paths_basic <- function(test_list, c_position = 1:2) {
   
   data_out <- data.frame(lat = -360,
@@ -151,7 +150,6 @@ ggvis_kde_contour <- function(level_contour_df, data_plot, base_graph = NULL){
 #' @return ggplot object of contour and data points.
 #' @export
 #'
-#' @examples
 gg_vis_delta_ball_contour <- function(output_lines, base_graph = NULL){
   
   if (is.null(base_graph)) {
@@ -218,7 +216,6 @@ bubble_data_plot_prep <- function(bubble_step){
 #' @return ggplot object with curves on it
 #' @export
 #'
-#' @examples
 bubble_data_plot_lines <- function(bubble_plot_data,base_graph = NULL,
                                    color = "pink", linewidth = 1, ...){
   data_plot_lower <- bubble_plot_data$lower
@@ -261,7 +258,6 @@ bubble_data_plot_lines <- function(bubble_plot_data,base_graph = NULL,
 #' @return ggplot object with points on it
 #' @export
 #'
-#' @examples
 bubble_data_plot_prep_center <- function(bubble_plot_data, base_graph = NULL, 
                                          color = "pink", ...){
   

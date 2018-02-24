@@ -248,7 +248,7 @@ max_cumulative_area <- function(tc_bubble_structure) {
 #' @param long column index of the longitude in the central points
 #' @param lat column index of the latitude in the central points
 #' 
-#' @output Boolean vectors on whether the points are in any of the bubble CIs 
+#' @return Boolean vectors on whether the points are in any of the bubble CIs 
 #' or not
 check_points_in_bubbleCI <- function(df_points, center_df, radius_df, 
                                      long = 1, lat = 2){
