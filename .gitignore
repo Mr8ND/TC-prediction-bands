@@ -5,4 +5,5 @@ data/*
 !spec/*.Rhistory
 __pycache__/
 !spec/*__pycache__/
-
+TCcrediblebands/R/data/*
+!TCcrediblebands/R/data/README.md

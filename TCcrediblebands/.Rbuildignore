@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^R/data/raw_data$
+^R/data/sample$
+^R/data/test_data$
