@@ -6,14 +6,16 @@ library(sp)
 
 source("code/functions/depth_function.R")
 
-#' Find the minimum distance (delta) such that all points are within delta of
-#' at least one other point.
+#' Find delta for covering
+#' 
+#' @description Find the minimum distance (delta) such that all points are 
+#' within delta of at least one other point.
 #'
 #' @param data continuous data frame of individual points (in each row)
 #' @param dist_mat distance matrix, calculated otherwise via euclidean distance
 #'
-#' @return dist_mat distance matrix between points
-#' @return mm_delta the minimum distance (delta)
+#' @return \item{dist_mat}{distance matrix between points}
+#' \item{mm_delta}{the minimum distance (delta)}
 #' @export
 get_delta <- function(data, dist_mat = NULL){
   if (is.null(dist_mat)) {
@@ -28,17 +30,18 @@ get_delta <- function(data, dist_mat = NULL){
 }
 
 
-#' Inner function to get uniform sampling of points in box around data points
+#' Sample from box around data points
+#' 
+#' @description Inner function to get uniform sampling of points in box around 
+#' data points
 #'
 #' @param data continuous data frame of individual points (in each row)
 #' @param n number of points drawn
 #'
-#' @return box_points data frame of uniformly randomly drawn points
-#' @return size the size of the box points are drawn from
-#'
-#' @examples
+#' @return \item{box_points}{data frame of uniformly randomly drawn points}
+#' \item{size}{the size of the box from which points are drawn}
 get_box_points <- function(data, n = 10000){
-  # get uniform box of
+  # get points drawn uniformly from box around data points
   ranges <- sapply(data, range)
   
   box_points <- data.frame(x = runif(n = n,
@@ -52,8 +55,10 @@ get_box_points <- function(data, n = 10000){
   return(list(box_points = box_points, size = size))
 }
 
-#' Inner Estimate the Area of Union balls using uniform draws 
-#' (with radius delta)
+#' Estimate area of union of balls (inner)
+#' 
+#' @description Inner function to estimate the area of union of balls with 
+#' radius delta, using uniform draws 
 #'
 #' @param data data continuous data frame of individual points (in each row)
 #' @param query data points uniformly drawn from a space (with calculated size)
@@ -61,11 +66,9 @@ get_box_points <- function(data, n = 10000){
 #' @param delta radius of each ball inside the union
 #' @param alpha alpha level for 2 sided confidence interval estimate
 #'
-#' @return area estimated area of union of balls
-#' @return area_ci vector with lower and upper confidence interval estimate
-#' 
-#'
-#' @examples
+#' @return 
+#' \item{area}{estimated area of union of balls}
+#' \item{area_ci}{vector with lower and upper confidence interval estimate}
 get_area_inner <- function(data, query, size, delta, alpha = .05){
   n = nrow(query)
   neighbor <- RANN::nn2(data = data, query = query,
@@ -80,19 +83,21 @@ get_area_inner <- function(data, query, size, delta, alpha = .05){
 }
 
 
-#' Estimate the Area of Union balls using uniform draws (with radius delta)
+#' Estimate area of union of balls (wrapper)
+#' 
+#' @description Wrapper function to estimate the area of union of balls with 
+#' radius delta, using uniform draws 
 #'
 #' @param data data continuous data frame of individual points (in each row)
 #' @param delta radius of each ball inside the union
 #' @param n number of points drawn uniformly within a box around the true data
 #' @param alpha alpha level for 2 sided confidence interval estimate
 #'
-#' @return area estimated area of union of balls
-#' @return area_ci vector with lower and upper confidence interval estimate
+#' @return 
+#' \item{area}{estimated area of union of balls}
+#' \item{area_ci}{vector with lower and upper confidence interval estimate}
 #' 
 #' @export
-#'
-#' @examples
 get_area <- function(data, delta, n = 10000, alpha = .05){
   
   unif_points <- get_box_points(data, n = n)
@@ -104,29 +109,33 @@ get_area <- function(data, delta, n = 10000, alpha = .05){
   return(area_info)
 }
 
-#' Makes triangle matrix for points in matrix 
+#' Make triangle matrix
+#' 
+#' @description Makes triangle matrix for points in matrix 
 #'
 #' @param dtri_data_tri sp object with triangles (n triangles)
 #'
 #' @return a matrix (n x 3) with strings of locations of 3 points in triangle 
 #' @export
-#'
-#' @examples
 get_tri_matrix <- function(dtri_data_tri){
   # makes a matrix with string points of triangle (n x 3)
   num_tri <- length(dtri_data_tri@polygons)
   all_tri <- matrix("", nrow = num_tri, ncol = 3)
   
   for (idx_tri in 1:num_tri) {
-    tri <- data.frame(dtri_data_tri@polygons[[idx_tri]]@Polygons[[1]]@coords)[1:3,]
-    all_tri[idx_tri,] <- tri %>% apply(1, function(x) paste0("(",x[1],",",x[2],")"))
+    tri <- data.frame(
+                  dtri_data_tri@polygons[[idx_tri]]@Polygons[[1]]@coords)[1:3,]
+    all_tri[idx_tri,] <- tri %>% 
+                          apply(1, function(x) paste0("(",x[1],",",x[2],")"))
   }
   
   return(all_tri)
 }
 
-#' Remove triangles from tuple matrix that have 1 or more edge that needs to be 
-#' removed
+#' Remove triangles with edges that need removal
+#' 
+#' @description Remove triangles from tuple matrix that have 1 or more edge that
+#' needs to be removed
 #'
 #' TODO: this function needs to be cleaned up
 #'
@@ -135,11 +144,9 @@ get_tri_matrix <- function(dtri_data_tri){
 #' @param removed_mat edges to be removed
 #'
 #' @return data frame with tuples of triangle not removed
-#'
-#' @examples
 remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
   # removes triangles for tuples data frame that have an edge removed 
-  removed_mat <- removed_mat[apply(removed_mat,1, 
+  removed_mat <- removed_mat[apply(removed_mat, 1, 
                                    function(row) sum(is.na(row)) == 0), ]
   
   tuples_of_tri$combo <- apply(tuples_of_tri,1, 
@@ -163,15 +170,14 @@ remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
   return(out_tuples)
 }
 
-#' Inner Function, removes delta length out both sides of a line
+#' Shorten line by delta on both sides
+#' 
+#' @description Inner function to remove delta length from both sides of a line
 #'
 #' @param line 2 x 2 matrix of edge points of line
 #' @param delta numeric delta to be subtracted
 #'
 #' @return 2 x 2 matrix of edges that are shrunk
-#' 
-#'
-#' @examples
 remove_delta_off_line <- function(line, delta){
   # (inner function) removed delta length of each side of a line
   diffs <- diff(line)
@@ -191,14 +197,14 @@ remove_delta_off_line <- function(line, delta){
   return(out_line)
 }
 
-#' Inner Function, create $n$ equidistance points along a line
+#' Create n equidistance points
+#' 
+#' @description Inner Function to create n equidistant points along a line
 #'
 #' @param line 2 x 2 matrix of edge points of line
-#' @param n_steps integer number of steps ($n$)
+#' @param n_steps integer number of steps (n)
 #'
-#' @return $n$ x 2 matrix with points on path
-#'
-#' @examples
+#' @return n x 2 matrix with points on path
 steps_along_2d_line <- function(line, n_steps = 1000){
   # (inner function) finds equidistance points along a line
   len   <- dist(line)
@@ -221,7 +227,10 @@ steps_along_2d_line <- function(line, n_steps = 1000){
   return(points)
 }
 
-#' Figure out which edges in the delaunay diagram are within the union of balls
+#' Get edges within union of balls
+#' 
+#' @description Figure out which edges in the delaunay diagram are within the 
+#' union of balls
 #'
 #' @param delaunay_tri_data sp data of delaunay triangles
 #' @param data_raw data frame with center points of balls 
@@ -229,13 +238,12 @@ steps_along_2d_line <- function(line, n_steps = 1000){
 #' @param n_steps number of equidistance points along the line, past delta 
 #' on both sides, that will be checked to approximate all points along the line
 #'
-#' @return lines_mat lines of edges that are kept (each edge has 2 rows and 
-#' share an index). These edges are within the union of the balls.
-#' @return removed_mat lines of edges that should be removed (i.e. are not 
-#' with the union of balls.)
+#' @return 
+#' \item{lines_mat}{lines of edges that are kept (each edge has 2 rows and 
+#' share an index). These edges are within the union of the balls.}
+#' \item{removed_mat}{lines of edges that should be removed (i.e. are not 
+#' with the union of balls.)}
 #' @export
-#'
-#' @examples
 get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
   ## this function gets lines that are included within the balls
   
@@ -254,7 +262,7 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
     if (dist(l) > delta * 2) {
       l_inner <- remove_delta_off_line(l, delta)
       points_along <- steps_along_2d_line(l_inner,n_steps)
-      neighbor <- nn2(data = data_raw, query = points_along,
+      neighbor <- RANN::nn2(data = data_raw, query = points_along,
                       k = 1, treetype = "kd")
       if (!all(neighbor$nn.dists < delta)) {
         removed_mat[(2*idx - 1):(2*idx),] <- l
@@ -278,14 +286,15 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
   return(list(lines_mat = lines_mat, removed_mat = removed_mat ))
 }
 
-#' Remove duplicates of points in point cloud (needed for certain algorithms)
+#' Remove duplicate points
+#' 
+#' @description Remove duplicates of points in point cloud (needed for certain 
+#' algorithms)
 #'
 #' @param data_raw data points of observations 
 #' expected lat, long column names
 #'
 #' @return data without duplicates
-#'
-#' @examples
 remove_duplicates_func <- function(data_raw){
   data_raw$connectors <- apply(data_raw,1, function(row) paste0(row[1],",",row[2]))
   
@@ -297,11 +306,11 @@ remove_duplicates_func <- function(data_raw){
   return(data_out)
 }
 
-#' Run delta ball analysis - get out outline of points.
-#' runs all analysis to get dataframe with regular lines
-#'  part of the approach in "Computing Polygonal Surfaces from Unions of Balls"
-#'  by Tam and Heidrich
+#' Run delta ball analysis 
 #' 
+#' @description Run delta ball analysis and get outline of points. Runs all 
+#' analyses to get dataframe with regular lines. Part of the approach in 
+#' "Computing Polygonal Surfaces from Unions of Balls" by Tam and Heidrich.
 #' 
 #' @param data_raw data frame with center points of balls 
 #' @param n_steps number of equidistance points along the line, past delta 
@@ -310,10 +319,7 @@ remove_duplicates_func <- function(data_raw){
 #'
 #' @return data frame of exterior lines (not ordered)
 #' @export
-#'
-#' @examples
 delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
-
   
   if (remove_duplicates) {
     data_raw <- remove_duplicates_func(data_raw)
@@ -389,12 +395,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   return(output_lines)
 }
 
-
-
-
-
-
-#' Preforms delta ball approach
+#' Performs delta ball approach
 #'
 #' @param data_list list of hurricanes
 #' @param alpha for credible band (related to depth)
@@ -407,13 +408,12 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 #' @param ... other parameters in distance calculation through 
 #' `distMatrixPath_innersq`
 #'
-#' @return structure data frame of non-ordered lines of contour
-#' @return area estimated error of contour area (float)
-#' @return area_ci area confidence interval (vector)
-#' @return delta optimal delta for covering
+#' @return 
+#' \item{structure}{data frame of non-ordered lines of contour}
+#' \item{area}{estimated error of contour area (float)}
+#' \item{area_ci}{area confidence interval (vector)}
+#' \item{delta}{optimal delta for covering}
 #' @export
-#'
-#' @examples
 delta_structure <- function(data_list, alpha, dist_mat = NULL, 
                             data_deep_points = NULL,
                             c_position = 1:2,
@@ -454,9 +454,7 @@ delta_structure <- function(data_list, alpha, dist_mat = NULL,
   return(out)
 }
 
-
-
-#' Proportion of true TC steps within delta of delta-ball CB
+#' Proportion of true TC steps within delta-ball CB
 #'
 #' @param raw_data_points data continuous data frame of individual points 
 #' (in each row)
@@ -464,10 +462,8 @@ delta_structure <- function(data_list, alpha, dist_mat = NULL,
 #' @param delta radius of each ball inside the union
 #'
 #' @return in_out_vec boolean vector if point is within delta of raw points
-#'
-#' @examples
 delta_ball_prop_interior <- function(raw_data_points, truth_points, delta){
-  neighbor <- nn2(data = raw_data_points, query = truth_points,
+  neighbor <- RANN::nn2(data = raw_data_points, query = truth_points,
                   k = 1, treetype = "kd")
   in_out_vec <- (neighbor$nn.dists < delta)
   

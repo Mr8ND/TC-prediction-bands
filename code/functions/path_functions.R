@@ -1,7 +1,9 @@
 library(geosphere)
 library(datamart)
 library(progress)
-#' Swap the 2 columns in a Data Frame
+#' Swap 2 columns
+#' 
+#' @description Swap the 2 columns in a Data Frame
 #'
 #' NOTE: not sure this should be exported
 #'
@@ -10,13 +12,13 @@ library(progress)
 #' @return data frame with columns reverse (actually just first 2 columns 
 #' included)
 #' @export
-#'
-#' @examples
 swap2DfCols <- function(data_df){
 	return(data.frame(cbind(data_df[, 2], data_df[, 1])))
 }
 
-#' Calculates the distance and bearing between each point of a path.
+#' Distance/bearing between points along path
+#' 
+#' @description Calculates the distance and bearing between each point of a path
 #'
 #' @param data_df (n x 2) data.frame, each row is a pair of values (lat, lon) 
 #' unless specified the reverse with longlat boolean
@@ -27,11 +29,10 @@ swap2DfCols <- function(data_df){
 #' @param verbose boolean logic if should have print outs (specifically that we
 #' switch the columns due to longlat boolean)
 #'
-#' @return distance vector of distances beween points (n - 1)
-#' @return bearing vector of bear change between points (n - 1)
+#' @return 
+#' \item{distance}{vector of distances beween points (n - 1)}
+#' \item{bearing}{vector of bear change between points (n - 1)}
 #' @export
-#'
-#' @examples
 distAlongP <- function(data_df, output_length = "nautical mile", 
                        longlat = TRUE, verbose = FALSE){
   
@@ -50,14 +51,15 @@ distAlongP <- function(data_df, output_length = "nautical mile",
 		output_d[i] <- datamart::uconv(geosphere::distGeo(data_df[i, 1:2], 
 		                                                  data_df[i + 1, 1:2]),
 		                     "m", output_length, "Length")
-		output_b[i] <- bearing(data_df[i, 1:2], data_df[i + 1, 1:2])
+		output_b[i] <- geosphere::bearing(data_df[i, 1:2], data_df[i + 1, 1:2])
 	}
 
 	return(list(distance = output_d, bearing = output_b))
 }
 
-
-#' Calculates the distance between each point of every path.
+#' Distance between points
+#' 
+#' @description Calculates the distance between each point of every path.
 #'
 #' @param data_df_p1 (n x 2) data.frame, each row is a pair of values (lat, lon) 
 #' unless specified the reverse with longlat boolean
@@ -72,8 +74,6 @@ distAlongP <- function(data_df, output_length = "nautical mile",
 #'
 #' @return vector of n distances between each order point in the two data frames
 #' @export
-#'
-#' @examples
 distBetweenP <- function(data_df_p1, data_df_p2, 
                         output_length = "nautical mile", 
                         longlat = TRUE, verbose = FALSE){
@@ -184,9 +184,7 @@ distBetweenP <- function(data_df_p1, data_df_p2,
 # 	return(w/rowSums(w))
 # }
 
-#####################################
-# Extensions to probMatrix Creation #
-#####################################
+# Extensions to probMatrix Creation --------------------------------
 
 #' Finds the kth smallest distance for each point
 #'
@@ -196,8 +194,6 @@ distBetweenP <- function(data_df_p1, data_df_p2,
 #'
 #' @return dist_k vector with kth distance (per each row)
 #' @export
-#'
-#' @examples
 calc_k_dist <- function(dist_matrix, K = 7){
   ncol_D <- ncol(dist_matrix)
   
@@ -210,7 +206,9 @@ calc_k_dist <- function(dist_matrix, K = 7){
   return(dist_k)
 }
   
-#' Title Creates Probability matrix, using KNN vector ot hold sigma
+#' Create probability matrix
+#' 
+#' @description Creates probability matrix, using KNN vector
 #'
 #' @param dist_matrix n x m distance matrix
 #' @param kNN_sigma m x 1 vector with sigma estimates for original structure
@@ -219,8 +217,6 @@ calc_k_dist <- function(dist_matrix, K = 7){
 #'
 #' @return p n x m matrix (transitional matrix)
 #' @export
-#'
-#' @examples
 probMatrixPath_k = function(dist_matrix, kNN_sigma, kNN_sigma_new = kNN_sigma){
 
   if (!(length(kNN_sigma_new) == nrow(dist_matrix) & 
@@ -234,9 +230,6 @@ probMatrixPath_k = function(dist_matrix, kNN_sigma, kNN_sigma_new = kNN_sigma){
   return(p)
 }
 
-
-##########
-##########
 
 #' 
 #' #' Given a certain probability matrix P, this function computes the matrix 
@@ -275,18 +268,19 @@ probMatrixPath_k = function(dist_matrix, kNN_sigma, kNN_sigma_new = kNN_sigma){
 #' 	return(output_mat)
 #' }
 
-#######################################
-# Extensions to d2MatrixPath Creation #
-#######################################
+# Extensions to d2MatrixPath Creation -----------------------------
+
 # Updates to number of steps along transition matrix, averaging
 # Now requires 2 functions 
 # (I don't think we use the d2 but it wasn't the hard to copy)
 
-#' Averages together P matrices raised to different t values
+#' Averages P matrices
+#' 
+#' @description Averages together P matrices raised to different t values
 #'
 #' Notes: Assumes that the P matrix is well created (rows sum to 1)
 #'
-#' The author knows longer knows what this does.
+#' The author no longer knows what this does.
 #' 
 #' @param prob_matrix (n x n) transition matrix 
 #' @param t_var integer or vector containing information about t
@@ -297,8 +291,6 @@ probMatrixPath_k = function(dist_matrix, kNN_sigma, kNN_sigma_new = kNN_sigma){
 #'
 #' @return p_average (n x n) transition matrix
 #' @export
-#'
-#' @examples
 pMatrixPath_average = function(prob_matrix, t_var, t_type = "upper"){
   
   # log2 way to express t ---------------------
@@ -329,8 +321,9 @@ pMatrixPath_average = function(prob_matrix, t_var, t_type = "upper"){
 
 
 #' Computes matrix D^2(x,y)
-#' defines as follows:
-#'    D^2(x,y) = sum_k (P(x,k)-P(y,k))/stat_k
+#' 
+#' @description Computes matrix D^2(x,y) defined as follows:
+#'    \deqn{D^2(x,y) = sum_k (P(x,k)-P(y,k))/stat_k}
 #' Where stat_k is the stationary vector of the probability matrix.
 #'
 #' Note: 
@@ -343,10 +336,8 @@ pMatrixPath_average = function(prob_matrix, t_var, t_type = "upper"){
 #'
 #' @param prob_matrix_t (n x n) probability matrix
 #'
-#' @return output_mat (n x n) D^2(x,y) matrix
+#' @return output_mat (n x n) \eqn{D^2(x,y)} matrix
 #' @export
-#'
-#' @examples
 d2MatrixPath_pt = function(prob_matrix_t){
   
   eigenvec_1 <- eigen(prob_matrix)$vectors[,1]
@@ -365,24 +356,18 @@ d2MatrixPath_pt = function(prob_matrix_t){
   return(output_mat)
 }
 
-
-###########
-###########
-
-###################
-# inverse mapping #
-###################
+# inverse mapping -----------------------------------------------------
 
 # for a single observation: 
 
-#' Wrapper for calculating euclidean distance, for a single TC
+#' Euclidean distance wrapper
+#' 
+#' @description Wrapper for calculating euclidean distance, for a single TC
 #'
 #' @param projection_locs locations of TC in projected space (n x d)
 #'
 #' @return euclidean distance matrix comparing between points
 #' @export
-#'
-#' @examples
 distance_mat_eulid <- function(projection_locs){
   
   n <- nrow(projection_locs)
@@ -395,10 +380,12 @@ distance_mat_eulid <- function(projection_locs){
 }
 
 
-
-#' Predicts the Hurricane path from training data and location of projection
+#' Predict hurricane path from projections
+#' 
+#' @description Predicts the hurricane path from training data and location of 
+#' projection
 #'
-#' This function does a lot, it:
+#' This function does the following:
 #' 1) gets a prediction for s_i(k) for the new observation in the projection 
 #' space
 #' 2) uses the kNN approach to calculate closeness weights (scaled obviously)
@@ -414,8 +401,6 @@ distance_mat_eulid <- function(projection_locs){
 #'
 #' @return predicted path of new observation
 #' @export
-#'
-#' @examples
 inverse_map <- function(distance_projection, projection_locs,
                         old_locs, new_p_loc, K = 7){
 
@@ -440,22 +425,9 @@ inverse_map <- function(distance_projection, projection_locs,
   return(predict)
 }
 
+# Distance Between Speed and GeoDist Correct -------------------------
 
-
-
-
-
-
-
-
-
-##############################################
-# Distance Between Speed and GeoDist Correct #
-##############################################
-
-#############################
-# Train to Train (Standard) #
-#############################
+# Train to Train (Standard) ------------------------------------------
 
 #' Calculates the distance matrix Delta between n paths
 #'
@@ -469,8 +441,6 @@ inverse_map <- function(distance_projection, projection_locs,
 #'
 #' @return
 #' @export
-#'
-#' @examples
 distMatrixPath_innersq = function(path_mat_list, 
                                   output_length = "nautical mile", 
                                   longlat = TRUE,
@@ -501,8 +471,6 @@ distMatrixPath_innersq = function(path_mat_list,
   return(output_mat)
 }
 
-
-
 # distMatrixSpeed_innersq <- function(speed_df){
 #   # this function is similar to the ones above - but we get the sum of square 
 #   # differences of the speed (this ends up being just a wrapper)
@@ -515,14 +483,7 @@ distMatrixPath_innersq = function(path_mat_list,
 #   return(d2)
 # }
 
-
-
-#######################
-# Train to Test (t2t) #
-#######################
-
-
-
+# Train to Test (t2t) ---------------------------------------------
 
 #   #This function calculates the distance matrix Delta between n paths.
 #   #This matrix is a symmetric matrix, with the diagonal being 1, and each of the off
@@ -538,8 +499,11 @@ distMatrixPath_innersq = function(path_mat_list,
 #   #Ouput is the delta matrix distance, output as a matrix (m x n). m test,n training paths
 #   
 
-#' Creates a path distance matrix between the test paths and training paths 
-#' (t2t) contains the correct L2 norm structure sum of square distances
+#' Create path distance matrix
+#' 
+#' @description Creates a path distance matrix between the test paths and 
+#' training paths (t2t) contains the correct L2 norm structure sum of square 
+#' distances
 #'
 #' @param path_mat_list_train list of paths of training curves (n objects)
 #' @param path_mat_list_test list of paths of test curves (m objects)
@@ -552,8 +516,6 @@ distMatrixPath_innersq = function(path_mat_list,
 #'
 #' @return delta matrix distance, output as a matrix (m x n)
 #' @export
-#'
-#' @examples
 distMatrixPath_t2t_path <- function(path_mat_list_train, path_mat_list_test, 
                                    output_length = "nautical mile", 
                                    longlat = TRUE, verbose = FALSE){
