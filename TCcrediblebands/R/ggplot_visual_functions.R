@@ -7,19 +7,19 @@
 
 # Locations ------------------------
 
-project_location      <- ""
-functions_loc         <- "R/"
+#project_location      <- ""
+#functions_loc         <- "R/"
 
-desired_functions <- c("path_functions.R",
-                       "thirteen_point_compression.R",
-                       "projection_map.R",
-                       "depth_function.R")
+#desired_functions <- c("path_functions.R",
+#                       "thirteen_point_compression.R",
+#                       "projection_map.R",
+#                      "depth_function.R")
 
 # Loading functions ------------------------
 
-for (f_name in desired_functions) {
-  source(paste0(functions_loc,f_name)) #needs at least calculateErrorBandsBubble
-}
+#for (f_name in desired_functions) {
+#  source(paste0(functions_loc,f_name)) #needs at least calculateErrorBandsBubble
+#}
 
 
 # Basic visualization functions -----------------------

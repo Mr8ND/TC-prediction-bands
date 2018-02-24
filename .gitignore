@@ -7,3 +7,5 @@ __pycache__/
 !spec/*__pycache__/
 TCcrediblebands/data/*
 !TCcrediblebands/data/README.md
+main/data/*
+!main/data/README.md

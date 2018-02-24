@@ -2,7 +2,7 @@
 #library(geosphere)
 
 #### Loading inner functions
-source(file = "R/path_functions.R")
+#source(file = "R/path_functions.R")
 
 #' Thirteen point compression
 #'

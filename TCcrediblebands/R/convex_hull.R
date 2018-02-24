@@ -6,7 +6,7 @@
 #library(progress) 
 
 
-source("R/depth_function.R")
+#source("R/depth_function.R")
 
 #' Get area of convex hull
 #'

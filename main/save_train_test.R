@@ -1,6 +1,6 @@
 # Code to save .Rdata file with lists train_data, test_data, and new_data (empty)
 
-functions_loc = "R/"
+functions_loc = "../TCcrediblebands/R/"
 source(paste0(functions_loc, "read_data_source.R"))
 
 # Read in train_names and test_names

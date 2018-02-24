@@ -1,10 +1,10 @@
-functions_loc <- "R/"
-desired_functions <- c("projection_map.R","Path_functions.R")
+#functions_loc <- "R/"
+#desired_functions <- c("projection_map.R","Path_functions.R")
 
 #' functions --------------
-for (f_name in desired_functions) {
-  source(paste0(functions_loc,f_name))
-}
+#for (f_name in desired_functions) {
+#  source(paste0(functions_loc,f_name))
+#}
 
 
 

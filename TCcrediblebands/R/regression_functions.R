@@ -1,5 +1,5 @@
-suppressMessages(suppressWarnings(library(lubridate))) 
-suppressMessages(suppressWarnings(library(geosphere)))
+#suppressMessages(suppressWarnings(library(lubridate))) 
+#suppressMessages(suppressWarnings(library(geosphere)))
 
 #' Sanitize TC data for analysis
 #' 

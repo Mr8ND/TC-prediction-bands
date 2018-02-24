@@ -12,7 +12,7 @@
 
 #' Sourcing external functions ----------------------------------------
 
-functions_loc <- 'R/'
+functions_loc <- '../TCcrediblebands/R/'
 source(paste0(functions_loc, 'kde_functions.R'))
 source(paste0(functions_loc, 'bubble_functions.R'))
 source(paste0(functions_loc, 'convex_hull.R'))

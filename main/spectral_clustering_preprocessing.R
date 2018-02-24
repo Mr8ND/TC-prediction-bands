@@ -2,7 +2,7 @@
 # libraries, and functions 
 
 project_location  <- ""
-functions_loc     <- paste0(project_location,"R/")
+functions_loc     <- paste0(project_location,"../TCcrediblebands/R/")
 data_loc 	        <- paste0(project_location,"data/")
 
 desired_functions <- c("path_functions.R","thirteen_point_compression.R",

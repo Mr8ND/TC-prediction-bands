@@ -4,7 +4,7 @@
 #library(rgeos)
 #library(sp)
 
-source("R/depth_function.R")
+#source("R/depth_function.R")
 
 #' Find delta for covering
 #' 

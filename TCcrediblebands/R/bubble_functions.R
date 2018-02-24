@@ -228,7 +228,7 @@ max_cumulative_area <- function(tc_bubble_structure) {
     dat_all <- rbind(pos[1:i,],
                      neg_back[(n - i):n,])
     spPoly <- sp::SpatialPolygons(list(
-                        sp::Polygons(list(sp::Polygons(dat_all)),ID = 1)))
+                        sp::Polygons(list(sp::Polygon(dat_all)),ID = 1)))
     area_vec <- c(area_vec, rgeos::gArea(spPoly))
   }  
   return(list(area_vec = area_vec, max = max(area_vec)))

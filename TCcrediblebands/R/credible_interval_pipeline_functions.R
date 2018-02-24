@@ -186,7 +186,7 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
   	if (verbose) {
 	    pb <- progress::progress_bar$new(
-	      format = "Creadible Interval Pipeline [:bar] :percent eta: :eta",
+	      format = "Credible Interval Pipeline [:bar] :percent eta: :eta",
 	      total = length(c(start_idx:end_idx))*4, clear = FALSE, width = 51)
   	}
 
