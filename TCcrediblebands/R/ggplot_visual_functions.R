@@ -1,14 +1,14 @@
-library(rgeos)
-library(geosphere) 
-library(ggmap)
-library(tidyverse)
-library(ks)
+#library(rgeos)
+#library(geosphere) 
+#library(ggmap)
+#library(tidyverse)
+#library(ks)
 
 
 # Locations ------------------------
 
 project_location      <- ""
-functions_loc         <- "code/functions/"
+functions_loc         <- "R/"
 
 desired_functions <- c("path_functions.R",
                        "thirteen_point_compression.R",

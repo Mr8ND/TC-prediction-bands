@@ -1,18 +1,18 @@
 #' Library ----------------------------------------
 
-library(datamart)
-library(geosphere)
-library(plyr)
-library(rworldmap)
-library(caret)
-library(ks)
-library(gtools)
-library(RANN)
+#library(datamart)
+#library(geosphere)
+#library(plyr)
+#library(rworldmap)
+#library(caret)
+#library(ks)
+#library(gtools)
+#library(RANN)
 
 
 #' Sourcing external functions ----------------------------------------
 
-functions_loc <- 'code/functions/'
+functions_loc <- 'R/'
 source(paste0(functions_loc, 'kde_functions.R'))
 source(paste0(functions_loc, 'bubble_functions.R'))
 source(paste0(functions_loc, 'convex_hull.R'))

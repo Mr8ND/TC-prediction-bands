@@ -2,9 +2,9 @@ Package: TCcrediblebands
 Title: Tropical Cyclone Simulation-based Credible Bands
 Version: 0.1
 Authors@R: c(
-    person("Benjamin", "LeRoy", email = "bpleroy@stat.cmu.edu", role = "c("aut")),
-    person("Robin", "Dunn", email = "robind@stat.cmu.edu", role = "c("aut")),
-    person("Nic", "Dalmasso", email = "ndalmass@stat.cmu.edu", role = "c("aut", "cre")))
+    person("Benjamin", "LeRoy", email = "bpleroy@stat.cmu.edu", role = c("aut")),
+    person("Robin", "Dunn", email = "robind@stat.cmu.edu", role = c("aut")),
+    person("Nic", "Dalmasso", email = "ndalmass@stat.cmu.edu", role = c("aut", "cre")))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.3)
 License: MIT + file LICENSE
@@ -29,4 +29,4 @@ Imports:
     splitstackshape,
     stringr,
     tidyverse
-
+RoxygenNote: 6.0.1

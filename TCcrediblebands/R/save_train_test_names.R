@@ -1,7 +1,7 @@
 # Code to store names of train and test TCs in .Rdata file.
 # Storing names will make train and test split reproducible.
 
-functions_loc = "code/functions/"
+functions_loc = "R/"
 source(paste0(functions_loc, "read_data_source.R"))
 
 # Make train and test names reproducible

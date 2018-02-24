@@ -1,9 +1,9 @@
 #' Library --------------------------------
-library(datamart)
-library(geosphere)
-library(sp)
-library(tidyverse)
-library(rgeos)
+#library(datamart)
+#library(geosphere)
+#library(sp)
+#library(tidyverse)
+#library(rgeos)
 
 
 #' Functions ------------------------------

@@ -1,13 +1,13 @@
 #' Library ----------------------------------------
 
-library(datamart)
-library(geosphere)
-library(plyr)
-library(rworldmap)
-library(caret)
-library(ks)
-library(gtools)
-library(RANN)
+#library(datamart)
+#library(geosphere)
+#library(plyr)
+#library(rworldmap)
+#library(caret)
+#library(ks)
+#library(gtools)
+#library(RANN)
 
 
 #' Functions ---------------------------------------

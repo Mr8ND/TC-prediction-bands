@@ -1,8 +1,8 @@
 # functions to project into the smaller space
 # TODO: figure out why we have the knn function?
-library(kknn)
-library(geosphere)
-library(ggplot2) #needed
+#library(kknn)
+#library(geosphere)
+#library(ggplot2) #needed
 
 #' Right Eigenvector Compression
 #' 

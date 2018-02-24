@@ -1,10 +1,10 @@
-library(tidyverse)
-library(assertthat)
-library(RANN)
-library(rgeos)
-library(sp)
+#library(tidyverse)
+#library(assertthat)
+#library(RANN)
+#library(rgeos)
+#library(sp)
 
-source("code/functions/depth_function.R")
+source("R/depth_function.R")
 
 #' Find delta for covering
 #' 

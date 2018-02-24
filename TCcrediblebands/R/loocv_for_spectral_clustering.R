@@ -2,7 +2,7 @@
 
 library(progress)
 
-functions_loc <- "code/functions/"
+functions_loc <- "R/"
 data_loc <- "data/"
 
 desired_functions <- c("path_functions.R","thirteen_point_compression.R",

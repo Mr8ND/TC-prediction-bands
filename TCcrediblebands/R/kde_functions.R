@@ -1,13 +1,13 @@
 # Libraries -------------------------------------------------
 
-require(datamart)
-require(geosphere)
-require(plyr)
-require(rworldmap)
-require(caret)
-require(ks)
-require(gtools)
-library(rgeos)
+#require(datamart)
+#require(geosphere)
+#require(plyr)
+#require(rworldmap)
+#require(caret)
+#require(ks)
+#require(gtools)
+#library(rgeos)
 
 
 # Functions -------------------------------------------------

@@ -6,9 +6,9 @@ library(gridExtra)
 # spectral clustering
 
 ## need to call in distMatrixPath_t2t_path from Path_functions.R
-source("code/functions/Path_functions.R")
-source("code/functions/13pointreduction.R")
-source("code/functions/point_reduction_with_speed.R")
+source("R/Path_functions.R")
+source("R/13pointreduction.R")
+source("R/point_reduction_with_speed.R")
 
 
 # takes list of compressed points (via compression_points_listable)

@@ -1,12 +1,12 @@
-library(tidyverse)
-library(ks)
-library(sp)
-library(rgeos)
-library(geosphere)
-library(progress) 
+#library(tidyverse)
+#library(ks)
+#library(sp)
+#library(rgeos)
+#library(geosphere)
+#library(progress) 
 
 
-source("code/functions/depth_function.R")
+source("R/depth_function.R")
 
 #' Get area of convex hull
 #'

@@ -1,6 +1,6 @@
 library(progress)
 
-functions_loc <- "code/functions/"
+functions_loc <- "R/"
 desired_functions <- c("projection_map.R","path_functions.R")
 
 # functions
