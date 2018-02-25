@@ -2,9 +2,7 @@
 % Please edit documentation in R/depth_function.R
 \name{depth_function}
 \alias{depth_function}
-\title{Library --------------------------
-Functions --------------------------
-Depth calculation}
+\title{Depth calculation}
 \usage{
 depth_function(dist_matrix)
 }

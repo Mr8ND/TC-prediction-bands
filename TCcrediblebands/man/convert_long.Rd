@@ -13,6 +13,7 @@ convert_long(df)
 Longitude column, converted to numeric
 }
 \description{
-If longitude ends in "E", drop "E" and convert longitude to numeric.
-If longitude ends in "W", drop "W" and convert longitude to negative numeric.
+If longitude ends in "E", drop "E" and convert longitude to 
+numeric. If longitude ends in "W", drop "W" and convert longitude to negative
+numeric.
 }

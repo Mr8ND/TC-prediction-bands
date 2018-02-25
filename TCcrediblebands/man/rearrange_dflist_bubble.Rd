@@ -2,9 +2,7 @@
 % Please edit documentation in R/bubble_functions.R
 \name{rearrange_dflist_bubble}
 \alias{rearrange_dflist_bubble}
-\title{Library --------------------------------
-Functions ------------------------------
-Rearranging list of simulated TCs}
+\title{Rearranging list of simulated TCs}
 \usage{
 rearrange_dflist_bubble(dflist, center_idx, long = 1, lat = 2)
 }
