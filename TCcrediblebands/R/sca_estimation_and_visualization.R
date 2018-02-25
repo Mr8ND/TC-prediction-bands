@@ -203,6 +203,7 @@ estimate_p_wrapper <- function(training_structure_estimating_p, D_test,
 #' simulated curves}
 #' \item{p_estimate}{probability estimates in the lower dimensional space of the
 #' test / simulated curves}
+#' @export
 inner_sca_projection <- function(test_data, 
                                  train_list_13_point,
                                  train_info,
@@ -259,6 +260,8 @@ inner_sca_projection <- function(test_data,
 #' simulated curves}
 #' \item{p_estimate}{probability estimates in the lower dimensional space of the
 #' test / simulated curves}
+#' 
+#' @export
 sca_projection <- function(test_data_list, 
                            train_list_13_point,
                            train_info,
