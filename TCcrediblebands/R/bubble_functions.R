@@ -106,6 +106,7 @@ create_CI_bubble_step_track <- function(df_points_step_track, center_idx,
 #'
 #' @param dflist List of simulated TCs
 #' @param center_idx Index of the path that needs to be considered as a center
+#' @param alpha_level Alpha level of the confidence interval
 #' @param long Column index of the longitude
 #' @param lat Column index of the latitude
 #' @param output_length Unit of measure of the output
@@ -155,6 +156,9 @@ bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
 error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2, 
                                          unit_measure = "nautical mile") {
 
+  #Hack to set variables equal to NULL so that R CMD check does not flag them
+  long <- lat <- NULL
+
   # Calculating centers and radius
   centers <- sapply(bubble_steps_CI,function(df) df[1,]) %>% 
                         t() %>%
@@ -200,7 +204,7 @@ error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2,
 #' 
 #' @details
 #' This functions uses as inputs the output of 
-#' \code{\link{error_bands_bubbleCI_posneg}}.
+#' \code{\link{error_bands_bubbleCI}}.
 #' 
 #' @param tc_bubble_structure Bubble CI list with centers, radius, positive 
 #' and negative parts

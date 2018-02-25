@@ -220,14 +220,14 @@ pMatrixPath_average = function(prob_matrix, t_var, t_type = "upper"){
 #' @export
 d2MatrixPath_pt = function(prob_matrix_t){
   
-  eigenvec_1 <- eigen(prob_matrix)$vectors[,1]
+  eigenvec_1 <- eigen(prob_matrix_t)$vectors[,1]
   
-  n_mat <- dim(prob_mat_t)[1]
+  n_mat <- dim(prob_matrix_t)[1]
   output_mat <- matrix(NA, nrow = n_mat, ncol = n_mat)
   
   for (i in c(1:n_mat)) {
     for (j in c(i:n_mat)) {
-      d2_vec <- (prob_matrix[i,] - prob_matrix[j,])/(eigenvec_1**(1/2))
+      d2_vec <- (prob_matrix_t[i,] - prob_matrix_t[j,])/(eigenvec_1**(1/2))
       output_mat[i,j] <- as.numeric(d2_vec %*% d2_vec)
       output_mat[j,i] <- output_mat[i,j] 
     }
@@ -266,7 +266,7 @@ distance_mat_eulid <- function(projection_locs){
 #' projection
 #'
 #' This function does the following:
-#' 1) gets a prediction for s_i(k) for the new observation in the projection 
+#' 1) gets a prediction for \eqn{s_i(k)} for the new observation in the projection 
 #' space
 #' 2) uses the kNN approach to calculate closeness weights (scaled obviously)
 #' 3) predicts the original space point by weighting the observations that it 
@@ -277,7 +277,7 @@ distance_mat_eulid <- function(projection_locs){
 #' @param projection_locs projection location of training data
 #' @param old_locs true paths (list) of training data
 #' @param new_p_loc new observation's location in projection (p) space
-#' @param K Number of neigbhors used to estimate \sigma_i(K)
+#' @param K Number of neigbhors used to estimate \eqn{\sigma_i(K)}
 #'
 #' @return predicted path of new observation
 #' @export

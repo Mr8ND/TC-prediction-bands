@@ -25,6 +25,7 @@
 #' @param alpha_level Alpha level of all the CI
 #' @param long Column index of the longitude
 #' @param lat Column index of the latitude
+#' @param kde_grid_size Two dimensional vector for the KDE grid size
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose If TRUE update messages will be displayed
 #' 
@@ -162,6 +163,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' to 1
 #' @param end_idx Ending index when selecting which TC to be simulated - if NULL, defaulted to
 #' the number of TCs available
+#' @param kde_grid_size Two dimensional vector for the KDE grid size
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose if TRUE, an update on the process will be printed
 #' @param curve_type_vec vector with the strings referring to the different types of curves

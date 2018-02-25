@@ -23,6 +23,7 @@ equally spaced
 Coverts list of point locations to 13 equally spaced points
 }
 \examples{
+\dontrun{
 df2 <-data.frame(matrix(
                  c(27.5, -87.5,
                  27.6, -87.9,
@@ -45,4 +46,5 @@ plot(newmap, ylim = c(10, 47), xlim = c(-90, -10), asp = 1)
 lines(df2[,2], df2[,1], col = "red")
 news_df2 <- thirteen_points(df2, lonlat = F)
 points(news_df2[,1], news_df2[,2], col = "red")
+}
 }

@@ -9,11 +9,11 @@ get_kde_contour_path(kde.obj, level = "5\%")
 \arguments{
 \item{kde.obj}{kde object}
 
-\item{level}{string of percentage level outside the contour, ex "5%"}
+\item{level}{string of percentage level outside the contour}
 }
 \value{
 data frame of countour (detail determined by detail level in kde.obj)
 }
 \description{
-Create level set for kde
+Returns the level set for a given kde
 }

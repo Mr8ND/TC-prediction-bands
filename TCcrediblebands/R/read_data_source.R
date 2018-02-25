@@ -60,7 +60,7 @@ pull_data <- function() {
   hurdat <- hurdat[tc_indices[first_tc]:length(hurdat)]
 
   # Get entries w/ 3 commas in line (signifying a TC title)
-  tc_indices <- which(str_count(hurdat, ",") == 3)
+  tc_indices <- which(stringr::str_count(hurdat, ",") == 3)
   
   # Get names of TCs in years >= 1951
   tc_names <- stringr::str_extract(hurdat[tc_indices], "[^,]+")
@@ -86,7 +86,7 @@ pull_data <- function() {
             "wind_SW_64", "wind_NW_64")
 
   # Apply column names to list of TC data frames
-  tc_list <- lapply(tc_list, setNames, cols)
+  tc_list <- lapply(tc_list, stats::setNames, cols)
 
   # Convert lat/long to numeric, taking hemisphere into account
   tc_list <- lapply(tc_list, FUN = function(x) {x$lat <- convert_lat(x); x})

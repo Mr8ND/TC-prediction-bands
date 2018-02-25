@@ -17,6 +17,7 @@ This function calculates the area of a contour object by creating a closed
 polygon and calculating the area of it.
 }
 \examples{
+\dontrun{
 set.seed(8192)
 
 x1 <- 2^rnorm(100)
@@ -28,5 +29,5 @@ cont <- with(kde_object, contourLines(x = eval.points[[1]],
                                    z = estimate,levels = cont["5\%"])[[1]])
 
 cont_area <- kde_contour_area(cont)
-
+}
 }

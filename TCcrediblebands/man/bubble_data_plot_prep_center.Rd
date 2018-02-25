@@ -5,16 +5,19 @@
 \title{Plot centers for bubble data}
 \usage{
 bubble_data_plot_prep_center(bubble_plot_data, base_graph = NULL,
-  color = "pink", ...)
+  color = "pink", zoom = 4, ...)
 }
 \arguments{
 \item{bubble_plot_data}{list of center points, lower and upper tangential 
-points from \code{\link{bubble_data_plot_prep}} function 
-(each a n x 2 data frame)}
+points (each a n x 2 data frame)}
 
 \item{base_graph}{plot to add points to}
 
 \item{color}{color of points}
+
+\item{zoom}{map zoom for ggmap}
+
+\item{...}{Interior ggpath parameters}
 }
 \value{
 ggplot object with points on it

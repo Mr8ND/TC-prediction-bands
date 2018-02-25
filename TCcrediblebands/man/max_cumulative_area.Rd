@@ -19,5 +19,5 @@ Finds area of bubble CI, for each step, then takes the maximum
 }
 \details{
 This functions uses as inputs the output of 
-\code{\link{error_bands_bubbleCI_posneg}}.
+\code{\link{error_bands_bubbleCI}}.
 }

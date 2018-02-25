@@ -35,12 +35,12 @@ is_dead_inner <- function(path, death_regs, bad_locations, death_rate){
   if (block %in% bad_locations) {
   	prob <- death_rate
   } else {
-  	prob <- predict(death_regs[[block]], type = "response",
+  	prob <- stats::predict(death_regs[[block]], type = "response",
   	                newdata = data.frame(path[n_row, ]))
   }
   
   # Simulate whether TC dies at current observation
-  is_dead <- rbinom(1,1,prob) == 1
+  is_dead <- stats::rbinom(1,1,prob) == 1
   return(is_dead)
 }
 
@@ -68,13 +68,13 @@ bearing_inner <- function(path, bearing_regs){
   block <- path[n_row, ]$block
 
   # Use block-specific regression to predict change in bearing at current obs
-  bearing_change <- predict(bearing_regs[[block]], 
+  bearing_change <- stats::predict(bearing_regs[[block]], 
                             newdata = data.frame(path[n_row, ]),
                             se.fit = T)
   
   # Add normal randomness to change in bearing
   path[n_row,'bearing_change'] <- bearing_change$fit +
-  	 	                                rnorm(n = 1, sd = bearing_change$se.fit)
+  	 	                                stats::rnorm(n = 1, sd = bearing_change$se.fit)
   
   # Determine new bearing, based on old bearing and change in bearing
   path[n_row,'bearing'] <- path[(n_row - 1), 'bearing'] + 
@@ -122,13 +122,13 @@ speed_inner <- function(path, speed_regs){
   block <- path[n_row, ]$block
 
   # Use block-specific regression to predict change in speed at current obs
-  speed_change <- predict(speed_regs[[block]], 
+  speed_change <- stats::predict(speed_regs[[block]], 
                           newdata = data.frame(path[n_row, ]),
                           se.fit = T)
   
   # Add normal randomness to change in speed
   path[n_row, 'speed_change'] <- speed_change$fit + 
-  	                                 rnorm(n = 1, sd = speed_change$se.fit)
+  	                                 stats::rnorm(n = 1, sd = speed_change$se.fit)
   
   # Determine new speed, based on old speed and change in speed
   path[n_row, 'speed'] <- path[(n_row - 1), 'speed'] + 
@@ -303,6 +303,9 @@ generate_curve <- function(path, train_models, death_regs_ind, auto_ind){
 #' @export
 generate_all <- function(train = NA, test = NA, remove_length_2 = T, 
                          number_paths = 350, replicate = T, verbose = T) {
+
+  #Hack to set variables equal to NULL so that R CMD check does not flag them
+  train_data <- test_data <- NULL
   
   # Read in data and set parameters if replicating paper
   if (replicate) {

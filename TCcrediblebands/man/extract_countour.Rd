@@ -22,6 +22,7 @@ This function extracts a specific level of contour from a kde object.
 Only works for some levels that the kde object calculated originally.
 }
 \examples{
+\dontrun{
 set.seed(8192)
 
 x1 <- 2^rnorm(100)
@@ -30,4 +31,5 @@ dfmat <- cbind(x1,y1)
 kde_object <- ks::kde(dfmat)
 
 cont <- extract_countour(kde_object, 5)
+}
 }

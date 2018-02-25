@@ -4,13 +4,15 @@
 \alias{gg_vis_delta_ball_contour}
 \title{Visualize delta ball exterior centers (with ggplot)}
 \usage{
-gg_vis_delta_ball_contour(output_lines, base_graph = NULL)
+gg_vis_delta_ball_contour(output_lines, base_graph = NULL, zoom = 4)
 }
 \arguments{
 \item{output_lines}{data frame of exterior lines (not ordered)}
 
 \item{base_graph}{ggplot object for base graph 
 (created from data_out otherwise)}
+
+\item{zoom}{map zoom for ggmap}
 }
 \value{
 ggplot object of contour and data points.

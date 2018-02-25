@@ -1,3 +1,4 @@
+
 # functions to project into the smaller space
 # TODO: figure out why we have the knn function?
 #library(kknn)
@@ -34,9 +35,10 @@ right_eigenvector_compression <- function(P, nu = 100, nv = 100,
   lambda <- lambda_original^t
   
   if (plot_n != 0) {
-    ggplot() + 
-      ggplot2::geom_bar(data = data.frame(y = lambda_original[1:plot_n]), 
-               aes(x = 1:plot_n,y = y), stat = "identity")
+    ggplot2::ggplot() + 
+      ggplot2::geom_bar(data = data.frame(y = lambda_original[1:plot_n],
+                                          x = 1:plot_n), 
+               ggplot2::aes_string(x = 'x', y = 'y'), stat = "identity")
   }
   
   Psi <- right_eigen
@@ -74,10 +76,10 @@ new_points_projection <- function(P_test, psi_map_train, lambda_train){
 #' KNN density estimate for each point 
 #'
 #' @description 
-#' TODO: figure out why this isn't just knn...
+#' KNN in Euclidean Distance
 #'
-#' @param train 
-#' @param test 
+#' @param train Training points
+#' @param test Testing points
 #' @param k number of neighbors that matter
 #'
 #' @return p density estimate for test observations 

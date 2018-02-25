@@ -29,11 +29,12 @@ This function fits a kernel density estimator to a TC dataframe, in which
 each point of the dataframe is considered to be a TC observation.
 }
 \examples{
+\dontrun{
 set.seed(8192)
 x <- 2^rnorm(100)
 y <- rnorm(100)
 dfmat <- cbind(x,y)
 
 kde_object <- fit_kde_object(dfmat)
-
+}
 }

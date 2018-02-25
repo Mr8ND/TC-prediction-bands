@@ -31,6 +31,8 @@ the number of TCs available}
 
 \item{verbose}{if TRUE, an update on the process will be printed}
 
+\item{kde_grid_size}{Two dimensional vector for the KDE grid size}
+
 \item{curve_type_vec}{vector with the strings referring to the different types of curves}
 }
 \value{

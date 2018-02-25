@@ -13,6 +13,8 @@ bubbleCI(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
 
 \item{center_idx}{Index of the path that needs to be considered as a center}
 
+\item{alpha_level}{Alpha level of the confidence interval}
+
 \item{long}{Column index of the longitude}
 
 \item{lat}{Column index of the latitude}

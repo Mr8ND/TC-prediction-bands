@@ -41,7 +41,7 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 							 K = 4, t = 1, dim = 5, kdensity = 10,
 							 c_position = 1:2){
 
-	compression_both <- compression_points_listable(list_df = test_list,
+	compression_both <- thirteen_points_listable(list_df = test_list,
 	                            c_position = c_position,lonlat = TRUE)
 
 	compression_pts <- lapply(compression_both, 
@@ -150,15 +150,15 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
 							test_color_low = test_color_low,
 							test_color_high = test_color_high)
 
-	data_out <- data_out %>% mutate(weight_discrete = color_out$breaks)
+	data_out <- data_out %>% dplyr::mutate(weight_discrete = color_out$breaks)
 	colors_rw <- color_out$colors_rw
 
 	# final map:
 
 	ggout <- base_graph + ggplot2::geom_path(data = data_out, 
-	                                         aes(x = long, y = lat, 
-	                                             color = weight_discrete, 
-	                                             group = curve)) +
+	                                         ggplot2::aes_string(x = 'long', y = 'lat', 
+	                                             color = 'weight_discrete', 
+	                                             group = 'curve')) +
 				ggplot2::scale_color_manual(values = colors_rw) +
 				ggplot2::labs(color = paste0("weights^(",round(test_color_power,2),")"))
 
@@ -176,7 +176,7 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
 data_projection <- function(scp_output){
 	n <- dim(scp_output$test_projected)[1]
 	test_df <- scp_output$test_projected %>% data.frame %>% 
-				dpylr::mutate(prob = scp_output$test_p_estimate,
+				dplyr::mutate(prob = scp_output$test_p_estimate,
 					   weight = scp_output$test_weight,
 					   curve = 1:n)
 	train_df <- scp_output$train_projected %>% data.frame
@@ -249,10 +249,10 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
 
 
 	ggout <- ggplot2::ggplot() +
-				ggplot2::geom_point(data = train_df, aes(x = X1, y = X2),
+				ggplot2::geom_point(data = train_df, ggplot2::aes_string(x = 'X1', y = 'X2'),
 						   alpha = train_alpha, color = 'black') +
 	      ggplot2::geom_point(data = test_df, 
-						   aes(x = X1, y = X2, fill = weight_discrete),
+						   ggplot2::aes_string(x = 'X1', y = 'X2', fill = 'weight_discrete'),
 						   shape = 21, color = "black") +
 	      ggplot2::scale_fill_manual(values = colors_rw) + 
 	      ggplot2::labs(fill = paste0("weights^(",round(test_color_power,2),")"))
