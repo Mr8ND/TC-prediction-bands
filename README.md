@@ -31,7 +31,9 @@ To install the latest version please do
 
 `
 library(devtools)
+
 devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
+
 library(TCcrediblebands)
 `
 
