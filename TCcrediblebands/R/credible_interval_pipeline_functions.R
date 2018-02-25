@@ -1,17 +1,3 @@
-#' Library ----------------------------------------
-
-#library(datamart)
-#library(geosphere)
-#library(plyr)
-#library(rworldmap)
-#library(caret)
-#library(ks)
-#library(gtools)
-#library(RANN)
-
-
-#' Functions ---------------------------------------
-
 #' Extract credible intervals of 4 methods from a single test TC
 #' 
 #' @description

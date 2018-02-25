@@ -1,21 +1,3 @@
-#library(tidyverse)
-#library(ggmap)
-#library(GGally)
-#library(gridExtra)
-# functions to take paths and visual them related to observed paths with 
-# spectral clustering
-
-## need to call in distMatrixPath_t2t_path from Path_functions.R
-#source("R/Path_functions.R")
-#source("R/13pointreduction.R")
-#source("R/point_reduction_with_speed.R")
-
-
-# takes list of compressed points (via compression_points_listable)
-# actually should be a list of just the new_13compression
-
-### from second_pipeline.R
-
 #' Spectral Clustering Process
 #' 
 #' produces weights and projection for paths (from projection)

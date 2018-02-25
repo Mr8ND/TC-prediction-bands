@@ -1,6 +1,3 @@
-#suppressMessages(suppressWarnings(library(stringr)))
-#suppressMessages(suppressWarnings(library(splitstackshape)))
-
 #' Convert latitude hemispheres to pos/neg
 #' 
 #' @description If latitude ends in "N", drop "N" and convert latitude to 

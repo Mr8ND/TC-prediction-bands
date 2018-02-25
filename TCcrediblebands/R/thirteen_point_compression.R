@@ -1,9 +1,3 @@
-##### Libraries
-#library(geosphere)
-
-#### Loading inner functions
-#source(file = "R/path_functions.R")
-
 #' Thirteen point compression
 #'
 #' @description Coverts list of point locations to 13 equally spaced points

@@ -1,13 +1,3 @@
-#functions_loc <- "R/"
-#desired_functions <- c("projection_map.R","Path_functions.R")
-
-#' functions --------------
-#for (f_name in desired_functions) {
-#  source(paste0(functions_loc,f_name))
-#}
-
-
-
 #' Creates structure for SCA algorithm from training data
 #'
 #' @param D_train Distance Matrix for training points

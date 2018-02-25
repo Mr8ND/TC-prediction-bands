@@ -1,6 +1,3 @@
-#suppressMessages(suppressWarnings(library(lubridate))) 
-#suppressMessages(suppressWarnings(library(geosphere)))
-
 #' Sanitize TC data for analysis
 #' 
 #' @description This function takes in an original TC data frame. It saves
