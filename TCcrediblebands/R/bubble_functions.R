@@ -1,13 +1,3 @@
-#' Library --------------------------------
-#library(datamart)
-#library(geosphere)
-#library(sp)
-#library(tidyverse)
-#library(rgeos)
-
-
-#' Functions ------------------------------
-
 #' Rearranging list of simulated TCs
 #' 
 #' @description

@@ -1,18 +1,3 @@
-# Libraries -------------------------------------------------
-
-#require(datamart)
-#require(geosphere)
-#require(plyr)
-#require(rworldmap)
-#require(caret)
-#require(ks)
-#require(gtools)
-#library(rgeos)
-
-
-# Functions -------------------------------------------------
-
-
 #' Flatten TC list to single dataframe
 #' 
 #' @description 

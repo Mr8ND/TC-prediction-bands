@@ -1,9 +1,3 @@
-#' Library --------------------------
-
-#library(tidyverse) # this library is needed here
-
-#' Functions --------------------------
-
 #' Depth calculation
 #' 
 #' @description

@@ -1,6 +1,3 @@
-#suppressMessages(suppressWarnings(library(progress))) 
-#suppressMessages(suppressWarnings(library(geosphere)))
-
 #' Simulate whether to stop growing TC
 #' 
 #' @description For regression approach to TC deaths, this function simulates

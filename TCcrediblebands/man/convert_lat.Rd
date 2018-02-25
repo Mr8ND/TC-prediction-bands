@@ -13,6 +13,7 @@ convert_lat(df)
 Latitude column, converted to numeric
 }
 \description{
-If latitude ends in "N", drop "N" and convert latitude to numeric.
-If latitude ends in "S", drop "S" and convert latitude to negative numeric.
+If latitude ends in "N", drop "N" and convert latitude to 
+numeric. If latitude ends in "S", drop "S" and convert latitude to negative 
+numeric.
 }

@@ -1,6 +1,3 @@
-#library(geosphere)
-#library(datamart)
-#library(progress)
 #' Swap 2 columns
 #' 
 #' @description Swap the 2 columns in a Data Frame

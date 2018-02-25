@@ -1,11 +1,3 @@
-#library(tidyverse)
-#library(assertthat)
-#library(RANN)
-#library(rgeos)
-#library(sp)
-
-#source("R/depth_function.R")
-
 #' Find delta for covering
 #' 
 #' @description Find the minimum distance (delta) such that all points are 

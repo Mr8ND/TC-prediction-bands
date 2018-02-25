@@ -2,9 +2,7 @@
 % Please edit documentation in R/credible_interval_pipeline_functions.R
 \name{credible_interval_single_tc}
 \alias{credible_interval_single_tc}
-\title{Library ----------------------------------------
-Functions ---------------------------------------
-Extract credible intervals of 4 methods from a single test TC}
+\title{Extract credible intervals of 4 methods from a single test TC}
 \usage{
 credible_interval_single_tc(dflist, test_true_path, alpha_level, long = 1,
   lat = 2, verbose = FALSE, kde_grid_size = rep(1000, 2),

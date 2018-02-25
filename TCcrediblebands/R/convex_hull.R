@@ -1,13 +1,3 @@
-#library(tidyverse)
-#library(ks)
-#library(sp)
-#library(rgeos)
-#library(geosphere)
-#library(progress) 
-
-
-#source("R/depth_function.R")
-
 #' Get area of convex hull
 #'
 #' @param data points to find a convex hull over (assumed n x 2)
