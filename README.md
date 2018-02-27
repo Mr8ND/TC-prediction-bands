@@ -29,11 +29,11 @@ All files in `main` are meant to be run from the upper projection location
 
 To install the latest version please do
 
-`library(devtools)`
-
-`devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')`
-
-`library(TCcrediblebands)`
+```r
+library(devtools)
+devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
+library(TCcrediblebands)
+```
 
 ## Comments
 This project started in Carnegie Mellon University's 10-701: Introduction to 

@@ -13,7 +13,8 @@ data_loc  <- "main/data/"
 # Install from Github ----------------------------------
 
 library(devtools)
-devtools::install_github(repo = 'benjaminleroy/Hurricanes_701/TCcrediblebands')
+library(methods)
+#devtools::install_github(repo = 'benjaminleroy/Hurricanes_701/TCcrediblebands')
 #devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
 library(TCcrediblebands)
 
@@ -55,6 +56,9 @@ projection_out <- sca_projection(test_data_list,
                                  train_info,
                                  c_position = 1:2,
                                  verbose = TRUE)
+
+
+inner_sca_projection(test_data_list[[1]][[1]])
 
 save(projection_out, file = paste0(data_loc, "sca_projection_info",
                                    as.character(start), "_",
