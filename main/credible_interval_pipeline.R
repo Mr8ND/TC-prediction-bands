@@ -17,7 +17,6 @@ true_curve_conversion_function <- function(df){
 
 data_loc <- "main/data/"
 load(paste0(data_loc, 'Test_Sims_350.Rdata'))
-load(paste0(data_loc, 'train_test_names.Rdata'))
 load(paste0(data_loc, 'raw_data.Rdata'))
 
 true_curve_test <- lapply(test_data, true_curve_conversion_function)
