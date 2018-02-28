@@ -14,6 +14,8 @@ data_loc  <- "main/data/"
 
 library(devtools)
 library(methods)
+#devtools::install_github(repo = 'benjaminleroy/Hurricanes_701/TCcrediblebands')
+#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
 library(TCcrediblebands)
 
 
@@ -53,10 +55,9 @@ projection_out <- sca_projection(test_data_list,
                                  train_list_13_point,
                                  train_info,
                                  c_position = 1:2,
-                                 verbose = TRUE)
-
-
-inner_sca_projection(test_data_list[[1]][[1]])
+                                 verbose = TRUE,
+                                 curve_type_vec = c("Auto_DeathRegs",
+                                                    "Auto_NoDeathRegs"))
 
 save(projection_out, file = paste0(data_loc, "sca_projection_info",
                                    as.character(start), "_",
