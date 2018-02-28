@@ -4,7 +4,7 @@ library(methods)
 
 #' Install from Github ----------------------------------
 
-devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
+#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
 library(TCcrediblebands)
 
 #' Loading all the data --------------------------------------
