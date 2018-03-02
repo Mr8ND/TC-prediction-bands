@@ -137,7 +137,9 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
 #' @param alpha_level contour level which needs to be extracted. Integer from 1 
 #' to 99.
 #
-#' @return Countour at (100-level) for the kde object.
+#' @return List of countours at (100-level) for the kde object - there is a
+#' contour for each disconnected contour that forms the (100-level) contour
+#' level.
 #' 
 #' @examples
 #' \dontrun{
@@ -155,7 +157,7 @@ extract_countour <- function(kde_obj, alpha_level) {
   alpha <- alpha_level*100
   cont_level <- paste0(as.character(alpha), "%")
   cont <- with(kde_obj, contourLines(x = eval.points[[1]],y = eval.points[[2]],
-                                  z = estimate,levels = cont[cont_level])[[1]]) 
+                                  z = estimate,levels = cont[cont_level])) 
                                                         # ^needs to be 1-\alpha
   return(cont)
 }
@@ -273,7 +275,7 @@ kde_from_tclist <- function(dflist, alpha_level, h_band = NULL,
   kde_object <- fit_kde_object(dfmat, h_band = h_band, grid_size = grid_size, 
                                 long = long, lat = lat)
   cont <- extract_countour(kde_object, alpha_level = alpha_level)
-  area_cont <- kde_contour_area(cont)
+  area_cont <- Reduce('+', lapply(cont, kde_contour_area))
 
   return(list('contour' = cont, 'area' = area_cont, 'kde_object' = kde_object))
 }
