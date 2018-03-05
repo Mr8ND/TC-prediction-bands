@@ -75,14 +75,17 @@ ggvis_paths <- function(data_out, zoom = 4,
 #' @param kde.obj kde object 
 #' @param level string of percentage level outside the contour
 #'
-#' @return data frame of countour (detail determined by detail level in kde.obj)
+#' @return list of data frame of countour (detail determined by 
+#' detail level in kde.obj) - there is a contour for each 
+#' disconnected contour that forms the (100-level) contour
+#' level.
 #' @export
 get_kde_contour_path <- function(kde.obj, level = "5%"){
   level_contour <- with(kde.obj, contourLines(x = eval.points[[1]], 
                                               y = eval.points[[2]],
                                               z = estimate, 
-                                              levels = cont[level])[[1]])
-  level_contour <- data.frame(level_contour)
+                                              levels = cont[level]))
+  level_contour <- lapply(level_contour, data.frame)
   
   return(level_contour)
 }

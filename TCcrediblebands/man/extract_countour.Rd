@@ -13,7 +13,9 @@ extract_countour(kde_obj, alpha_level)
 to 99.}
 }
 \value{
-Countour at (100-level) for the kde object.
+List of countours at (100-level) for the kde object - there is a
+contour for each disconnected contour that forms the (100-level) contour
+level.
 }
 \description{
 This function extracts a specific level of contour from a kde object.

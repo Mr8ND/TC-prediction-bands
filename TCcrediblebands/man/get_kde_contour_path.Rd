@@ -12,7 +12,10 @@ get_kde_contour_path(kde.obj, level = "5\%")
 \item{level}{string of percentage level outside the contour}
 }
 \value{
-data frame of countour (detail determined by detail level in kde.obj)
+list of data frame of countour (detail determined by 
+detail level in kde.obj) - there is a contour for each 
+disconnected contour that forms the (100-level) contour
+level.
 }
 \description{
 Returns the level set for a given kde
