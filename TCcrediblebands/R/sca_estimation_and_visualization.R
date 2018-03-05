@@ -35,7 +35,8 @@ right_eigenvector_compression <- function(P, nu = 100, nv = 100,
     ggplot2::ggplot() + 
       ggplot2::geom_bar(data = data.frame(y = lambda_original[1:plot_n],
                                           x = 1:plot_n), 
-                        ggplot2::aes_string(x = 'x', y = 'y'), stat = "identity")
+                        ggplot2::aes_string(x = 'x', y = 'y'), 
+                        stat = "identity")
   }
   
   Psi <- right_eigen
@@ -341,7 +342,8 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
                                      c_position = 1:2){
   
   compression_both <- thirteen_points_listable(list_df = test_list,
-                                               c_position = c_position,lonlat = TRUE)
+                                               c_position = c_position,
+                                               lonlat = TRUE)
   
   compression_pts <- lapply(compression_both, 
                             function(x){x$new_13compression})
@@ -379,11 +381,19 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 
 #' Compresses data from list (to be plotted in ggplot)
 #' 
-#' compresses data into tidyverse focused dataframe (for ggplot)
+#' @description 
+#' Compresses data into tidyverse focused dataframe (for ggplot)
 #'
 #' @param test_list list of paths to analysis (each a df)
 #' @param scp_output spectral_cluster_process function output
 #' @param c_position positions of lat and lon columns in test_list data frames
+#'
+#' @details 
+#' \code{scp_output} is expected to be a list with at least 2 components: 
+#' (1) \code{test_p_estimate} - probablity estimates of the test curves 
+#' (\eqn{p_i})
+#' (2) \code{test_weight} - a vector of normalized probabilities 
+#' (\eqn{\p_i/\sum_k p_k})
 #'
 #' @return data frame that can be used to visualize curves
 #' @export
@@ -395,8 +405,8 @@ data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
   
   for (i in 1:length(test_list)) {
     data_out <- rbind(data_out,
-                      data.frame(lat = test_list[[i]][c_position[2]],
-                                 long = test_list[[i]][c_position[1]],
+                      data.frame(lat = test_list[[i]][,c_position[2]],
+                                 long = test_list[[i]][,c_position[1]],
                                  prob = scp_output$test_p_estimate[i],
                                  weight = scp_output$test_weight[i],
                                  curve = i))
@@ -456,9 +466,9 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
   # final map:
   
   ggout <- base_graph + ggplot2::geom_path(data = data_out, 
-                                           ggplot2::aes_string(x = 'long', y = 'lat', 
-                                                               color = 'weight_discrete', 
-                                                               group = 'curve')) +
+                                  ggplot2::aes_string(x = 'long', y = 'lat', 
+                                                      color = 'weight_discrete', 
+                                                      group = 'curve')) +
     ggplot2::scale_color_manual(values = colors_rw) +
     ggplot2::labs(color = paste0("weights^(",round(test_color_power,2),")"))
   
@@ -549,10 +559,12 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
   
   
   ggout <- ggplot2::ggplot() +
-    ggplot2::geom_point(data = train_df, ggplot2::aes_string(x = 'X1', y = 'X2'),
+    ggplot2::geom_point(data = train_df, 
+                        ggplot2::aes_string(x = 'X1', y = 'X2'),
                         alpha = train_alpha, color = 'black') +
     ggplot2::geom_point(data = test_df, 
-                        ggplot2::aes_string(x = 'X1', y = 'X2', fill = 'weight_discrete'),
+                        ggplot2::aes_string(x = 'X1', y = 'X2', 
+                                            fill = 'weight_discrete'),
                         shape = 21, color = "black") +
     ggplot2::scale_fill_manual(values = colors_rw) + 
     ggplot2::labs(fill = paste0("weights^(",round(test_color_power,2),")"))

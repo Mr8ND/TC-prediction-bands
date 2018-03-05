@@ -17,5 +17,12 @@ data_plot_sc_paths(test_list, scp_output, c_position = 1:2)
 data frame that can be used to visualize curves
 }
 \description{
-compresses data into tidyverse focused dataframe (for ggplot)
+Compresses data into tidyverse focused dataframe (for ggplot)
+}
+\details{
+\code{scp_output} is expected to be a list with at least 2 components: 
+(1) \code{test_p_estimate} - probablity estimates of the test curves 
+(\eqn{p_i})
+(2) \code{test_weight} - a vector of normalized probabilities 
+(\eqn{\p_i/\sum_k p_k})
 }
