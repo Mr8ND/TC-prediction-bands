@@ -4,12 +4,12 @@
 \alias{ggvis_all_weighted}
 \title{Creates clean visual of weighted curves using Spectral Clustering Analysis}
 \usage{
-ggvis_all_weighted(scp_output, test_list, c_position = 1:2, zoom = 4,
+ggvis_all_weighted(sca_output, test_list, c_position = 1:2, zoom = 4,
   train_alpha = 0.3, test_color_power = 1/3, test_color_low = "white",
   test_color_high = "red", color_n_breaks = 10)
 }
 \arguments{
-\item{scp_output}{#' @param scp_output a list of diffusion map associated information 
+\item{sca_output}{a list of diffusion map associated information 
 assumed of the form of output provided by 
 \code{link{spectral_cluster_process}}. At minimum this list needs 2 elements
 \itemize{

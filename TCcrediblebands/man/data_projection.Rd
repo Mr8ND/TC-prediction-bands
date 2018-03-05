@@ -4,12 +4,12 @@
 \alias{data_projection}
 \title{Get points for objects in projection space}
 \usage{
-data_projection(scp_output = list(test_projection = data.frame(),
+data_projection(sca_output = list(test_projection = data.frame(),
   train_projected = data.frame(), test_p_estimate = integer(0), test_weight =
   integer(0)))
 }
 \arguments{
-\item{scp_output}{spectral_cluster_process function output. Or at least the 
+\item{sca_output}{spectral_cluster_process function output. Or at least the 
 following structure in a list:
 \itemize{
 \item \code{test_projected} test data in projection space

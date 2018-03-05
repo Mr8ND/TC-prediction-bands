@@ -4,14 +4,14 @@
 \alias{data_plot_sc_paths}
 \title{Compresses data from list (to be plotted in ggplot)}
 \usage{
-data_plot_sc_paths(test_list, scp_output = list(test_p_estimate = rep(1,
+data_plot_sc_paths(test_list, sca_output = list(test_p_estimate = rep(1,
   length(test_list)), test_weight = rep(1/length(test_list),
   length(test_list))), c_position = 1:2)
 }
 \arguments{
 \item{test_list}{list of \eqn{s} paths to analysis (each a df)}
 
-\item{scp_output}{a list of diffusion map associated information 
+\item{sca_output}{a list of diffusion map associated information 
 assumed of the form of output provided by 
 \code{link{spectral_cluster_process}}. At minimum this list needs 2 elements
 \itemize{
@@ -30,7 +30,7 @@ data frame that can be used to visualize curves
 Compresses data into tidyverse focused dataframe (for ggplot)
 }
 \details{
-\code{scp_output} is expected to be a list with at least 2 components: 
+\code{sca_output} is expected to be a list with at least 2 components: 
 (1) \code{test_p_estimate} - probablity estimates of the test curves 
 (\eqn{p_i})
 (2) \code{test_weight} - a vector of standardized probabilities 
