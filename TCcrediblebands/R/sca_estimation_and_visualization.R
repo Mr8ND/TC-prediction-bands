@@ -379,26 +379,46 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 }
 
 
+
+
+# ggplot wrappers --------------------------------------
+
+
 #' Compresses data from list (to be plotted in ggplot)
 #' 
 #' @description 
 #' Compresses data into tidyverse focused dataframe (for ggplot)
 #'
-#' @param test_list list of paths to analysis (each a df)
-#' @param scp_output spectral_cluster_process function output
+#' @param test_list list of \eqn{s} paths to analysis (each a df)
+#' @param scp_output a list of diffusion map associated information 
+#' assumed of the form of output provided by 
+#' \code{link{spectral_cluster_process}}. At minimum this list needs 2 elements
+#' \itemize{
+#' \item \code{test_p_estimate}: a \eqn{s} length vector of non-standardized 
+#' probabilities (\eqn{p_i})
+#' \item \code{test_weight}: a \eqn{s} length vector of standardized 
+#' probabilities (\eqn{p_i/\max_k p_k})
+#' }
 #' @param c_position positions of lat and lon columns in test_list data frames
 #'
 #' @details 
 #' \code{scp_output} is expected to be a list with at least 2 components: 
 #' (1) \code{test_p_estimate} - probablity estimates of the test curves 
 #' (\eqn{p_i})
-#' (2) \code{test_weight} - a vector of normalized probabilities 
-#' (\eqn{\p_i/\sum_k p_k})
+#' (2) \code{test_weight} - a vector of standardized probabilities 
+#' (\eqn{p_i/\max_k p_k})
 #'
 #' @return data frame that can be used to visualize curves
 #' @export
 #'
-data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
+data_plot_sc_paths <- function(test_list, 
+                               scp_output = 
+                                 list(test_p_estimate = 
+                                        rep(1,length(test_list)), 
+                                      test_weight = 
+                                        rep(1/length(test_list),
+                                            length(test_list))), 
+                               c_position = 1:2){
   
   data_out <- data.frame(lat = -360, long = -360, prob = 0, 
                          weight = 0, curve = 0)
@@ -424,7 +444,14 @@ data_plot_sc_paths <- function(test_list, scp_output, c_position = 1:2){
 #' 1. Function currently uses geom_path - assumed euclidean space for map :/
 #'
 #' @param data_out data frame with correct path information same as outputed 
-#' from data_plot_sc_paths functions
+#' from data_plot_sc_paths functions. Specifically, columns as follows:
+#' \itemize{
+#' \item \code{curve} curve number indicating which curve the observation is in
+#' \item \code{lat} latitude values for that step of the TC
+#' \item \code{long} longitude values for that step of the TC
+#' \item \code{weight} probability weights for each curve (between 0 and 1)
+#' }
+#' where we expect observations of the curve to ordered in time.
 #' @param zoom map zoom for ggmap
 #' @param test_color_power power to raise the probability weights 
 #' (then use linear scaling for colors)
@@ -477,13 +504,24 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
 
 #' Get points for objects in projection space
 #'
-#' @param scp_output pectral_cluster_process function output
+#' @param scp_output spectral_cluster_process function output. Or at least the 
+#' following structure in a list:
+#' \itemize{
+#' \item \code{test_projected} test data in projection space
+#' \item \code{train_projected}training data in projection space
+#' \item \code{test_p_estimate} probability estimates for test data (\eqn{p_i})
+#' \item \code{test_weight} scaled probabilities estimates (by max of probs) for
+#'  test  (\eqn{p_i/\max_k p_k})
+#' }
 #'
 #' @return 
 #' \item{test_df}{data frame of training points and probability weights}
 #' \item{train_df}{data frame of test points}
 #' @export
-data_projection <- function(scp_output){
+data_projection <- function(scp_output = list(test_projection = data.frame(),
+                                              train_projected = data.frame(),
+                                              test_p_estimate = integer(0),
+                                              test_weight = integer(0))){
   n <- dim(scp_output$test_projected)[1]
   test_df <- scp_output$test_projected %>% data.frame %>% 
     dplyr::mutate(prob = scp_output$test_p_estimate,
@@ -497,11 +535,17 @@ data_projection <- function(scp_output){
 
 #' Inner color function setup
 #'
-#' @param weights_in probability weights for 
+#' @description 
+#' creates a color ramp of \code{n_breaks} equally spaced (along a potentially
+#' scaled version of) the inputted \code{weights_in}.
+#' 
+#'
+#' @param weights_in standardized probability weights (between 0 and 1)
 #' @param test_color_power power to raise the probability weights 
 #' (then use linear scaling for colors)
 #' @param test_color_low lower color value for color range, 
 #' @param test_color_high higher color value for color range,
+#' @param n_breaks integer number of breaks along the color range
 #'
 #' @return 
 #' \item{breaks}{vector of which of the 10 breaks each weight is in 
@@ -511,13 +555,14 @@ data_projection <- function(scp_output){
 color_function <- function(weights_in,
                            test_color_power = 1/3,
                            test_color_low = "white",
-                           test_color_high = "red"){
+                           test_color_high = "red", 
+                           n_breaks = 10){
   
   w_func <- function(x){return(x^test_color_power)}
   
-  breaks <- cut(w_func(weights_in), breaks = c(0, 1:10/10))
+  breaks <- cut(w_func(weights_in), breaks = c(0, (1:n_breaks)/n_breaks))
   colors_rw <- grDevices::colorRampPalette(c(test_color_low, 
-                                             test_color_high))(10)
+                                             test_color_high))(n_breaks)
   
   return(list(breaks = breaks, colors_rw = colors_rw))
 }
@@ -528,12 +573,24 @@ color_function <- function(weights_in,
 #' ggplot experts are encouraged to use the output of data_projection 
 #' function applied to scp_output instead of this wrapper
 #'
-#' @param scp_output spectral_cluster_process function output
+#' @param scp_output spectral_cluster_process function output (see details)
 #' @param train_alpha opacity level for black training points
 #' @param test_color_power power transformation (x^ test_color_power) of 
 #' probability values for test points color
 #' @param test_color_low lower color for range of colors on test points prob
 #' @param test_color_high high color for range of colors on test points prob
+#' @param color_n_breaks integer number of breaks along the color range 
+#' (equally spaced along transformed probability space)
+
+#' @details 
+#' \code{scp_output} is a list that, at minimum needs:
+#' \itemize{
+#' \item \code{test_projected} test data in projection space
+#' \item \code{train_projected}training data in projection space
+#' \item \code{test_p_estimate} probability estimates for test data (\eqn{p_i})
+#' \item \code{test_weight} scaled probabilities estimates (by max of probs) for
+#'  test (\eqn{p_i/\max_k p_k})
+#' }
 #'
 #' @return ggplot scatter plot of training and colored test points
 #' @export
@@ -541,7 +598,8 @@ color_function <- function(weights_in,
 ggvis_projection <- function(scp_output, train_alpha = .3, 
                              test_color_power = 1/3, 
                              test_color_low = "white",
-                             test_color_high = "red"){
+                             test_color_high = "red",
+                             color_n_breaks = 10){
   # data
   data_p <- data_projection(scp_output)
   test_df <- data_p$test_df
@@ -552,7 +610,8 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
   color_out <- color_function(test_df$weight,
                               test_color_power = test_color_power,
                               test_color_low = test_color_low,
-                              test_color_high = test_color_high)
+                              test_color_high = test_color_high,
+                              n_breaks = color_n_breaks)
   
   test_df <- test_df %>% dplyr::mutate(weight_discrete = color_out$breaks)
   colors_rw <- color_out$colors_rw
@@ -586,7 +645,16 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
 #' ggplot experts are encouraged to use the output of this function to  
 #' instead of just running with the created plot
 #'
-#' @param scp_output spectral_cluster_process function output
+#' @param scp_output #' @param scp_output a list of diffusion map associated information 
+#' assumed of the form of output provided by 
+#' \code{link{spectral_cluster_process}}. At minimum this list needs 2 elements
+#' \itemize{
+#' \item \code{test_projected} test data in projection space
+#' \item \code{train_projected}training data in projection space
+#' \item \code{test_p_estimate} probability estimates for test data (\eqn{p_i})
+#' \item \code{test_weight} scaled probabilities estimates (by max of probs) for
+#'  test (\eqn{p_i/\max_k p_k})
+#' }
 #' @param test_list list of paths to analysis (each a df)
 #' @param c_position positions of lat and lon columns in test_list data frames
 #' @param zoom map zoom for ggmap (plot 2: map)
@@ -597,6 +665,8 @@ ggvis_projection <- function(scp_output, train_alpha = .3,
 #' (plot 1: scatter)
 #' @param test_color_high high color for range of colors on test points prob
 #' (plot 1: scatter)
+#' @param color_n_breaks integer number of breaks along the color range 
+#' (equally spaced along transformed probability space) (plot 1: scatter)
 #'
 #' @return 
 #' \item{gg_path}{ggmap based map object of colored test curves}
@@ -609,15 +679,17 @@ ggvis_all_weighted <- function(scp_output, test_list,
                                train_alpha = .3, 
                                test_color_power = 1/3, 
                                test_color_low = "white",
-                               test_color_high = "red"){
+                               test_color_high = "red",
+                               color_n_breaks = 10){
   # create data
-  data_curves <- data_plot_sc_paths(test_list,scp_output,c_position)
+  data_curves <- data_plot_sc_paths(test_list, scp_output, c_position)
   
   gg_path <- ggvis_paths(data_curves, zoom = zoom)
   gg_proj <- ggvis_projection(scp_output, train_alpha = train_alpha, 
                               test_color_power = test_color_power, 
                               test_color_low = test_color_low,
-                              test_color_high = test_color_high)
+                              test_color_high = test_color_high,
+                              color_n_breaks)
   
   gridExtra::grid.arrange(gg_proj, gg_path, nrow = 1)
   
