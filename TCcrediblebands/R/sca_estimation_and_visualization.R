@@ -536,7 +536,7 @@ data_projection <- function(sca_output = list(test_projection = data.frame(),
 }
 
 
-#' Inner color function setup
+#' color function setup
 #'
 #' @description 
 #' creates a color ramp of \code{n_breaks} equally spaced (along a potentially

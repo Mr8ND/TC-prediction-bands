@@ -2,7 +2,7 @@
 % Please edit documentation in R/sca_estimation_and_visualization.R
 \name{color_function}
 \alias{color_function}
-\title{Inner color function setup}
+\title{color function setup}
 \usage{
 color_function(weights_in, test_color_power = 1/3, test_color_low = "white",
   test_color_high = "red", n_breaks = 10)
