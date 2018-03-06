@@ -3,6 +3,7 @@
 export(bubble_data_plot_lines)
 export(bubble_data_plot_prep_center)
 export(calc_k_dist)
+export(color_function)
 export(convex_hull_structure)
 export(credible_interval_pipeline)
 export(credible_interval_single_tc)
