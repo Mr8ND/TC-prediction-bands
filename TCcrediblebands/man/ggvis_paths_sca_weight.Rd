@@ -5,7 +5,8 @@
 \title{Visualize the TC paths with weights colored}
 \usage{
 ggvis_paths_sca_weight(data_out, zoom = 4, test_color_power = 1/3,
-  test_color_low = "white", test_color_high = "red", base_graph = NULL)
+  test_color_low = "white", test_color_high = "red", n_breaks = 10,
+  base_graph = NULL)
 }
 \arguments{
 \item{data_out}{data frame with correct path information same as outputed 
@@ -26,6 +27,8 @@ where we expect observations of the curve to ordered in time.}
 \item{test_color_low}{lower color value for color range,}
 
 \item{test_color_high}{higher color value for color range,}
+
+\item{n_breaks}{integer number of breaks along the color range}
 
 \item{base_graph}{ggplot object for base graph 
 (created from data_out otherwise)}

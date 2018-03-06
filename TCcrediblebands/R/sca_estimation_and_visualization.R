@@ -457,6 +457,7 @@ data_plot_sc_paths <- function(test_list,
 #' (then use linear scaling for colors)
 #' @param test_color_low lower color value for color range, 
 #' @param test_color_high higher color value for color range,
+#' @param n_breaks integer number of breaks along the color range
 #' @param base_graph ggplot object for base graph 
 #' (created from data_out otherwise)
 #'
@@ -467,6 +468,7 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
                                    test_color_power = 1/3, 
                                    test_color_low = "white",
                                    test_color_high = "red",
+                                   n_breaks = 10,
                                    base_graph = NULL){
   
   if (is.null(base_graph)) {
@@ -485,7 +487,8 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
   color_out <- color_function(data_out$weight,
                               test_color_power = test_color_power,
                               test_color_low = test_color_low,
-                              test_color_high = test_color_high)
+                              test_color_high = test_color_high,
+                              n_breaks = n_breaks)
   
   data_out <- data_out %>% dplyr::mutate(weight_discrete = color_out$breaks)
   colors_rw <- color_out$colors_rw
@@ -552,6 +555,7 @@ data_projection <- function(sca_output = list(test_projection = data.frame(),
 #' (relative to power transformation)}
 #' \item{colors_rw}{color palette ramp vector}
 #'
+#' @export
 color_function <- function(weights_in,
                            test_color_power = 1/3,
                            test_color_low = "white",
