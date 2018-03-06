@@ -6,7 +6,7 @@
 \usage{
 ggvis_all_weighted(sca_output, test_list, c_position = 1:2, zoom = 4,
   train_alpha = 0.3, test_color_power = 1/3, test_color_low = "white",
-  test_color_high = "red", color_n_breaks = 10)
+  test_color_high = "red", color_n_breaks = 10, base_map_graph = NULL)
 }
 \arguments{
 \item{sca_output}{a list of diffusion map associated information 
@@ -39,6 +39,9 @@ probability values for test points color (plot 1: scatter)}
 
 \item{color_n_breaks}{integer number of breaks along the color range 
 (equally spaced along transformed probability space) (plot 1: scatter)}
+
+\item{base_graph}{ggplot object for base graph 
+(created from data_out otherwise) (plot 2: map)}
 }
 \value{
 \item{gg_path}{ggmap based map object of colored test curves}

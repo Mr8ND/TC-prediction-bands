@@ -667,7 +667,8 @@ ggvis_projection <- function(sca_output, train_alpha = .3,
 #' (plot 1: scatter)
 #' @param color_n_breaks integer number of breaks along the color range 
 #' (equally spaced along transformed probability space) (plot 1: scatter)
-#'
+#' @param base_graph ggplot object for base graph 
+#' (created from data_out otherwise) (plot 2: map)
 #' @return 
 #' \item{gg_path}{ggmap based map object of colored test curves}
 #' \item{gg_proj}{ggplot scatter plot of training and colored test points}
@@ -680,11 +681,16 @@ ggvis_all_weighted <- function(sca_output, test_list,
                                test_color_power = 1/3, 
                                test_color_low = "white",
                                test_color_high = "red",
-                               color_n_breaks = 10){
+                               color_n_breaks = 10,
+                               base_map_graph = NULL){
   # create data
   data_curves <- data_plot_sc_paths(test_list, sca_output, c_position)
   
-  gg_path <- ggvis_paths(data_curves, zoom = zoom)
+  gg_path <- ggvis_paths_sca_weight(data_curves, zoom = zoom,
+                                     test_color_power = test_color_power, 
+                                     test_color_low = test_color_low,
+                                     test_color_high = test_color_high,
+                                     base_graph = base_map_graph)
   gg_proj <- ggvis_projection(sca_output, train_alpha = train_alpha, 
                               test_color_power = test_color_power, 
                               test_color_low = test_color_low,
