@@ -208,9 +208,9 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   
   ggout <- base_graph + 
     ggplot2::geom_path(data = data_plot_lower, ggplot2::aes_string(x = 'lat', y = 'lon'), 
-              color = color, linewidth = linewidth, ...) +
+              color = color, size = linewidth, ...) +
     ggplot2::geom_path(data = data_plot_upper, ggplot2::aes_string(x = 'lat', y = 'lon'), 
-              color = color, linewidth = linewidth, ...) 
+              color = color, size = linewidth, ...) 
   
   if (centers) {
     ggout <- ggvis_bubble_data_centers(bubble_plot_data, base_graph = ggout, 
@@ -222,13 +222,13 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
     ggout <- ggplot2::geom_segment(data = 
                             data.frame(x = data_plot_lower[n_final,"lat"],
                                        y = data_plot_lower[n_final,"long"],
-                                       xend = data_plot_lower[n_final,"lat"],
-                                       yend = data_plot_lower[n_final,"long"]),
+                                       xend = data_plot_upper[n_final,"lat"],
+                                       yend = data_plot_upper[n_final,"long"]),
                             ggplot2::aes_string(x = "x",
                                                 y = "y",
                                                 xend = "xend",
                                                 yend = "yend"),
-                            color = color)
+                            color = color, size = linewidth)
   }
   
   return(ggout)
