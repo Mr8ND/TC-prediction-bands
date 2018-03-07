@@ -187,16 +187,16 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
                               centers = FALSE, connect = TRUE,
                               color = "pink", linewidth = 1, zoom = 4,
                               ...){
-  data_plot_lower <- bubble_plot_data$positive
+  data_plot_lower <- data.frame(bubble_plot_data$positive)
   names(data_plot_lower)[1:2] <- c("lat", "lon")
-  data_plot_upper <- bubble_plot_data$negative
+  data_plot_upper <- data.frame(bubble_plot_data$negative)
   names(data_plot_upper)[1:2] <- c("lat", "lon")
   
   if (is.null(base_graph)) {
     
     data_all <- rbind(data_plot_lower, data_plot_upper)
     latrange <- range(data_all$lat)
-    lonrange <- range(data_all$long)
+    lonrange <- range(data_all$lon)
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
@@ -219,7 +219,7 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   
   if (connect) {
     n_final <- nrow(data_plot_lower)
-    ggout <- ggplot2::geom_segment(data = 
+    ggout <- ggout + ggplot2::geom_segment(data = 
                             data.frame(x = data_plot_lower[n_final,"lat"],
                                        y = data_plot_lower[n_final,"lon"],
                                        xend = data_plot_upper[n_final,"lat"],
