@@ -174,6 +174,7 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
 #' (each a n x 2 data frame)
 #' @param base_graph plot to add to
 #' @param centers boolean to decide whether to also plot centers (as points)
+#' @param connect boolean to connect the left and right final tangential points
 #' @param color color of band
 #' @param linewidth width of line
 #' @param zoom map zoom for ggmap
@@ -183,7 +184,7 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
 #' @export
 #'
 ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
-                              centers = FALSE,
+                              centers = FALSE, connect = TRUE,
                               color = "pink", linewidth = 1, zoom = 4,
                               ...){
   data_plot_lower <- bubble_plot_data$positive
@@ -214,6 +215,20 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   if (centers) {
     ggout <- ggvis_bubble_data_centers(bubble_plot_data, base_graph = ggout, 
                               color = color, zoom = 4, ...)
+  }
+  
+  if (connect) {
+    n_final <- nrow(data_plot_lower)
+    ggout <- ggplot2::geom_segment(data = 
+                            data.frame(x = data_plot_lower[n_final,"lat"],
+                                       y = data_plot_lower[n_final,"long"],
+                                       xend = data_plot_lower[n_final,"lat"],
+                                       yend = data_plot_lower[n_final,"long"]),
+                            ggplot2::aes_string(x = "x",
+                                                y = "y",
+                                                xend = "xend",
+                                                yend = "yend"),
+                            color = color)
   }
   
   return(ggout)
