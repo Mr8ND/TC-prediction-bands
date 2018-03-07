@@ -84,11 +84,12 @@ ggvis_paths <- function(data_out, zoom = 4,
 contour_list_to_df <- function(contour_list){
   contour_list_of_df <- list()
   for (i in 1:length(contour_list)) {
-    contour_list_of_df <- data.frame(x = contour_list_of_df[[i]]$x,
-                                     y = contour_list_of_df[[i]]$y,
-                                     level = contour_list_of_df[[i]]$level
+    contour_list_of_df <- data.frame(x = contour_list[[i]]$x,
+                                     y = contour_list[[i]]$y,
+                                     level = contour_list[[i]]$level
     )
   }
+  return(contour_list_of_df)
 }
 
 
