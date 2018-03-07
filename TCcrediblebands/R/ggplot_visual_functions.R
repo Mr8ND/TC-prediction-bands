@@ -221,9 +221,9 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
     n_final <- nrow(data_plot_lower)
     ggout <- ggplot2::geom_segment(data = 
                             data.frame(x = data_plot_lower[n_final,"lat"],
-                                       y = data_plot_lower[n_final,"long"],
+                                       y = data_plot_lower[n_final,"lon"],
                                        xend = data_plot_upper[n_final,"lat"],
-                                       yend = data_plot_upper[n_final,"long"]),
+                                       yend = data_plot_upper[n_final,"lon"]),
                             ggplot2::aes_string(x = "x",
                                                 y = "y",
                                                 xend = "xend",
