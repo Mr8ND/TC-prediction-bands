@@ -84,7 +84,7 @@ ggvis_paths <- function(data_out, zoom = 4,
 contour_list_to_df <- function(contour_list){
   contour_list_of_df <- list()
   for (i in 1:length(contour_list)) {
-    contour_list_of_df <- data.frame(x = contour_list[[i]]$x,
+    contour_list_of_df[[i]] <- data.frame(x = contour_list[[i]]$x,
                                      y = contour_list[[i]]$y,
                                      level = contour_list[[i]]$level
     )
@@ -107,10 +107,10 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
                               zoom = 4, color = "pink", ...){
   
   if (is.null(base_graph)) {
-    latrange <- range(sapply(level_contour_list, function(x){
-                              range(x$lat)}))
-    lonrange <- range(sapply(level_contour_list, function(x){
-      range(x$long)}))
+    latrange <- range(sapply(level_contour_list, function(df){
+                              range(df$y)}))
+    lonrange <- range(sapply(level_contour_list, function(df){
+      range(df$x)}))
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
@@ -119,11 +119,11 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
   } 
   
   ggout <- base_graph  
-  for (i in length(level_countour_list)) {
+  for (i in 1:length(level_contour_list)) {
     ggout <- ggout + 
-      ggplot2::geom_path(data = level_countour_list[[i]],
-                         ggplot2::aes_string(x = 'x', y = 'y'),
-                         color = color, ...)
+      ggplot2::geom_path(data = level_contour_list[[i]],
+                         ggplot2::aes_string(x = "x", y = "y"),
+                         color = color)
   }
   return(ggout)
 }
@@ -135,20 +135,19 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
 #'
 #' @param output_lines data frame of exterior lines (not ordered)
 #' @param base_graph ggplot object for base graph 
-#'       (created from data_out otherwise)
+#'       (created from output_lines otherwise)
 #' @param zoom map zoom for ggmap
 #' @param color color of band
 #' @param ... interior ggpath parameters
 #'
-#' @return ggplot object of contour and data points.
+#' @return ggplot object of contours
 #' @export
 #'
 ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
                                      color = "pink", ...){
-  
   if (is.null(base_graph)) {
     latrange <- range(output_lines$lat)
-    lonrange <- range(output_lines$long)
+    lonrange <- range(output_lines$lon)
     
     ocean <- c(left = lonrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
@@ -164,6 +163,49 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
   
   return(ggout)
 }
+
+# Convex Hull visualation function ---------------------------
+
+
+#' Visualize delta ball exterior centers (with ggplot)
+#'
+#' @description 
+#' Basically the same of \code{\link{ggvis_delta_ball_contour}}
+#'
+#' @param output_lines data frame of exterior lines
+#' @param base_graph ggplot object for base graph 
+#'       (created from output_lines otherwise)
+#' @param zoom map zoom for ggmap
+#' @param color color of band
+#' @param ... interior ggpath parameters
+#'
+#' @return ggplot object of contour
+#' @export
+#'
+ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
+                                     color = "pink", ...){
+  
+  names(output_lines)[names(output_lines) == "long"] <- "lon"
+  
+  if (is.null(base_graph)) {
+    latrange <- range(output_lines$lat)
+    lonrange <- range(output_lines$lon)
+    
+    ocean <- c(left = lonrange[1], bottom = latrange[1],
+               right = lonrange[2], top = latrange[2])
+    map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
+    
+    base_graph <- ggmap::ggmap(map)
+  } 
+  
+  ggout <- base_graph + 
+    ggplot2::geom_path(data = output_lines, 
+                       ggplot2::aes_string(x = 'lat', y = 'lon'),
+                       color = color, ...)
+  
+  return(ggout)
+}
+
 
 # Bubble visualization functions -------------------------
 

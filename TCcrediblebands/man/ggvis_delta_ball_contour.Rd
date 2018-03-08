@@ -11,7 +11,7 @@ ggvis_delta_ball_contour(output_lines, base_graph = NULL, zoom = 4,
 \item{output_lines}{data frame of exterior lines (not ordered)}
 
 \item{base_graph}{ggplot object for base graph 
-(created from data_out otherwise)}
+(created from output_lines otherwise)}
 
 \item{zoom}{map zoom for ggmap}
 
@@ -20,7 +20,7 @@ ggvis_delta_ball_contour(output_lines, base_graph = NULL, zoom = 4,
 \item{...}{interior ggpath parameters}
 }
 \value{
-ggplot object of contour and data points.
+ggplot object of contours
 }
 \description{
 Visualize delta ball exterior centers (with ggplot)
