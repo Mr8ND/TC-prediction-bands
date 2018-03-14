@@ -256,7 +256,7 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
               color = color, size = linewidth, ...) 
   
   if (centers) {
-    ggout <- ggvis_bubble_data_centers(bubble_plot_data, base_graph = ggout, 
+    ggout <- ggvis_bubble_data_centers_inner(bubble_plot_data, base_graph = ggout, 
                               color = color, zoom = 4, ...)
   }
   
