@@ -25,7 +25,7 @@ function. Default is NULL.}
 evaluation of kde object. Can be reduced to speed-up computation.}
 }
 \value{
-\item{contour}{Contour at the specified level}
+\item{contour}{List of contour(s) at the specified level}
 \item{area}{Contour area}
 \item{kde_object}{Full KDE Object (from \code{\link[ks]{kde}})}
 }

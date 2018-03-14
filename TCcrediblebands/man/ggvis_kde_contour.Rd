@@ -4,12 +4,11 @@
 \alias{ggvis_kde_contour}
 \title{Create ggplot of contour}
 \usage{
-ggvis_kde_contour(level_contour_df, data_plot, base_graph = NULL, zoom = 4)
+ggvis_kde_contour(level_contour_list, base_graph = NULL, zoom = 4,
+  color = "pink", ...)
 }
 \arguments{
-\item{level_contour_df}{data frame of level contour}
-
-\item{data_plot}{data frame of points}
+\item{level_contour_list}{list of  data frame of level contours}
 
 \item{base_graph}{ggplot object for base graph 
 (created from data_out otherwise)}
