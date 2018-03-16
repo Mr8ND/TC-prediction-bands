@@ -11,7 +11,7 @@ check_points_in_bubbleCI(df_points, center_df, radius_df, long = 1, lat = 2)
 
 \item{center_df}{Dataframe of central points of the CI bubble}
 
-\item{radius_df}{Dataframe of radius of the CI bubble}
+\item{radius_df}{Dataframe of radius of the CI bubble (vector?)}
 
 \item{long}{column index of the longitude in the central points}
 
@@ -25,4 +25,7 @@ or not
 Given a dataframe of points this function returns a vector of the same
 length with 1 or 0 whether the respective points is included in any of the CI
 bubble.
+
+NOTE: this approach has been superseded by 
+\code{\link{check_points_within_diff_radius}}
 }

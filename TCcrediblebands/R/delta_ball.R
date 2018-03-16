@@ -33,6 +33,8 @@ get_delta <- function(data, dist_mat = NULL){
 #'
 #' @return \item{box_points}{data frame of uniformly randomly drawn points}
 #' \item{size}{the size of the box from which points are drawn}
+#' 
+#' @export
 get_box_points <- function(data, n = 10000){
   # get points drawn uniformly from box around data points
   ranges <- sapply(data, range)
