@@ -116,7 +116,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
   #level from the kde_obj$cont vector and store it for comparison.
   if (!is.null(alpha_level)) {
     contour_alpha_level <- as.numeric(kde_obj$cont[
-                paste(as.character((1 - alpha_level) * 100), "%", sep = "")])
+                paste(as.character(alpha_level* 100), "%", sep = "")])
     in_alpha_vec <- as.numeric(predict_vec >= contour_alpha_level)
     out_mat <- cbind(out_mat, in_alpha_vec)
   }
@@ -242,7 +242,7 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
                               spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
                               spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
 
-  return(points_in_poly)
+  return(as.numeric(points_in_poly > 0))
 }
 
 
