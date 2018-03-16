@@ -196,6 +196,8 @@ error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2,
 #' This functions uses as inputs the output of 
 #' \code{\link{error_bands_bubbleCI}}.
 #' 
+#' NOTE: this approach has been superseded by \code{\link{get_area_diff_radius}}
+#' 
 #' @param tc_bubble_structure Bubble CI list with centers, radius, positive 
 #' and negative parts
 #' 
@@ -229,6 +231,171 @@ max_cumulative_area <- function(tc_bubble_structure) {
 }
 
 
+
+
+#' Inner function to get approximate area/ proportion of observations in for 
+#' pointwise bubble CB 
+#'
+#' @description Inner calculation of proportion of points close to the center of
+#' the pointwise bubble based CB relative to a changing radius. This function 
+#' works in a similar way as \code{\link{get_area_inner}} created for the 
+#' \eqn{\delta}-ball based approach.
+
+#' @details
+#' This functions uses as inputs the output of 
+#' \code{\link{error_bands_bubbleCI}}.
+#'
+#'
+#' @param tc_bubble_structure Bubble CI list with centers, radius, positive 
+#' and negative parts (at least a list of centers data frame and radius vector)
+#' @param query points to check relative to the center points 
+#' @param size size of space where query points were drawn (note if size = 1, 
+#' then you are getting the proportion of points with the balls)
+#' @param long Column index of the longitude for query entry
+#' @param lat Column index of the latitude for query entry
+#' @param alpha alpha level for 2 sided confidence interval estimate
+#' @param unit_measure string of measurement unit of points, see options in
+#' datamart::uconv.
+#' @param verbose boolean logic if should have print outs (specifically that we
+#' switch the columns due to longlat boolean)
+#'
+#' @return 
+#' \item{area}{estimated area of union of balls}
+#' \item{area_ci}{vector with lower and upper confidence interval estimate}
+#' \item{in_vec}{vector of 0/1 to indicate if the query point was inside at 
+#' least one ball}
+#' @export
+get_area_diff_radius_inner <- function(tc_bubble_structure, query, size = 1,
+                                       long = 1, lat = 2, alpha = .05,
+                                       unit_measure = "nautical mile",
+                                       verbose = TRUE){
+  
+  rad <- tc_bubble_structure$radius
+  centers <- tc_bubble_structure$centers
+  
+  n_centers <- nrow(centers)
+  n_obs <- nrow(query)
+  
+  contained_vec <- rep(0, n_obs)
+  
+  if (verbose) {
+    pb <- progress::progress_bar$new(
+      format = "Closeness Check [:bar] :percent eta: :eta",
+      total = n_centers, clear = FALSE, width = 51)
+  }
+  
+  for (t_step in 1:n_centers) {
+    dist_vec <- datamart::uconv(
+      geosphere::distGeo(centers[t_step, 1:2],
+                         query[, c(long,lat)]),
+      "m", unit_measure, "Length")
+    contained_vec <- contained_vec + (dist_vec < rad[t_step])
+    
+    if (verbose) {
+      pb$tick()
+    }
+  }
+  in_vec <- 1* (contained_vec > 0)
+  prop <- mean(in_vec)
+  prop_ci <- prop + c(-1,1) * stats::qnorm(1 - alpha/2) * 
+    sqrt( (1 - prop) * prop / n_obs )
+  
+  area <- prop * size 
+  area_ci <- prop_ci * size
+  return(list(area = area, area_ci = area_ci, in_vec = in_vec))
+}
+
+#' Estimate area of union of balls with different radius(wrapper)
+#' 
+#' @description Wrapper function to estimate the area of union of balls with 
+#' different radius (for pointwise CI), using uniform draws 
+#'
+#' @param tc_bubble_structure Bubble CI list with centers, radius, positive 
+#' and negative parts (at least a list of centers data frame and radius vector)
+#' @param n number of points drawn uniformly within a box around the true data
+#' @param alpha alpha level for 2 sided confidence interval estimate
+#' @param unit_measure string of measurement unit of points, see options in
+#' datamart::uconv.
+#' @param verbose boolean logic if should have print outs (specifically that we
+#' switch the columns due to longlat boolean)
+#'
+#' @return 
+#' \item{area}{estimated area of union of balls}
+#' \item{area_ci}{vector with lower and upper confidence interval estimate}
+#' 
+#' @export
+get_area_diff_radius <- function(tc_bubble_structure, n = 10000,
+                                alpha = .05,
+                                unit_measure = "nautical mile",
+                                verbose = TRUE){
+  
+  # correct box set-up
+  radius_ind <- datamart::uconv(tc_bubble_structure$radius, 
+                                from = unit_measure, 
+                                to = "m", "Length")
+  #direction <- bearing_orthog[i]
+  mat1 <- geosphere::destPoint(tc_bubble_structure$centers, 0, radius_ind)
+  mat2 <- geosphere::destPoint(tc_bubble_structure$centers, 90, radius_ind)
+  mat3 <- geosphere::destPoint(tc_bubble_structure$centers, 180, radius_ind)
+  mat4 <- geosphere::destPoint(tc_bubble_structure$centers, 270, radius_ind)
+  
+  data_box <- rbind(mat1, mat2, mat3, mat4) %>% data.frame
+  
+  unif_points <- get_box_points(data_box, n = n) #in delta_ball.R
+  query <- unif_points$box_points
+  size  <- unif_points$size
+  
+  area_info <- get_area_diff_radius_inner(tc_bubble_structure, query, 
+                                          size = size, alpha = alpha,
+                                          unit_measure = unit_measure,
+                                          verbose = verbose)
+  
+  out_list <- list()
+  out_list$area <- area_info$area
+  out_list$area_ci <- area_info$area_ci
+  
+  return(out_list)
+  
+}
+
+
+#' Checks if points are within at least 1 ball from the bubble CI (different 
+#' radii)
+#' @description uses flexablity of \code{\link{get_area_diff_radius_inner}}
+#' 
+#' @param tc_bubble_structure Bubble CI list with centers, radius, positive 
+#' and negative parts (at least a list of centers data frame and radius vector)
+#' @param df_points Dataframe of points which inclusion needs to be calculated
+#' @param long Column index of the longitude for \code{df_points} entry
+#' @param lat Column index of the latitude for \code{df_points} entry
+#' @param unit_measure string of measurement unit of points, see options in
+#' datamart::uconv.
+#' @param verbose boolean logic if should have print outs (specifically that we
+#' switch the columns due to longlat boolean)
+#' 
+#' @return vector of 0/1 to indicate if the query point was inside at least one 
+#' ball
+#' @export
+#'
+check_points_within_diff_radius <- function(tc_bubble_structure, df_points,
+                                            long = 1, lat = 2, 
+                                            unit_measure = "nautical mile",
+                                            verbose = TRUE){
+  
+  tc_bubble_structure$radius[is.na(tc_bubble_structure$radius)] <- 0
+  tc_bubble_structure$centers[is.na(tc_bubble_structure$centers)] <- 0
+  
+  area_info <- get_area_diff_radius_inner(tc_bubble_structure, df_points, 
+                                          size = 1,
+                                          long = long, lat = lat, alpha = 0,
+                                          unit_measure = unit_measure,
+                                          verbose = verbose)
+  
+  return(area_info$in_vec)
+  
+}
+
+
 #' Check if points are inside bubble CI
 #' 
 #' @description
@@ -236,9 +403,12 @@ max_cumulative_area <- function(tc_bubble_structure) {
 #' length with 1 or 0 whether the respective points is included in any of the CI
 #' bubble.
 #' 
+#' NOTE: this approach has been superseded by 
+#' \code{\link{check_points_within_diff_radius}}
+#' 
 #' @param df_points Dataframe of points which inclusion needs to be calculated
 #' @param center_df Dataframe of central points of the CI bubble
-#' @param radius_df Dataframe of radius of the CI bubble
+#' @param radius_df Dataframe of radius of the CI bubble (vector?)
 #' @param long column index of the longitude in the central points
 #' @param lat column index of the latitude in the central points
 #' 

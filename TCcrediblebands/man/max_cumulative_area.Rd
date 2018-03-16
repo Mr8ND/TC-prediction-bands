@@ -20,4 +20,6 @@ Finds area of bubble CI, for each step, then takes the maximum
 \details{
 This functions uses as inputs the output of 
 \code{\link{error_bands_bubbleCI}}.
+
+NOTE: this approach has been superseded by \code{\link{get_area_diff_radius}}
 }
