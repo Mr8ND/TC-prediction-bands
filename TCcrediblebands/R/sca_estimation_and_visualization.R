@@ -671,7 +671,7 @@ ggvis_projection <- function(sca_output, train_alpha = .3,
 #' (plot 1: scatter)
 #' @param color_n_breaks integer number of breaks along the color range 
 #' (equally spaced along transformed probability space) (plot 1: scatter)
-#' @param base_graph ggplot object for base graph 
+#' @param base_map_graph ggplot object for base graph 
 #' (created from data_out otherwise) (plot 2: map)
 #' @return 
 #' \item{gg_path}{ggmap based map object of colored test curves}

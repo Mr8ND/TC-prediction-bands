@@ -100,6 +100,8 @@ contour_list_to_df <- function(contour_list){
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
 #' @param zoom map zoom for ggmap
+#' @param color color of band
+#' @param ... interior ggpath parameters
 #'
 #' @return ggplot object of contour and data points.
 #' @export
@@ -256,7 +258,7 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
               color = color, size = linewidth, ...) 
   
   if (centers) {
-    ggout <- ggvis_bubble_data_centers(bubble_plot_data, base_graph = ggout, 
+    ggout <- ggvis_bubble_data_centers_inner(bubble_plot_data, base_graph = ggout, 
                               color = color, zoom = 4, ...)
   }
   

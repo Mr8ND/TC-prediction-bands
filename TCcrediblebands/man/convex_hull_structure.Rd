@@ -25,7 +25,7 @@ convex_hull_structure(data_list, alpha, dist_mat = NULL,
 \item{verbose}{if the distance matrix is verbose}
 
 \item{...}{other parameters in distance calculation through 
-\code{\link{`distMatrixPath_innersq`}}}
+\code{\link{distMatrixPath_innersq}}}
 }
 \value{
 \item{polygon}{dataframe}

@@ -14,6 +14,10 @@ ggvis_kde_contour(level_contour_list, base_graph = NULL, zoom = 4,
 (created from data_out otherwise)}
 
 \item{zoom}{map zoom for ggmap}
+
+\item{color}{color of band}
+
+\item{...}{interior ggpath parameters}
 }
 \value{
 ggplot object of contour and data points.
