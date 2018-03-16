@@ -4,10 +4,12 @@
 \alias{get_area_c}
 \title{Get area of convex hull}
 \usage{
-get_area_c(data)
+get_area_c(data, c_position = 1:2)
 }
 \arguments{
 \item{data}{points to find a convex hull over (assumed n x 2)}
+
+\item{c_position}{Position of the longitude/latitude pair}
 }
 \value{
 \item{polygon}{dataframe}

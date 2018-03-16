@@ -13,7 +13,8 @@ data_loc  <- "main/data/"
 # Install from Github ----------------------------------
 
 library(devtools)
-devtools::install_github(repo = 'benjaminleroy/Hurricanes_701/TCcrediblebands')
+library(methods)
+#devtools::install_github(repo = 'benjaminleroy/Hurricanes_701/TCcrediblebands')
 #devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
 library(TCcrediblebands)
 
@@ -37,7 +38,7 @@ n_curves = 350 #number of simulated curves
 
 reduced_test_env <- list()
 for (name_tc in test_tc_names) {
-  reduced_test_env <- list()
+  reduced_test_env[[name_tc]] <- list()
   for (curve_type in desired_curves_types) {
     for (i in c(1:n_curves)) { 
       reduced_test_env[[name_tc]][[curve_type]][[i]] <- 

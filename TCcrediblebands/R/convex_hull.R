@@ -1,6 +1,7 @@
 #' Get area of convex hull
 #'
 #' @param data points to find a convex hull over (assumed n x 2)
+#' @param c_position Position of the longitude/latitude pair
 #'
 #' @return 
 #' \item{polygon}{dataframe}
@@ -30,7 +31,8 @@
 #'   geom_path(data = c_points, 
 #'             aes(x = xx, y = yy), color = "red")
 #' }
-get_area_c <- function(data){
+get_area_c <- function(data, c_position = 1:2){
+  data <- data[,c(c_position[2],c_position[1])]
   c_out <- grDevices::chull(data)
   c_points <- data[c_out,]
   
@@ -80,8 +82,8 @@ get_area_c <- function(data){
 #'}
 points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 
-  points_in_poly <- sp::point.in.polygon(predict_mat[, long], 
-                                         predict_mat[, lat],
+  points_in_poly <- sp::point.in.polygon(predict_mat[, lat], 
+                                         predict_mat[, long],
                                 spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
                                 spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
 
@@ -101,7 +103,7 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 #' (otherwise calculated)
 #' @param verbose if the distance matrix is verbose
 #' @param ... other parameters in distance calculation through 
-#' `distMatrixPath_innersq`
+#' \code{\link{`distMatrixPath_innersq`}}
 #'
 #' @return 
 #' \item{polygon}{dataframe}
@@ -126,7 +128,7 @@ convex_hull_structure <- function(data_list, alpha, dist_mat = NULL,
   }
   # getting convex hull structure and area -----------------
   
-  chull_out <-  get_area_c(data_deep_points)
+  chull_out <-  get_area_c(data_deep_points, c_position = 1:2)
 
   return(chull_out)
 }

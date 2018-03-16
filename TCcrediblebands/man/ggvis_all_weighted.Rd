@@ -4,12 +4,21 @@
 \alias{ggvis_all_weighted}
 \title{Creates clean visual of weighted curves using Spectral Clustering Analysis}
 \usage{
-ggvis_all_weighted(scp_output, test_list, c_position = 1:2, zoom = 4,
+ggvis_all_weighted(sca_output, test_list, c_position = 1:2, zoom = 4,
   train_alpha = 0.3, test_color_power = 1/3, test_color_low = "white",
-  test_color_high = "red")
+  test_color_high = "red", color_n_breaks = 10, base_map_graph = NULL)
 }
 \arguments{
-\item{scp_output}{spectral_cluster_process function output}
+\item{sca_output}{a list of diffusion map associated information 
+assumed of the form of output provided by 
+\code{link{spectral_cluster_process}}. At minimum this list needs 2 elements
+\itemize{
+\item \code{test_projected} test data in projection space
+\item \code{train_projected}training data in projection space
+\item \code{test_p_estimate} probability estimates for test data (\eqn{p_i})
+\item \code{test_weight} scaled probabilities estimates (by max of probs) for
+ test (\eqn{p_i/\max_k p_k})
+}}
 
 \item{test_list}{list of paths to analysis (each a df)}
 
@@ -27,6 +36,12 @@ probability values for test points color (plot 1: scatter)}
 
 \item{test_color_high}{high color for range of colors on test points prob
 (plot 1: scatter)}
+
+\item{color_n_breaks}{integer number of breaks along the color range 
+(equally spaced along transformed probability space) (plot 1: scatter)}
+
+\item{base_graph}{ggplot object for base graph 
+(created from data_out otherwise) (plot 2: map)}
 }
 \value{
 \item{gg_path}{ggmap based map object of colored test curves}

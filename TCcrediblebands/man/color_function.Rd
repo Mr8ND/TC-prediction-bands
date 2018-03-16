@@ -2,13 +2,13 @@
 % Please edit documentation in R/sca_estimation_and_visualization.R
 \name{color_function}
 \alias{color_function}
-\title{Inner color function setup}
+\title{color function setup}
 \usage{
 color_function(weights_in, test_color_power = 1/3, test_color_low = "white",
-  test_color_high = "red")
+  test_color_high = "red", n_breaks = 10)
 }
 \arguments{
-\item{weights_in}{probability weights for}
+\item{weights_in}{standardized probability weights (between 0 and 1)}
 
 \item{test_color_power}{power to raise the probability weights 
 (then use linear scaling for colors)}
@@ -16,6 +16,8 @@ color_function(weights_in, test_color_power = 1/3, test_color_low = "white",
 \item{test_color_low}{lower color value for color range,}
 
 \item{test_color_high}{higher color value for color range,}
+
+\item{n_breaks}{integer number of breaks along the color range}
 }
 \value{
 \item{breaks}{vector of which of the 10 breaks each weight is in 
@@ -23,5 +25,6 @@ color_function(weights_in, test_color_power = 1/3, test_color_low = "white",
 \item{colors_rw}{color palette ramp vector}
 }
 \description{
-Inner color function setup
+creates a color ramp of \code{n_breaks} equally spaced (along a potentially
+scaled version of) the inputted \code{weights_in}.
 }

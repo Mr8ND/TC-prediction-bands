@@ -5,11 +5,19 @@
 \title{Visualize the TC paths with weights colored}
 \usage{
 ggvis_paths_sca_weight(data_out, zoom = 4, test_color_power = 1/3,
-  test_color_low = "white", test_color_high = "red", base_graph = NULL)
+  test_color_low = "white", test_color_high = "red", n_breaks = 10,
+  base_graph = NULL)
 }
 \arguments{
 \item{data_out}{data frame with correct path information same as outputed 
-from data_plot_sc_paths functions}
+from data_plot_sc_paths functions. Specifically, columns as follows:
+\itemize{
+\item \code{curve} curve number indicating which curve the observation is in
+\item \code{lat} latitude values for that step of the TC
+\item \code{long} longitude values for that step of the TC
+\item \code{weight} probability weights for each curve (between 0 and 1)
+}
+where we expect observations of the curve to ordered in time.}
 
 \item{zoom}{map zoom for ggmap}
 
@@ -19,6 +27,8 @@ from data_plot_sc_paths functions}
 \item{test_color_low}{lower color value for color range,}
 
 \item{test_color_high}{higher color value for color range,}
+
+\item{n_breaks}{integer number of breaks along the color range}
 
 \item{base_graph}{ggplot object for base graph 
 (created from data_out otherwise)}

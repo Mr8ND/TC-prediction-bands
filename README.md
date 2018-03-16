@@ -1,82 +1,50 @@
 # Hurricanes_701
 
-10-701: Introduction to Machine Learning
-
-Carnegie Mellon University
-
-Fall 2016
-
-This repository stores the documentation of our new approach to predicting the 
-full paths of tropical storms (TCs) using just a few initial points by 
-leveraging extensions on regression models to generate curves, combined with 
-updates to use weighting metrics from a compression of the training data 
-using spectral analysis to get a density estimation for the training data,
-and two dimensional confidence bands. This approach was specifically designed
-with the use of the 
+This repository stores the documentation for new approaches to predicting 
+credible bands for full paths of tropical storms (TCs) using just a few initial 
+points. We leveraging extensions on regression models to generate curves, 
+combined with multiple approaches to create credible bands for the full paths. 
+These approaches utilizes, kernel density estimation, utilize depth-based 
+relationships between curves, and also leverage geometric properties of the 
+space. This project was specifically designed with the use of the 
 [*HURDAT 2*](http://www.aoml.noaa.gov/hrd/hurdat/hurdat2-1851-2015-070616.txt) 
-data set from the 
-[*National Oceanic and Atmospheric Administration*](http://www.aoml.noaa.gov/hrd/hurdat/Data_Storm.html). 
+data set from the [*National Oceanic and Atmospheric Administration*](
+http://www.aoml.noaa.gov/hrd/hurdat/Data_Storm.html). 
 
 ## Replication of Results
-As is generally the case in papers today, our analysis is replicable. Follow the
-below instructions to do so.
-
-
-### Location of Important Code Files
-Files in `code/final_script` directory can replicate the work presented in the 
-paper. No initial `set seed` was used in the initial segmentation of the 
-tropical storms (TCs), and as such, to completely replicate the work, you'd need
-to gather the split from Ben LeRoy and additionally you'd want to go into 
-`cleaning_data_test_train_subset.py` and change line 95 to have 
-`run_initial_time = False` (Keep it `True` if you aren't too worried about the 
-split).
+As is generally the case in papers today, our analysis is replicable. The files
+in the `main/` folder store the necessary files to run our analysis. The viewer 
+should note that the analysis pipeline takes a long while and should decide if 
+they would like the full results or just test out the analysis on a few samples. 
+Additionally, the R package `TCcrediblebands`, which is included in this repo 
+provides the user with the ability to analysis different generated curves with 
+our credible band approaches and also TC paths that were not available when 
+we developed with package.
 
 ### Running files
-All files (`python` and `R`) should be run from the upper projection location (
-`Hurricanes_701`) which we notate as the `project_location`. Python file 
-(`.py`) should be run using `python3`.
+All files in `main` are meant to be run from the upper projection location 
+(`Hurricanes_701`).
 
-The `python` file requires the following packages:
-- `numpy`: general data structure
-- `pickle`: saving files (although all important files are saved as `csv`s for 
-`R`)
-- `re`: general expression manipulations
-- `collections`: table and counting structure
-- `matplotlib`,`matplotlib.pyplot`: plotting
-- `sys`: file location
+### `TCcrediblebands` package
 
-`R` files require the following libraries:
-- `geosphere`: distances and bearing on spheres (for the earth: which is non euclidean)
-- `plyr`: 
-- `datamart`: 
-- `kknn`: kNN algorithm, and kNN density estimator
-- `rworldmap`: plotting 2d surfaces of the earth
-- `plot3D`: plotting 3d compressions
-- `xtable`: creating latex tables for presentation
+To install the latest version please do
 
-### Getting the Data and Creating Necessary Subfolders in the Data Directory
+```r
+library(devtools)
+devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
+library(TCcrediblebands)
+```
 
-Go into the data folder and run `make all`. Note that later you'll need to run
-a bash shell file (`.sh`) to create more subfolders.
-
-### Order of Files to Run
-
-- `cleaning_data_test_train_subset.py`: python process to clean and prepare data for R code
-- `create_folders.sh`: bash script to make the correct subdirectories for simulated data created in `Simulate_Validation_Paths.R` (will need to be done after `cleaning_data_test_train_subset.py` is run,
-can do in the terminal with `bash create_folder.sh`)
-- `Simulate_Validation_Paths.R`: created simulated paths for the training data *
-- `initial_pipeline.R`: Creates Distance matrices, Markov Matrices and more on the test data (Spectral Analysis).*
-- `loocv.R`: Tune parameters for density map estimation using LOOCV **
-- `second_pipeline`: Estimate likelihood of generated paths using Spectral Analysis *
-
-"*" means it takes a long time to run
-
-
+## Comments
+This project started in Carnegie Mellon University's 10-701: Introduction to 
+Machine Learning in the Fall of 2016. After this class, we have worked with 
+support from [Professor Chad Schafer](http://www.stat.cmu.edu/~cschafer/).
 
 ## Contributors 
 - Nic Dalmasso ([`Mr8ND`](https://github.com/Mr8ND))
 - Robin Dunn  ([`RobinMDunn`](https://github.com/RobinMDunn))
 - Benjamin LeRoy ([`benjaminleroy`](https://github.com/benjaminleroy))
 
-This repository is public and owned by Nic Dalmasso, Robin Dunn and Ben LeRoy.
+This repository is public and owned by Nic Dalmasso, Robin Dunn and Benjamin 
+LeRoy.
 

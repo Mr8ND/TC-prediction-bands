@@ -4,10 +4,20 @@
 \alias{data_projection}
 \title{Get points for objects in projection space}
 \usage{
-data_projection(scp_output)
+data_projection(sca_output = list(test_projection = data.frame(),
+  train_projected = data.frame(), test_p_estimate = integer(0), test_weight =
+  integer(0)))
 }
 \arguments{
-\item{scp_output}{pectral_cluster_process function output}
+\item{sca_output}{spectral_cluster_process function output. Or at least the 
+following structure in a list:
+\itemize{
+\item \code{test_projected} test data in projection space
+\item \code{train_projected}training data in projection space
+\item \code{test_p_estimate} probability estimates for test data (\eqn{p_i})
+\item \code{test_weight} scaled probabilities estimates (by max of probs) for
+ test  (\eqn{p_i/\max_k p_k})
+}}
 }
 \value{
 \item{test_df}{data frame of training points and probability weights}
