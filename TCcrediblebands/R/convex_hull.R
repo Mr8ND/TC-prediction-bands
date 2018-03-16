@@ -87,7 +87,7 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
                                 spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
                                 spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
 
-  return(points_in_poly == 1)
+  return(as.numeric(points_in_poly > 0))
 }
 
 
@@ -103,7 +103,7 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 #' (otherwise calculated)
 #' @param verbose if the distance matrix is verbose
 #' @param ... other parameters in distance calculation through 
-#' \code{\link{`distMatrixPath_innersq`}}
+#' \code{\link{distMatrixPath_innersq}}
 #'
 #' @return 
 #' \item{polygon}{dataframe}

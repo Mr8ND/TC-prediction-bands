@@ -40,7 +40,7 @@ probability values for test points color (plot 1: scatter)}
 \item{color_n_breaks}{integer number of breaks along the color range 
 (equally spaced along transformed probability space) (plot 1: scatter)}
 
-\item{base_graph}{ggplot object for base graph 
+\item{base_map_graph}{ggplot object for base graph 
 (created from data_out otherwise) (plot 2: map)}
 }
 \value{

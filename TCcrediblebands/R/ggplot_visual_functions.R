@@ -100,6 +100,8 @@ contour_list_to_df <- function(contour_list){
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
 #' @param zoom map zoom for ggmap
+#' @param color color of band
+#' @param ... interior ggpath parameters
 #'
 #' @return ggplot object of contour and data points.
 #' @export
