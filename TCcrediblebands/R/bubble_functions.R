@@ -289,7 +289,7 @@ get_area_diff_radius_inner <- function(tc_bubble_structure, query, size = 1,
       geosphere::distGeo(centers[t_step, 1:2],
                          query[, c(long,lat)]),
       "m", unit_measure, "Length")
-    contained_vec <- contained_vec + (dist_vec < rad[t_step])
+    contained_vec <- contained_vec + (dist_vec <= rad[t_step])
     
     if (verbose) {
       pb$tick()
@@ -452,6 +452,8 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' @param long Column index of the longitude
 #' @param lat Column index of the latitude
 #' @param unit_measure Unit of measure used for distance
+#' @param alpha_ci_level Fraction for confidence interval of area estimates based on uniform
+#' sampling distribution.
 #' 
 #' @return
 #' \item{bubble_CI_object}{A list of matrices, each with prediction and, 
@@ -462,7 +464,7 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' \item{area_vector}{cumulative area as one steps along the CB,
 #' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
 bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1, 
-                                 long = 1, lat = 2, 
+                                 long = 1, lat = 2, alpha_ci_level = .05,
                                  unit_measure = 'nautical mile') {
 
     bubble_steps_CI <- bubbleCI(dflist = dflist, center_idx = center_idx, 
@@ -475,11 +477,12 @@ bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1,
                                   long_col = long, lat_col = lat, 
                                   unit_measure = unit_measure)
 
-    area_list <- max_cumulative_area(bubble_ci_structure)
+    area_list <- get_area_diff_radius(bubble_ci_structure, 
+                                  alpha = alpha_ci_level,
+                                  unit_measure = unit_measure)
 
     return(list('bubble_CI_object' = bubble_ci_structure, 
-                'area' = area_list[[2]], 
-                'area_vector' = area_list[[1]]))
+                'area' = area_list$area))
 } 
 
 

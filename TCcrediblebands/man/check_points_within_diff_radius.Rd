@@ -6,7 +6,7 @@
 radii)}
 \usage{
 check_points_within_diff_radius(tc_bubble_structure, df_points, long = 1,
-  lat = 2, unit_measure, verbose = TRUE)
+  lat = 2, unit_measure = "nautical mile", verbose = TRUE)
 }
 \arguments{
 \item{tc_bubble_structure}{Bubble CI list with centers, radius, positive 
