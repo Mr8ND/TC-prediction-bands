@@ -24,9 +24,9 @@ true_curve_test <- lapply(test_data, true_curve_conversion_function)
 
 #' Getting the initial arguments -----------------------------
 
-start_idx_passed <- 224
-end_idx_passed <- 224 #length(test_env)
-n_sim_curve_total <- 100
+start_idx_passed <- 1
+end_idx_passed <- length(test_env)
+n_sim_curve_total <- 350
 alpha_level <- 0.1
 alpha_ci_level <- .05
 
