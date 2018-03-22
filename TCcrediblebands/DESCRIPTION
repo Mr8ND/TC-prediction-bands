@@ -28,5 +28,5 @@ Imports:
     splitstackshape,
     stats,
     stringr,
-    purr
+    purrr
 RoxygenNote: 6.0.1
