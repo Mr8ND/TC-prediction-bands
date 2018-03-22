@@ -102,7 +102,8 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
         'area' = delta_ball_structure$area,
         'area_ci' =  delta_ball_structure$area_ci,
         'delta' = delta_ball_structure$delta,
-        'in_vec' = as.numeric(delta_ball_inclusion_vec[,1])
+        'in_vec' = as.numeric(delta_ball_inclusion_vec[,1]),
+        'deep_points' = data_deep_points
         )
 
 
