@@ -33,7 +33,7 @@ calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, long = 1, lat 
 	tc_bubble_structure <- hur_out_obj[["bubble_ci"]][["bubble_structure"]]
 	bubble_invec_list <- lapply(X = sim_hur_list,
 							FUN = check_points_within_diff_radius,
-                            tc_bubble_structure = bubble_ci_list$bubble_CI_object,
+                            tc_bubble_structure = tc_bubble_structure,
                             long = long, lat = lat, 
                             unit_measure = unit_measure,
                             verbose = verbose)
@@ -43,8 +43,8 @@ calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, long = 1, lat 
 	delta <- hur_out_obj[["delta_ball"]][["delta"]]
 	delta_ball_invec_list <- lapply(X = sim_hur_list,
 							FUN = delta_ball_prop_interior,
-							raw_data_points = data_deep_points, 
-                            delta = delta_ball_structure$delta)
+							raw_data_points = deep_points, 
+                            delta = delta)
 	delta_ball_invec_list <- lapply(X = delta_ball_invec_list, function(x) as.numeric(x[,1]))
 
 	# CONVEX HULL

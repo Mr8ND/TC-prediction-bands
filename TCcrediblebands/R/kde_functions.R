@@ -268,7 +268,7 @@ points_in_contour_list <- function(cont_list, predict_mat, long = 1, lat = 2){
                         predict_mat = predict_mat,
                         long = long,
                         lat = lat)
-  in_vec_output <- reduce(.f = pmax, .x = in_vec_list)
+  in_vec_output <- purrr::reduce(.f = pmax, .x = in_vec_list)
 
   return(in_vec_output)
 }
