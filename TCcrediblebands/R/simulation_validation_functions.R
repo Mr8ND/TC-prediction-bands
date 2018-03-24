@@ -27,7 +27,7 @@ calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, long = 1, lat 
 	kde_invec_list <- lapply(X = sim_hur_list,
 							FUN = points_in_contour_list, 
 							cont_list = cont_list, 
-							long = 1, lat = 2)
+							long = long, lat = lat)
 
 	# BUBBLE CI
 	tc_bubble_structure <- hur_out_obj[["bubble_ci"]][["bubble_structure"]]
