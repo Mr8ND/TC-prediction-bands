@@ -5,7 +5,7 @@
 \title{Creating bubble CI out of TC simulated lists}
 \usage{
 bubble_ci_from_tclist(dflist, center_idx, alpha_level = 0.1, long = 1,
-  lat = 2, unit_measure = "nautical mile")
+  lat = 2, alpha_ci_level = 0.05, unit_measure = "nautical mile")
 }
 \arguments{
 \item{dflist}{List of simulated TCs}
@@ -17,6 +17,9 @@ bubble_ci_from_tclist(dflist, center_idx, alpha_level = 0.1, long = 1,
 \item{long}{Column index of the longitude}
 
 \item{lat}{Column index of the latitude}
+
+\item{alpha_ci_level}{Fraction for confidence interval of area estimates based on uniform
+sampling distribution.}
 
 \item{unit_measure}{Unit of measure used for distance}
 }

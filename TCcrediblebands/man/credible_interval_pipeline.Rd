@@ -7,8 +7,9 @@
 credible_interval_pipeline(tc_full_sim_list, tc_true_path_list,
   alpha_level = 0.1, start_idx = NULL, end_idx = NULL, long = 1,
   lat = 2, unit_measure = "nautical mile", verbose = TRUE,
-  kde_grid_size = rep(1000, 2), curve_type_vec = c("Auto_DeathRegs",
-  "Auto_NoDeathRegs", "NoAuto_DeathRegs", "NoAuto_NoDeathRegs"))
+  kde_grid_size = rep(1000, 2), alpha_ci_level = 0.05,
+  curve_type_vec = c("Auto_DeathRegs", "Auto_NoDeathRegs", "NoAuto_DeathRegs",
+  "NoAuto_NoDeathRegs"))
 }
 \arguments{
 \item{tc_full_sim_list}{List of simulated TCs}
@@ -32,6 +33,9 @@ the number of TCs available}
 \item{verbose}{if TRUE, an update on the process will be printed}
 
 \item{kde_grid_size}{Two dimensional vector for the KDE grid size}
+
+\item{alpha_ci_level}{Fraction for confidence interval of area estimates based on uniform
+sampling distribution.}
 
 \item{curve_type_vec}{vector with the strings referring to the different types of curves}
 }

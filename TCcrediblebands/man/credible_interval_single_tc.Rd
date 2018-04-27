@@ -6,7 +6,7 @@
 \usage{
 credible_interval_single_tc(dflist, test_true_path, alpha_level, long = 1,
   lat = 2, verbose = FALSE, kde_grid_size = rep(1000, 2),
-  unit_measure = "nautical mile")
+  alpha_ci_level = 0.05, unit_measure = "nautical mile")
 }
 \arguments{
 \item{dflist}{List of simulated TCs}
@@ -22,6 +22,9 @@ credible_interval_single_tc(dflist, test_true_path, alpha_level, long = 1,
 \item{verbose}{If TRUE update messages will be displayed}
 
 \item{kde_grid_size}{Two dimensional vector for the KDE grid size}
+
+\item{alpha_ci_level}{Fraction for confidence interval of area estimates based on uniform
+sampling distribution.}
 
 \item{unit_measure}{Unit of measure used for distance}
 }

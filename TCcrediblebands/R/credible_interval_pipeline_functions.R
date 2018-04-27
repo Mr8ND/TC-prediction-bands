@@ -14,6 +14,8 @@
 #' @param kde_grid_size Two dimensional vector for the KDE grid size
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose If TRUE update messages will be displayed
+#' @param alpha_ci_level Fraction for confidence interval of area estimates based on uniform
+#' sampling distribution.
 #' 
 #' @return 1 list with 4 arguments, once for each of the 4 methods, which all 
 #' have an 'area' and 'in_vec' argument to determine the area value and a 
@@ -23,6 +25,7 @@
 credible_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
                                         long = 1, lat = 2, verbose = FALSE,
                                         kde_grid_size = rep(1000,2),
+                                        alpha_ci_level = .05,
                                         unit_measure = 'nautical mile'){
 
     # KDE CI
@@ -54,13 +57,15 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     bubble_ci_list <- bubble_ci_from_tclist(dflist = dflist, 
                                       center_idx = depth_vector_idx, 
                                       alpha_level = alpha_level,
+                                      alpha_ci_level = alpha_ci_level,
                                       long = long, lat = lat, 
                                       unit_measure = unit_measure)
-    bubble_ci_inclusion_vec <- check_points_in_bubbleCI(
-                                            df_points = test_true_path, 
-                                            center_df = bubble_ci_list$bubble_CI_object$centers, 
-                                            radius_df = bubble_ci_list$bubble_CI_object$radius, 
-                                            long = long, lat = lat)
+    bubble_ci_inclusion_vec <- check_points_within_diff_radius(
+                                        tc_bubble_structure = bubble_ci_list$bubble_CI_object, 
+                                        df_points = test_true_path,
+                                        long = long, lat = lat, 
+                                        unit_measure = unit_measure,
+                                        verbose = verbose)
 
     out_bubble_list <- list(
                         'bubble_structure' = bubble_ci_list$bubble_CI_object,
@@ -85,7 +90,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     depth_vector = depth_vector,
                                     c_position = c(long,lat),
                                     area_ci_n = 2000, 
-                                    area_ci_alpha = alpha_level, 
+                                    area_ci_alpha = alpha_ci_level, 
                                     verbose = verbose)
 
     delta_ball_inclusion_vec <- delta_ball_prop_interior(data_deep_points, 
@@ -97,7 +102,8 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
         'area' = delta_ball_structure$area,
         'area_ci' =  delta_ball_structure$area_ci,
         'delta' = delta_ball_structure$delta,
-        'in_vec' = as.numeric(delta_ball_inclusion_vec[,1])
+        'in_vec' = as.numeric(delta_ball_inclusion_vec[,1]),
+        'deep_points' = data_deep_points
         )
 
 
@@ -153,6 +159,8 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose if TRUE, an update on the process will be printed
 #' @param curve_type_vec vector with the strings referring to the different types of curves
+#' @param alpha_ci_level Fraction for confidence interval of area estimates based on uniform
+#' sampling distribution.
 #' 
 #' @return A list in which each sublist is a curve type and each sublist has for each element
 #' a TC with the 4 different calculated credible intervals.
@@ -160,7 +168,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
                                         start_idx = NULL, end_idx = NULL, long = 1, lat = 2, 
                                         unit_measure = 'nautical mile', verbose = TRUE,
-                                        kde_grid_size = rep(1000,2),
+                                        kde_grid_size = rep(1000,2), alpha_ci_level = .05,
                                         curve_type_vec = c('Auto_DeathRegs', 'Auto_NoDeathRegs', 
                                                            'NoAuto_DeathRegs', 'NoAuto_NoDeathRegs')) {
     output = list()
@@ -194,7 +202,8 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
                                                          long = long, lat = lat, 
                                                          unit_measure = unit_measure,
                                                          verbose = FALSE,
-                                                         kde_grid_size = kde_grid_size)
+                                                         kde_grid_size = kde_grid_size,
+                                                         alpha_ci_level = alpha_ci_level)
         if (verbose) {
         pb$tick()
       	}

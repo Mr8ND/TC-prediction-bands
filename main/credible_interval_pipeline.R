@@ -28,6 +28,7 @@ start_idx_passed <- 1
 end_idx_passed <- length(test_env)
 n_sim_curve_total <- 350
 alpha_level <- 0.1
+alpha_ci_level <- .05
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) > 0) {
@@ -56,6 +57,7 @@ for (name_tc in names(test_env)) {
 output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
                                           tc_true_path_list = tc_true_path_list,
                                           alpha_level = alpha_level,
+                                          alpha_ci_level = alpha_ci_level,
                                           start_idx = start_idx_passed,
                                           end_idx = end_idx_passed)
 

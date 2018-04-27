@@ -230,6 +230,7 @@ kde_contour_area <- function(cont) {
 #' 
 #' position_wrt_contour <- points_in_contour(cont, predict_mat)
 #'}
+#' @export
 points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
 
   poly <- with(cont, data.frame(x,y))
@@ -243,6 +244,33 @@ points_in_contour <- function(cont, predict_mat, long = 1, lat = 2) {
                               spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
 
   return(as.numeric(points_in_poly > 0))
+}
+
+
+#' Identification of points inside a contour list
+#' 
+#' @description
+#' Wrapper around \code{\link{points_in_contour}} for calculating whether points
+#' are inside at least one of a series of contours
+#' 
+#' @param cont_list list of KDE contour objects
+#' @param predict_mat matrix with the points to be determined in terms of
+#' position with respect to the contour.
+#' @param long index of the column referring to "longitude". Default is 1.
+#' @param lat index of the column referring to "latitude". Default is 2.
+#' 
+#' @return Vector of binary values, 1 if the point is inside the contour, 
+#' 0 is not. Dimensionality is the same as the number of rows in predict_mat
+#' @export
+points_in_contour_list <- function(cont_list, predict_mat, long = 1, lat = 2){
+
+  in_vec_list <- lapply(X = cont_list, FUN = points_in_contour, 
+                        predict_mat = predict_mat,
+                        long = long,
+                        lat = lat)
+  in_vec_output <- purrr::reduce(.f = pmax, .x = in_vec_list)
+
+  return(in_vec_output)
 }
 
 
