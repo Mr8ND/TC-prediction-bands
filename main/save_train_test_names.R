@@ -1,11 +1,11 @@
 # Code to store names of train and test TCs in .Rdata file.
 # Storing names will make train and test split reproducible.
 
-functions_loc = "../TCcrediblebands/R/"
-source(paste0(functions_loc, "read_data_source.R"))
+library(TCcrediblebands)
+library(splitstackshape)
 
 # Make train and test names reproducible
-set.seed(1)
+set.seed(10)
 
 # Pull data from HURDAT website
 tc_list <- pull_data()
@@ -18,7 +18,11 @@ test_prop <- 1 - train_prop
 df <- data.frame(names(tc_list), substr(names(tc_list), 5, 8))
 colnames(df) <- c("name", "year")
 train_sel <- stratified(df, group = "year", size = train_prop)
-  
+
+
+library(gridExtra)
+grid.arrange(a,b,nrow = 2)
+
 # Get training and test TC names
 train_names <- as.character(train_sel$name)
 test_names <- setdiff(df$name, train_sel$name)
