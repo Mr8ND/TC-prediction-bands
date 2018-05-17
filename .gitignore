@@ -10,3 +10,5 @@ TCcrediblebands/data/*
 main/data/*
 !main/data/README.md
 main/interval_pipeline_checker.R
+code/*
+paper/*
