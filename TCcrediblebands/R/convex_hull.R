@@ -83,8 +83,8 @@ get_area_c <- function(data, c_position = 1:2){
 points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 
   eps2 <- 5 * .Machine$double.eps # to account for machine error 
-  x_eps <- c(0,0,1,-1) * eps2
-  y_eps <- c(1,-1,0,0) * eps2 
+  x_eps <- c(0, 0, 0, 1, -1) * eps2
+  y_eps <- c(0, 1, -1, 0, 0) * eps2 
   points_in_poly <- sapply(1:4,
                            function(i) {sp::point.in.polygon(
                                           predict_mat[, lat] + x_eps[i], 
