@@ -10,7 +10,7 @@ library(TCcrediblebands)
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) > 0) {
-  sim_file_name <- args[1] #  'Test_Sims_100_addl.Rdata'
+  sim_file_name <- args[1] #  'Test_Sims_100_addl.rdata'
 }
 
 
@@ -29,7 +29,7 @@ a = load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
 load(paste0(data_loc, sim_file_name)) #test_env
-amount <- output_list_pipeline[[1]][[1]][[1]] %>% length
+amount <- test_env[[names(test_env)[1]]][[1]] %>% length
 
 
 if (!(all(names(test_env) == names(output_list_pipeline)))) { 
