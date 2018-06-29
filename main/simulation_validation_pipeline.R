@@ -18,7 +18,8 @@ true_curve_conversion_function <- function(df){
 latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all_2018-06-29.Rdata'
 
 data_loc <- "main/data/"
-load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
+a = load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
+eval(parse(text = paste0("output_list_pipeline <- ",a)))
 load(paste0(data_loc, 'Test_Sims_100_addl.Rdata')) #test_env
 
 if(!(all(names(test_env) == names(output_list_pipeline)))){
