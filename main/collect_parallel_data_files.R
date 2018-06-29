@@ -1,3 +1,8 @@
+# first string: files that have common string are mergered (put in grep)
+# second string: saved file is "first string" + "second_string" - don't include ".Rdata"
+
+
+
 library(tidyverse)
 
 ###############################################################
@@ -5,11 +10,17 @@ library(tidyverse)
 
 data_loc <- "main/data/"
 
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) > 0) {
+  file_pattern <- args[1] 
+  end_string <- args[2]
+}
+
 list_of_files <- list.files(data_loc)[
-            list.files(data_loc) %>% grep(pattern = "sca_projection_info")
+            list.files(data_loc) %>% grep(pattern = file_pattern)
                                     ]
 # initialize names --------
-load(paste0(data_loc,'/Test_Sims_350.Rdata')) # for order
+load(paste0(data_loc,'Test_Sims_350.Rdata')) # for order
 
 all_projections <- list()
 for (tc_name in names(test_env)) {
@@ -30,7 +41,9 @@ if ((sapply(all_projections,class) %>%
     length) == 1 & 
       class(all_projections[[1]]) == "list") {
   save(all_projections, file = paste0(data_loc,
-                                      "sca_projection_info_all.Rdata"))
+                                      file_pattern, 
+                                      end_string,
+                                      ".Rdata"))
 }
 
 
