@@ -2,7 +2,8 @@
 # variable name: what we will have the list for storage
 # second string: saved file is "first string" + "second_string" - don't include ".Rdata"
 
-
+# example: 
+# Rscript main/collect_parallel_data_files.R output_pipeline_alphalevel0.1 output_pipeline _all
 
 library(tidyverse)
 
@@ -64,7 +65,7 @@ eval(parse(text = paste0(var_name,"<- all_projections")))
 eval(parse(text = paste0(
   "save(", var_name, 
   ", file = paste0(data_loc, file_pattern, end_string,",
-  "'.Rdata')")))
+  "'.Rdata'))")))
 
 
 
