@@ -1,3 +1,7 @@
+# sim_file_name: the simulation rdata file that stores all the curves
+# example:
+# Rscript main/simulation_validation_pipeline.R Test_Sims_100_addl.rdata
+
 #' Library ----------------------------------------
 library(methods)
 library(tidyverse)
@@ -32,9 +36,16 @@ load(paste0(data_loc, sim_file_name)) #test_env
 amount <- test_env[[names(test_env)[1]]][[1]] %>% length
 
 
-if (!(all(names(test_env) == names(output_list_pipeline)))) { 
-  stop("Names of the test_env and output_list_pipeline objects need to be the
-       same")
+if (is.null(names(output_list_pipeline))) { 
+  warning(paste("output_list_pipeline list missing names.",
+          "Renaming output_list_pipeline's entries with test env's names"))
+  names(output_list_pipeline) = names(test_env)
+} else {
+  if (!(all(names(test_env) == names(output_list_pipeline)))) {
+    stop(paste(
+       "Names of the test_env and output_list_pipeline objects need to be the",
+       "same"))
+  }
 }
 
 #' Execution --------------------------------------------------------
