@@ -58,8 +58,8 @@ desired_curves_types <- c("Auto_DeathRegs","Auto_NoDeathRegs",
                           "NoAuto_DeathRegs", "NoAuto_NoDeathRegs")
 
 simulation_validation_pipeline <- list()
-for (name_tc in names(output_list_pipeline)){
-	for (curve_type in desired_curves_types){
+for (name_tc in names(output_list_pipeline)) {
+	for (curve_type in desired_curves_types) {
 		simulation_validation_pipeline[[name_tc]][[curve_type]] <- calculate_invec_per_method(
 						hur_out_obj = output_list_pipeline[[name_tc]][[curve_type]],
 					  sim_hur_list = lapply(test_env[[name_tc]][[curve_type]], data.frame)
