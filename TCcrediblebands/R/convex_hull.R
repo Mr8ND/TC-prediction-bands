@@ -90,6 +90,7 @@ get_area_c <- function(data, c_position = 1:2){
 #' 
 #' position_wrt_contour <- points_in_spatial_polygon(spPoly, predict_mat)
 #'}
+#' @export 
 points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 
   eps2 <- 50 * .Machine$double.eps # to account for machine error 
