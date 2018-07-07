@@ -26,7 +26,7 @@ true_curve_conversion_function <- function(df){
   return(output_df)
 }
 
-latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all_2018-06-29.Rdata'
+latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_complete_2018-07-02.Rdata'
 
 data_loc <- "main/data/"
 a = load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
