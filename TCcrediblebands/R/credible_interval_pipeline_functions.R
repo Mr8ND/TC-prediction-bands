@@ -98,7 +98,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     c_position = c(long, lat),
                                     depth_vector = depth_vector,
                                     verbose = verbose)
-    data_deep_final_time <- Sys.time() - data_deep_start_time()
+    data_deep_final_time <- Sys.time() - data_deep_start_time
     
     # Delta Ball CI
     delta_start_time <- Sys.time()
@@ -111,7 +111,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     area_ci_n = 2000, 
                                     area_ci_alpha = alpha_ci_level, 
                                     verbose = verbose)
-    delta_final_time <- Sys.time() - Sys.time()
+    delta_final_time <- delta_start_time - Sys.time()
 
     delta_ball_inclusion_vec <- delta_ball_prop_interior(data_deep_points, 
                                                     test_true_path, 
