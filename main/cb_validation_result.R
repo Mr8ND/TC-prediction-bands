@@ -193,7 +193,7 @@ save(df_list_tc, df_list_tc50, df_list_tc25,
 
 
 # loading data
-#b <- load("main/data/sim_validation_results_summary_data_2018-07-07.Rdata")
+#b <- load("main/data/sim_validation_results_summary_data2018-07-07.Rdata")
 
 # Visualizations -----------------
 
@@ -242,7 +242,7 @@ all_data_uniform %>% ggplot() +
                                                 "Convex Hull",
                                                 "Delta Ball Covering"),
                    x = factor(num_curves)), alpha = .5) + 
-  facet_grid(~sim_type) + 
+  facet_grid(~sim_type, labeller = label_wrap_gen(width = 18)) + 
   geom_hline(yintercept = .9, linetype = "dashed") +
   guides(fill = guide_legend(reverse = TRUE),
          color = guide_legend(reverse = TRUE)) +
@@ -271,7 +271,7 @@ all_data_pointwise %>% ggplot() +
                                                 "Convex Hull",
                                                 "Delta Ball Covering"),
                    x = factor(num_curves)), alpha = .5) + 
-  facet_grid(~sim_type) + 
+  facet_grid(~sim_type, labeller = label_wrap_gen(width = 18)) + 
   geom_hline(yintercept = .9, linetype = "dashed") +
   guides(fill = guide_legend(reverse = TRUE),
          color = guide_legend(reverse = TRUE)) +
