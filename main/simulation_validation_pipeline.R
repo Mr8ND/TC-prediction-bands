@@ -58,17 +58,28 @@ desired_curves_types <- c("Auto_DeathRegs","Auto_NoDeathRegs",
                           "NoAuto_DeathRegs", "NoAuto_NoDeathRegs")
 
 simulation_validation_pipeline <- list()
+time_storage <- list()
+
+for (curve_type in desired_curves_types) {
+  time_storage[[curve_type]] <- list()
+}
+
 for (name_tc in names(output_list_pipeline)) {
 	for (curve_type in desired_curves_types) {
+    time_start <- Sys.time()
 		simulation_validation_pipeline[[name_tc]][[curve_type]] <- calculate_invec_per_method(
 						hur_out_obj = output_list_pipeline[[name_tc]][[curve_type]],
 					  sim_hur_list = lapply(test_env[[name_tc]][[curve_type]], data.frame)
 					    )
+    time_storage[[curve_type]][[name_tc]] <- (Sys.time() - time_start)[[1]]
 	}
   pb$tick()
 }
 
+time_storage <- lapply(time_storage, unlist)
+
 out_filename <- paste0('main/data/',
                        'sim_validation_results',amount,'_',
                        Sys.Date(), '.Rdata')
-save(simulation_validation_pipeline, file = out_filename)
+save(simulation_validation_pipeline, 
+  time_storage, file = out_filename)
