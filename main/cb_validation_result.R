@@ -288,3 +288,87 @@ ggsave(paste0(image_path,"pw_cb_boxplot.pdf"), device = "pdf",
 
 
 
+
+
+### area:
+
+latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_complete_2018-07-02.Rdata'
+
+data_loc <- "main/data/"
+a <- load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
+eval(parse(text = paste0("output_list_pipeline <- ",a)))
+
+
+df_area <- data.frame(area = -99, cb = "ben", tc = "ben", sim = "ben") %>%
+              mutate(cb = as.character(cb),
+                     tc = as.character(tc),
+                     sim = as.character(sim))
+
+for (tc in 1:length(output_list_pipeline)) {
+  for (sim in names(output_list_pipeline[[tc]])) {
+    for (cb in names(output_list_pipeline[[tc]][[sim]])[-5]) {
+      df_area <- rbind(df_area, 
+                       data.frame(
+                        area = output_list_pipeline[[tc]][[sim]][[cb]]$area,
+                        cb = cb, tc = tc, sim = sim))
+    }
+  }
+}
+
+df_area <- df_area[-1,]
+
+library(reshape2)
+
+df_area <- df_area %>%
+    mutate(sim = factor(sim, 
+                             levels = c("Auto_DeathRegs", "Auto_NoDeathRegs",
+                                        "NoAuto_DeathRegs", "NoAuto_NoDeathRegs"),
+                             labels = c("Auto Regression, Kernel Death",
+                                        "Auto Regression, Bernoulli Death",
+                                        "Non Auto Regression, Kernel Death",
+                                        "Non Auto Regression, Bernoulli Death")),
+           cb = factor(cb,
+                            levels = c("kde", "bubble_ci",
+                                       "delta_ball",  "convex_hull"),
+                            labels = c("Kernel Density Estimate",
+                                       "Pointwise Bubble Estimate",
+                                       "Delta Ball Covering",
+                                       "Convex Hull")))
+
+area_table <- df_area %>% 
+  group_by(sim, cb) %>%
+  summarize(mean = mean(area),
+            median = median(area),
+            q25 = quantile(area,.25),
+            q75 = quantile(area,.75),
+            sd = sd(area)) %>% 
+  melt(id.vars = c("sim", "cb")) %>%
+  dcast( variable ~ sim + cb) %>% 
+  mutate(variable = as.character(variable))
+
+area_table[,-1] <- round(area_table[,-1])
+
+
+area_table <- rbind(area_table,
+                    c("Auto/Non Auto:",
+                      sapply(names(area_table), 
+                              function(x) strsplit(x = x, split = ",")[[1]][1])[-1]
+                      ),
+                    c("Death:",
+                      sapply(names(area_table),
+                              function(x) strsplit(x = x, split = ", |_")[[1]][2])[-1]),
+                    c("Prediction Band:",
+                      sapply(names(area_table),
+                              function(x) strsplit(x = x, split = "_")[[1]][2])[-1]))
+
+# names(area_table) <- gsub(x = names(area_table), 
+#                           pattern = "_", 
+#                           replacement = " & ")
+# names(area_table)[1] <- " "
+
+columns <- c(1,14:17) # 2:5, 6:9, 10:13, 14:17
+
+area_table %>% 
+  filter(variable %in% c("Auto/Non Auto:", "Death:", "Prediction Band:",
+                         "q25", "median","q75" )) %>%
+  .[c(4:6,2,1,3),columns] %>% xtable

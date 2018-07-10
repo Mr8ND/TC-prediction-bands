@@ -34,7 +34,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     kde_ci_list <- kde_from_tclist(dflist = dflist, 
     								grid_size = kde_grid_size,
                                     alpha_level = alpha_level)
-    kde_full_time <- kde_start_time - Sys.time()
+    kde_full_time <- Sys.time() - kde_start_time 
 
     kde_predict_mat <- predict_kde_object(kde_obj = kde_ci_list$kde_object, 
                         predict_mat = test_true_path, 
@@ -111,7 +111,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     area_ci_n = 2000, 
                                     area_ci_alpha = alpha_ci_level, 
                                     verbose = verbose)
-    delta_final_time <- delta_start_time - Sys.time()
+    delta_final_time <- Sys.time() - delta_start_time 
 
     delta_ball_inclusion_vec <- delta_ball_prop_interior(data_deep_points, 
                                                     test_true_path, 

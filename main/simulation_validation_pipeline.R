@@ -29,7 +29,7 @@ true_curve_conversion_function <- function(df){
 latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_complete_2018-07-02.Rdata'
 
 data_loc <- "main/data/"
-a = load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
+a <- load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
 load(paste0(data_loc, sim_file_name)) #test_env
