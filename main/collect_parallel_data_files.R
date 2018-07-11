@@ -59,7 +59,7 @@ if (has_names_logic) { # has names
 }
 
 # rename variable
-eval(parse(text = paste0(var_name,"<- all_projections")))
+eval(parse(text = paste0(var_name," <- all_projections")))
 
 # save variable
 eval(parse(text = paste0(
