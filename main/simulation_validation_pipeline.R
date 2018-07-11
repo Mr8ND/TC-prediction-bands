@@ -72,4 +72,4 @@ for (name_tc in names(output_list_pipeline)) {
 out_filename <- paste0('main/data/',
                        'sim_validation_results',amount,'_',
                        Sys.Date(), '.Rdata')
-save(simulation_validation_pipeline file = out_filename)
+save(simulation_validation_pipeline, file = out_filename)
