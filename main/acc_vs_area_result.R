@@ -212,7 +212,8 @@ large_acc_vs_area2 <- box_plus_scatter(data = data_run %>%
                  facet_string = "cb_type_full",
                  breaks = seq(0,3309,by = 250),
                  base_gg_obj = large_acc_vs_area,
-                 frac = .7, fill = "black", color = rgb(1, 0.3, 0.3, .7),
+                 frac = .7, fill = rgb(1, 0.3, 0.3, .7), 
+                 color = rgb(1, 0.3, 0.3, .7),
                  alpha = .1)
 
 large_acc_vs_area_final <- large_acc_vs_area2 +

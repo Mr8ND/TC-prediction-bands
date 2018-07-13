@@ -102,7 +102,7 @@ average_n_length_mat_wrapper <- function(tc_list,
     output_list[[tc_name]] <- list()
     for (sim_type in names(tc_list[[tc_name]])) {
       output_list[[tc_name]][[sim_type]] <- list()
-      for (cb_type in names(tc_list[[tc_name]][[sim_type]])) {
+      for (cb_type in names(tc_list[[tc_name]][[sim_type]])[-5]) {
         df_compression <- tc_list[[tc_name]][[sim_type]][[cb_type]] %>%
             average_n_length_mat(sim_number = sim_number)
         output_list[[tc_name]][[sim_type]][[cb_type]] <- df_compression
@@ -142,7 +142,7 @@ all_sim_df_together <- function(df_list_tc, verbose = TRUE){
 
   for (tc_name in names(df_list_tc)) {
     for (sim_type in names(df_list_tc[[tc_name]])) {
-      for (cb_type in names(df_list_tc[[tc_name]][[sim_type]])) {
+      for (cb_type in names(df_list_tc[[tc_name]][[sim_type]])[-5]) {
         inner_df <- df_list_tc[[tc_name]][[sim_type]][[cb_type]] %>%
           mutate(tc_name = tc_name,
                  sim_type = sim_type,
@@ -312,7 +312,7 @@ all_data_pointwise %>% ggplot() +
 # proportion captured, uniform vs pointwise ------------------
 
 # uniform PB
-all_data_uniform %>% ggplot() +
+uniform_pb_assessment <- all_data_uniform %>% ggplot() +
   geom_boxplot(aes(y = prop_captured_curves,
                    fill = forcats::fct_relevel(cb_type,
                                       "Pointwise Bubble Estimate",
@@ -341,12 +341,13 @@ all_data_uniform %>% ggplot() +
   scale_fill_manual(values = c("#d7191c", "#fdae61",
                                 "#2b83ba", "#abdda4"))
 
-ggsave(paste0(image_path,"sim_unif_cb_boxplot.pdf"), device = "pdf",
+ggsave(plot = uniform_pb_assessment,
+       file = paste0(image_path,"sim_unif_cb_boxplot.pdf"), device = "pdf",
        width = 10, height = 6.5, units = "in")
 
 # pointwise PB
 
-all_data_pointwise %>% ggplot() +
+pointwise_pb_assessment <- all_data_pointwise %>% ggplot() +
   geom_boxplot(aes(y = prop_captured,
                    fill = forcats::fct_relevel(cb_type,
                                                "Pointwise Bubble Estimate",
@@ -375,7 +376,8 @@ all_data_pointwise %>% ggplot() +
   scale_fill_manual(values = c("#d7191c", "#fdae61",
                                 "#2b83ba", "#abdda4"))
 
-ggsave(paste0(image_path,"sim_pw_cb_boxplot.pdf"), device = "pdf",
+ggsave(plot = pointwise_pb_assessment,
+       file = paste0(image_path,"sim_pw_cb_boxplot.pdf"), device = "pdf",
        width = 10, height = 6.5, units = "in")
 
 
