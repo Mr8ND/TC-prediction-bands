@@ -24,6 +24,12 @@ Dimensionality is the same as the number of rows in predict_mat
 This function calculates whether a series of points are inside a given
 polygon or not
 }
+\details{
+To account for computer storage of values generating rounding errors
+this approach adds noise of \code{50 * .Machine$double.eps} in \emp{x} and 
+\emp{y} directions and the point counts as interior if any of these jitters 
+or the real point follow inside the polygon.
+}
 \examples{
 \dontrun{
 set.seed(8192)
@@ -46,4 +52,10 @@ predict_mat <- cbind(x1,y1)
 
 position_wrt_contour <- points_in_spatial_polygon(spPoly, predict_mat)
 }
+}
+\references{
+Inside this function we use \code{sp}'s \code{point.in.polygon}
+with uses the C function InPoly(). InPoly is Copyright (c) 1998 by 
+Joseph O'Rourke. It may be freely redistributed in its entirety provided 
+that this copyright notice is not removed.
 }

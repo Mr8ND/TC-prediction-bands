@@ -26,10 +26,10 @@ true_curve_conversion_function <- function(df){
   return(output_df)
 }
 
-latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all_2018-06-29.Rdata'
+latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all.Rdata'
 
 data_loc <- "main/data/"
-a = load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
+a <- load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
 load(paste0(data_loc, sim_file_name)) #test_env
@@ -58,13 +58,14 @@ desired_curves_types <- c("Auto_DeathRegs","Auto_NoDeathRegs",
                           "NoAuto_DeathRegs", "NoAuto_NoDeathRegs")
 
 simulation_validation_pipeline <- list()
-for (name_tc in names(output_list_pipeline)){
-	for (curve_type in desired_curves_types){
+
+for (name_tc in names(output_list_pipeline)) {
+	for (curve_type in desired_curves_types) {
 		simulation_validation_pipeline[[name_tc]][[curve_type]] <- calculate_invec_per_method(
 						hur_out_obj = output_list_pipeline[[name_tc]][[curve_type]],
 					  sim_hur_list = lapply(test_env[[name_tc]][[curve_type]], data.frame)
 					    )
-	}
+    }
   pb$tick()
 }
 

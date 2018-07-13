@@ -29,19 +29,28 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                         unit_measure = 'nautical mile'){
 
     # KDE CI
+    kde_start_time <- Sys.time()
+
     kde_ci_list <- kde_from_tclist(dflist = dflist, 
     								grid_size = kde_grid_size,
                                     alpha_level = alpha_level)
+    kde_full_time <- Sys.time() - kde_start_time 
+
     kde_predict_mat <- predict_kde_object(kde_obj = kde_ci_list$kde_object, 
                         predict_mat = test_true_path, 
                         alpha_level = alpha_level, 
                         long = long, lat = lat)
 
+
+
     out_kde_list <- list('contour' = kde_ci_list$contour, 
-                          'area' = kde_ci_list$area,
-                          'in_vec' = kde_predict_mat[, 4])
+                         'area' = kde_ci_list$area,
+                         'in_vec' = kde_predict_mat[, 4])
 
     # Distance Matrix calculation
+
+    
+    dist_start_time <- Sys.time()
     dflist_13pointsreduction <- thirteen_points_listable(dflist, 
                                                     c_position = c(long,lat),
                                                     verbose = verbose)
@@ -50,16 +59,24 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                                 output_length = unit_measure,
                                                 verbose = verbose
                                                 )
+    dist_full_time <- Sys.time() - dist_start_time
+
+    depth_start_time <- Sys.time()
     depth_vector <- depth_function(dist_matrix_13pointsreduction)
     depth_vector_idx <- which(depth_vector == max(depth_vector))[1]
 
+    depth_full_time <- Sys.time() - depth_start_time
+
     # Bubble CI
+    bubble_start_time <- Sys.time()
     bubble_ci_list <- bubble_ci_from_tclist(dflist = dflist, 
                                       center_idx = depth_vector_idx, 
                                       alpha_level = alpha_level,
                                       alpha_ci_level = alpha_ci_level,
                                       long = long, lat = lat, 
                                       unit_measure = unit_measure)
+    bubble_full_time <- Sys.time() - bubble_start_time
+
     bubble_ci_inclusion_vec <- check_points_within_diff_radius(
                                         tc_bubble_structure = bubble_ci_list$bubble_CI_object, 
                                         df_points = test_true_path,
@@ -71,27 +88,30 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                         'bubble_structure' = bubble_ci_list$bubble_CI_object,
                         'area' = bubble_ci_list$area,
                         'area_vector' = bubble_ci_list$area_vector,
-                        'in_vec' = bubble_ci_inclusion_vec
-                        )
+                        'in_vec' = bubble_ci_inclusion_vec)
     
     # deep points calculation
+    data_deep_start_time <- Sys.time()
     data_deep_points <- depth_curves_to_points(data_list = dflist,
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction, 
-                                    c_position = c(long,lat),
+                                    c_position = c(long, lat),
                                     depth_vector = depth_vector,
                                     verbose = verbose)
-
+    data_deep_final_time <- Sys.time() - data_deep_start_time
+    
     # Delta Ball CI
+    delta_start_time <- Sys.time()
     delta_ball_structure <- delta_structure(data_list = dflist, 
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    c_position = c(long,lat),
+                                    c_position = c(long, lat),
                                     area_ci_n = 2000, 
                                     area_ci_alpha = alpha_ci_level, 
                                     verbose = verbose)
+    delta_final_time <- Sys.time() - delta_start_time 
 
     delta_ball_inclusion_vec <- delta_ball_prop_interior(data_deep_points, 
                                                     test_true_path, 
@@ -108,13 +128,15 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 
 
     # Convex Hull CI
+    convex_start_time <- Sys.time()
     convex_hull_structure <- convex_hull_structure(data_list = dflist, 
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    c_position = c(long,lat),
+                                    c_position = c(long, lat),
                                     verbose = verbose)
+    convex_final_time <- Sys.time() - convex_start_time
 
     convex_hull_inclusion_vec <- points_in_spatial_polygon(
                             convex_hull_structure$spPoly, 
@@ -128,12 +150,20 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
         'in_vec' = as.numeric(convex_hull_inclusion_vec)
         )
 
+    time_list <- list('depth' = depth_full_time[[1]],
+                      'data_deep' = data_deep_final_time[[1]],
+                      'dist' = dist_full_time[[1]],
+                      'kde' = kde_full_time[[1]],
+                      'bubble' = bubble_full_time[[1]],
+                      'delta' = delta_final_time[[1]],
+                      'convex' = convex_final_time[[1]])
 
     return(list('kde' = out_kde_list, 
                 'bubble_ci' = out_bubble_list,
                 'delta_ball' = out_delta_ball_list, 
                 'convex_hull' = out_convex_hull_list,
-                'depth_vector' = depth_vector))
+                'depth_vector' = depth_vector,
+                'time' = time_list))
 }
 
 
