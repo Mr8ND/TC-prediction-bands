@@ -300,10 +300,11 @@ save(df_list_tc, df_list_tc50, df_list_tc25,
                    Sys.Date(),
                    ".Rdata"))
 
-
 # loading data -----------
 # (if you've already run the above)
 ### b <- load("main/data/sim_validation_results_summary_data2018-07-14.Rdata")
+
+
 
 # Visualizations -----------------
 
@@ -324,12 +325,6 @@ all_data_uniform_graph <- all_data_three %>%
   group_by(tc_name, sim_type_graph, cb_type_graph, num_curves) %>%
   summarize(num_captured_curves = sum(prop == 1)) %>%
   mutate(prop_captured_curves = num_captured_curves/num_curves)
-
-# all_data_pointwise %>% ggplot() +
-#   geom_boxplot(aes(y = prop_captured,
-#                    fill = cb_type,
-#                    x = factor(num_curves))) +
-#   facet_grid(~sim_type) + geom_hline(yintercept = .9)
 
 
 # Actual visualization and saving -------------------
@@ -406,7 +401,7 @@ ggsave(plot = pointwise_pb_assessment,
        width = 10, height = 6.5, units = "in")
 
 
-# visual for area distribtions -----------------
+# visual for area distributions -----------------
 
 latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all.Rdata'
 
@@ -467,8 +462,6 @@ data_loc <- "main/data/"
 a <- load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
-
-
 df_time <- data.frame(depth = -1, data_deep = -1, 
                       dist = -1, inner_kde = -1,
                       inner_bubble = -1, inner_delta = -1, 
@@ -493,15 +486,7 @@ for (tc in 1:length(output_list_pipeline)) {
   }
 }
 
-df_time <- df_time[-1,]
-
-# cb_type_table_levels <- c("Kernel Density Estimate" = "kde",
-#                           "Spherical Ball Covering" = "bubble_ci",
-#                           "Delta Ball Covering"     = "delta_ball",
-#                           "Convex Hull"             = "convex_hull")
-
-
-df_time <- df_time %>% mutate(kde = inner_kde,
+df_time <- df_time[-1,] %>% mutate(kde = inner_kde,
                               bubble_ci = dist + depth + inner_bubble,
                               delta_ball = dist + depth + data_deep + 
                                             inner_delta,
@@ -516,11 +501,6 @@ df_time2 <- df_time %>%
 
 df_time3 <- df_time2 %>% make_mat_cleaner
 
-# df_time3 %>% ggplot() +
-#   geom_histogram(aes(x = value)) +
-#   facet_grid(sim_type_graph ~ cb_type_graph)
-
-
 df_time4 <- df_time3 %>% group_by(sim_type_table, cb_type_table) %>%
   summarize(time = paste0(sprintf("%.2f",round(mean(value),2)),
                           " \\(\\pm\\) ", 
@@ -528,9 +508,11 @@ df_time4 <- df_time3 %>% group_by(sim_type_table, cb_type_table) %>%
   reshape2::dcast(sim_type_table ~ cb_type_table) %>% 
   rename("Simulation Curve Type" = "sim_type_table")
 
+### xtable -----------------
+
 bold_somerows <- 
         function(x) gsub('BOLD(.*)',paste0('\\\\textbf{\\1','}'),x)
-
+        # function used in print statement below - not really used
 
 xtable_time <- df_time4 %>% xtable(
                 align = c("r|R{1.2in}||L{.95in}L{.95in}|L{.9in}L{.9in}|"),
@@ -546,7 +528,7 @@ print(xtable_time,
       #^for some reason we need this - even though not used
       file = paste0(table_path,"sim_time_fitting.tex"))
 
-## time for prediction -------------
+# time for prediction -------------
 
 # note these times are associtated with 100 fits
 
@@ -571,9 +553,7 @@ for (tc in 1:length(simulation_validation_pipeline100)) {
   }
 }
 
-df_time_p <- df_time_p[-1,]
-
-df_time_p2 <- df_time_p %>%
+df_time_p2 <- df_time_p[-1,] %>%
   reshape2::melt(id.vars = c("tc", "sim_type"),
                  measure.vars = c("kde", "bubble_ci",
                                   "delta_ball", "convex_hull")) %>%
@@ -581,10 +561,11 @@ df_time_p2 <- df_time_p %>%
 
 df_time_p3 <- df_time_p2 %>% make_mat_cleaner
 
-# # quick check for symmetry-ish --------------
+### quick check for symmetry-ish --------------
 # df_time_p3 %>% ggplot() +
 #   geom_histogram(aes(x = value)) +
 #   facet_grid(sim_type_graph ~ cb_type_graph)
+# ---------------------------------------------
 
 df_time_p4 <- df_time_p3 %>% group_by(sim_type_table, cb_type_table) %>%
   summarize(time = paste0(sprintf("%.2f",round(mean(value),2)),
@@ -593,7 +574,7 @@ df_time_p4 <- df_time_p3 %>% group_by(sim_type_table, cb_type_table) %>%
             reshape2::dcast(sim_type_table ~ cb_type_table) %>%
             rename("Simulation Curve Type" = "sim_type_table")
 
-# table -------
+### xtable -----------------
 
 xtable_time_p <- df_time_p4 %>% xtable(
                  align = c("r|R{1.2in}||L{.95in}L{.9in}|L{.8in}L{.8in}|"),
