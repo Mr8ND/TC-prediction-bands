@@ -9,7 +9,8 @@ library(gridExtra)
 # Load Data ------------------
 
 data_loc <- "main/data/"
-image_path <- "images/"
+image_path <- "report/images/"
+table_path <- "report/tables/"
 
 latest_full_output_pipeline <- 'output_pipeline_all.Rdata'
 a <- load(paste0(data_loc, latest_full_output_pipeline))
@@ -81,31 +82,41 @@ acc_size_df <- acc_size_df[-1,] %>%
   										   prop_acc))
 
 
+cb_type_table_levels <- c("Kernel Density Estimate" = "kde",
+                          "Spherical Ball Covering" = "bubble_ci",
+                          "Delta Ball Covering"     = "delta_ball",
+                          "Convex Hull"             = "convex_hull")
+cb_type_table_labels <- names(cb_type_table_levels)
+
+cb_type_graphic_levels <- c("Kernel Density Estimate" = "kde",
+                            "Spherical Ball Covering" = "bubble_ci",
+                            "Delta Ball Covering"     = "delta_ball",
+                            "Convex Hull"             = "convex_hull")
+cb_type_graphic_labels <- names(cb_type_graphic_levels)
+
+sim_type_table_levels <- c("Auto \\& Logistic"     = "Auto_DeathRegs",
+                           "Auto \\& Kernel"       = "Auto_NoDeathRegs",
+                           "Non-Auto \\& Logistic" = "NoAuto_DeathRegs",
+                           "Non-Auto \\& Kernel"   = "NoAuto_NoDeathRegs")
+sim_type_table_labels <- names(sim_type_table_levels)
+
+sim_type_graphic_levels <- c("Auto Regression & Logistic Death"   = "Auto_DeathRegs",
+                           "Auto Regression & Kernel Death"       = "Auto_NoDeathRegs",
+                           "Non-Auto Regression & Logistic Death" = "NoAuto_DeathRegs",
+                           "Non-Auto Regression & Kernel Death"   = "NoAuto_NoDeathRegs")
+sim_type_graphic_labels <- names(sim_type_graphic_levels)
+
+
 data_run <- acc_size_df %>% mutate(
-  cb_type_full = factor(cb_type,levels  = c("Kernel Density Estimate" = "kde",
-                                  "Point-wise Bubble Estimate" = "bubble_ci",
-                                  "Delta Ball Covering" = "delta_ball",
-                                  "Convex Hull" = "convex_hull"),
-                        labels = names(c("Kernel Density Estimate" = "kde",
-                                         "Point-wise Bubble Estimate" =
-                                         						"bubble_ci",
-                                         "Delta Ball Covering" = "delta_ball",
-                                         "Convex Hull" = "convex_hull"))),
-  sim_type_full = factor(sim_type,levels =
-                      c("Auto Regression, Kernel Death" = "Auto_DeathRegs",
-                      "Auto Regression, Bernoulli Death" = "Auto_NoDeathRegs",
-                      "Non-Auto Regression, Kernel Death" = "NoAuto_DeathRegs",
-                      "Non-Auto Regression, Bernoulli Death" =
-                        "NoAuto_NoDeathRegs"),
-                      labels = names(c("Auto Regression, Kernel Death" =
-                      										"Auto_DeathRegs",
-                                       "Auto Regression, Bernoulli Death" =
-                                       						"Auto_NoDeathRegs",
-                                       "Non-Auto Regression, Kernel Death" =
-                                       						"NoAuto_DeathRegs",
-                                       "Non-Auto Regression, Bernoulli Death" =
-                                         				"NoAuto_NoDeathRegs")))
-) %>% mutate(area_discrete = cut(x = area, breaks = seq(0, 3309, by = 250)))
+  cb_type_full = factor(cb_type, levels  = cb_type_graphic_levels,
+                        labels = cb_type_graphic_labels),
+  sim_type_full = factor(sim_type, levels = sim_type_graphic_levels,
+                      labels = sim_type_graphic_labels),
+  cb_type_full_table = factor(cb_type, levels = cb_type_table_levels,
+                              labels = cb_type_table_labels),
+  sim_type_full_table = factor(sim_type, levels = sim_type_table_levels,
+                               labels = sim_type_table_labels)) #%>% 
+#  mutate(area_discrete = cut(x = area, breaks = seq(0, 3309, by = 250)))
 
 # visualization function ------------------
 
@@ -247,10 +258,10 @@ small_acc_vs_area_final <- small_acc_vs_area2 +
 
 arrangement <- arrangeGrob(large_acc_vs_area_final +
 						labs(title = "Larger Prediction Bands",
-                             x = "Area (maximum = 3250)"),
+                             x = "Area in square nautical miles (maximum = 3250)"),
              small_acc_vs_area_final +
              			labs(title = "Smaller Prediction Bands",
-                              x = "Area (maximum = 2400)"), ncol = 1)
+                              x = "Area in square nautical miles (maximum = 2400)"), ncol = 1)
 
 ggsave(plot = arrangement,
 	   filename = paste0(image_path,"tc_results_area_vs_prop.pdf"),
@@ -258,22 +269,73 @@ ggsave(plot = arrangement,
 
 # tables ------------
 
-table <- data_run %>%
-  group_by(sim_type, cb_type_full) %>%
-  dplyr::summarize(full_acc = mean(prop_acc))
+# ~ bolding solution from https://stackoverflow.com/questions/33218469/boldify-the-contents-of-bottom-row-in-xtable
+bold_somerows <- 
+        function(x) gsub('BOLD(.*)',paste0('\\\\textbf{\\1','}'),x)
+
+# ~ for multistacked headers: https://cran.r-project.org/web/packages/xtable/vignettes/xtableGallery.pdf
+#   page: 27
+#   in Latex file you'll need need:
+#         \newcolumntype{L}[1]{>{\raggedright\let\newline\\
+#         \arraybackslash\hspace{0pt}}b{#1}}
+#         \newcolumntype{C}[1]{>{\centering\let\newline\\
+#         \arraybackslash\hspace{0pt}}b{#1}}
+#         \newcolumntype{R}[1]{>{\raggedleft\let\newline\\
+#         \arraybackslash\hspace{0pt}}b{#1}}
+#         \newcolumntype{P}[1]{>{\raggedright\tabularxbackslash}p{#1}}
+#  
+
+# average proportion captured 
+
+table <- data_run %>% 
+  group_by(sim_type_full_table, cb_type_full_table) %>%
+  dplyr::summarize(
+    full_acc = sprintf("%.2f",round(mean(prop_acc),2))) %>%
+  dcast(sim_type_full_table ~ cb_type_full_table) %>%
+  rename("Simulation Curve Type" = "sim_type_full_table")
+
+xtable1 <- table %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.75in}|"),
+                 digits = 2,
+                 caption = paste0("Average proportion of points of ",
+                                  "a true TC captured by the PB."),
+                 label = "tab:average_captured")
+
+print(xtable1, 
+      table.placement = "ht!",
+      include.rownames = FALSE,
+      sanitize.text.function = bold_somerows, 
+      #^for some reason we need this - even though not used
+      file = paste0(table_path,"tc_average_proportion.tex"))
+
+# proportion with capture above .3, .9, =1
+
+
+# ~ adding math in caption from https://cran.r-project.org/web/packages/xtable/vignettes/xtableGallery.pdf
+#   and https://www.sharelatex.com/learn/Mathematical_expressions 
 
 table2 <- data_run %>%
-  group_by(sim_type, cb_type_full) %>%
+  group_by(sim_type_full_table, cb_type_full_table) %>%
   dplyr::summarize(
-    both = paste0(round(mean(prop_acc >= .30),2)," / ",
-                  round(mean(prop_acc >= .90),2)," / ",
-                  round(mean(prop_acc >= 1), 2)
-    ))
+    both = paste0(sprintf("%.2f",round(mean(prop_acc >= .30),2)),
+                  " / ",
+                  sprintf("%.2f",round(mean(prop_acc >= .90),2)),
+                  " BOLD(",
+                  sprintf("%.2f",round(mean(prop_acc >= 1), 2)),
+                   ")")) %>%
+  dcast(sim_type_full_table ~ cb_type_full_table) %>%
+  rename("Simulation Curve Type" = "sim_type_full_table")
 
-### xtable output ------------
 
-# mean prop values
-table %>% dcast(sim_type ~ cb_type_full)  %>% xtable
+xtable2 <- xtable(table2, align = c("r|R{1.2in}||L{.95in}L{.95in}|L{.95in}L{.95in}|"),
+                 caption = paste0("Proportion of points of TCs with proportion",
+                                  " of point captured  \\((\\geq .3) / ",
+                                  "(\\geq .9)\\) \\(\\textbf{(= 1)}\\)"),
+                 label = "tab:prop_captured")
 
-# prop >= .3, prop >= .9, prop = 1
-table2 %>% dcast(sim_type ~ cb_type_full) %>% xtable
+print(xtable2, 
+      table.placement = "ht!",
+      include.rownames = FALSE,
+      sanitize.text.function = bold_somerows,
+      file = paste0(table_path,"tc_prop_above_p3p9p10.tex"))
+
+
