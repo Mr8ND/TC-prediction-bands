@@ -1,10 +1,10 @@
 # creation of example of what delta ball does visualzation
-
 library(tidyverse)
 library(TCcrediblebands)
 library(clusterSim)
 library(sp)
 library(gridExtra)
+library(ggforce)
 
 # data generation -----------------
 
@@ -152,7 +152,7 @@ e <- output_lines %>% ggplot(aes(x = x, y = y, group = idx)) +
 
 # final graphics ---------------------
 theme_set(theme_minimal() + theme(plot.title = element_text(hjust = 0.5)))
-arrangement <- arrangeGrob(
+arrange_vis <- arrangeGrob(
 			 a + labs(title = "Raw data\n",
 					  x = "x", y = "y"),
 			 b + labs(title = "Delta Ball around each point\n",
@@ -165,6 +165,6 @@ arrangement <- arrangeGrob(
 					  x = "x", y = "y"),nrow = 2)
 
 image_path <- "report/images/"
-ggsave(plot = arrangement,
+ggsave(plot = arrange_vis,
 	   filename = paste0(image_path,"delta_ball_vis.pdf"),
 	   device = "pdf", width = 10, height = 6.5, units = "in")
