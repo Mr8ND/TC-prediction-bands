@@ -3,7 +3,6 @@ library(reshape2)
 library(xtable)
 library(forcats)
 library(progress)
-library(latex2exp)
 library(gridExtra)
 library(TCcrediblebands)
 library(ggmap)
@@ -44,7 +43,7 @@ names(color_vec) <- pb_name_options[-5]
 
 progressBar <- progress::progress_bar$new(
   format = "Processing [:bar] :percent eta: :eta",
-  total = length(test_env) * 4, clear = FALSE, width = 51)
+  total = length(test_env[start_idx:end_idx]) , clear = FALSE, width = 51)
 
 
 for (tc in names(test_env)[start_idx:end_idx]) {
@@ -154,7 +153,7 @@ for (tc in names(test_env)[start_idx:end_idx]) {
                                  	color = color_vec[pb])
 	    		}
 	    	if (pb == "bubble_ci") {
-	    		bubble_plot_data_auto_ker <- output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
+	    		bubble_plot_data_auto_ker <- output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
         											sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
 		      	ggout_auto_ker <- TCcrediblebands::ggvis_bubble_data(
 		        					bubble_plot_data = bubble_plot_data_auto_ker,
@@ -163,7 +162,7 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 		        					connect = TRUE, 
 		        					centers = FALSE) 
 
-		      	bubble_plot_data_auto_bin <- output_list_pipeline[[tc]][["NoAuto_DeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
+		      	bubble_plot_data_auto_bin <- output_list_pipeline[[tc]][["Auto_DeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
         											sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
 		      	ggout_auto_bin <- TCcrediblebands::ggvis_bubble_data(
 		        					bubble_plot_data = bubble_plot_data_auto_bin,
