@@ -202,7 +202,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ggout <- base_graph + 
     ggplot2::geom_path(data = output_lines, 
-                       ggplot2::aes_string(x = 'lat', y = 'lon'),
+                       ggplot2::aes_string(y = 'lat', x = 'lon'),
                        color = color, ...)
   
   return(ggout)
