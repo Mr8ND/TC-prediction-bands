@@ -51,10 +51,10 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 	true_tc <- test_data[[tc]]
 
 	# training curve data frames ----------
-	train_curves_auto_ker <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_paths_basic()
-	train_curves_auto_bin <- test_env[[tc]][["Auto_NoDeathRegs"]] %>% data_plot_paths_basic()
-	train_curves_nonauto_ker <- test_env[[tc]][["NoAuto_DeathRegs"]] %>% data_plot_paths_basic()
-	train_curves_nonauto_bin <- test_env[[tc]][["NoAuto_NoDeathRegs"]] %>% data_plot_paths_basic()
+	train_curves_auto_ker <- test_env[[tc]][["Auto_NoDeathRegs"]] %>% data_plot_paths_basic()
+	train_curves_auto_bin <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_paths_basic()
+	train_curves_nonauto_ker <- test_env[[tc]][["NoAuto_NoDeathRegs"]] %>% data_plot_paths_basic()
+	train_curves_nonauto_bin <- test_env[[tc]][["NoAuto_DeathRegs"]] %>% data_plot_paths_basic()
 	
 	# base plot prep ---------------
 	latrange <- range(c(true_tc$lat, 
@@ -129,13 +129,13 @@ for (tc in names(test_env)[start_idx:end_idx]) {
     	for (pb in which_pb) {
     		if(pb == "kde") {
     			kde_contour_dfs_auto_ker <- TCcrediblebands::contour_list_to_df(
-        						    output_list_pipeline[[tc]][["Auto_DeathRegs"]][["kde"]][["contour"]])
+        						    output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["kde"]][["contour"]])
       			ggout_auto_ker <- TCcrediblebands::ggvis_kde_contour(kde_contour_dfs_auto_ker,
       								base_graph = ggout_auto_ker,
                                  	color = color_vec[pb])
 
       			kde_contour_dfs_auto_bin <- TCcrediblebands::contour_list_to_df(
-        						    output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["kde"]][["contour"]])
+        						    output_list_pipeline[[tc]][["Auto_DeathRegs"]][["kde"]][["contour"]])
       			ggout_auto_bin <- TCcrediblebands::ggvis_kde_contour(kde_contour_dfs_auto_bin,
       								base_graph = ggout_auto_bin,
                                  	color = color_vec[pb])
