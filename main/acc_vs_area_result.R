@@ -6,6 +6,12 @@ library(progress)
 library(latex2exp)
 library(gridExtra)
 
+# Set theme -----------------
+
+theme_set(theme_minimal() +
+  theme(strip.background = element_rect(fill = "grey90", color = NA))
+  )
+
 # Load Data ------------------
 
 data_loc <- "main/data/"
@@ -77,7 +83,9 @@ for (tc in names(output_list_pipeline)) {
 
 }
 
-acc_size_df <- acc_size_df[-1,] %>%
+acc_size_df <- acc_size_df[-1,] 
+
+acc_size_df <- acc_size_df %>%
   mutate(prop_acc2 = ifelse(prop_acc == 1, runif(nrow(acc_size_df),1,1.1),
   										   prop_acc))
 
@@ -213,7 +221,7 @@ large_acc_vs_area <- data_run %>%
   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
   geom_hline(yintercept = 1) +
-  theme_minimal() + scale_x_continuous(breaks = seq(0, 3250, by = 250)) +
+  scale_x_continuous(breaks = seq(0, 3250, by = 250)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(y = "proportion captured", x = "Area")
 
@@ -237,8 +245,7 @@ small_acc_vs_area <- data_run %>%
   						filter(smart_size == "small",area < 2400) %>%
   ggplot() +   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
-  geom_hline(yintercept = 1) +
-  theme_minimal() +
+  geom_hline(yintercept = 1) 
   scale_x_continuous(breaks = seq(0, 2400, by = 125), lim = c(0, 2400)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(y = "proportion captured", x = "Area")
