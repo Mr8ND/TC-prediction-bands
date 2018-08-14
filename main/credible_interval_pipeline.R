@@ -59,7 +59,8 @@ output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_lis
                                           alpha_level = alpha_level,
                                           alpha_ci_level = alpha_ci_level,
                                           start_idx = start_idx_passed,
-                                          end_idx = end_idx_passed)
+                                          end_idx = end_idx_passed,
+                                          curve_type_vec = desired_curves_types)
 
 out_filename <- paste0(data_loc,
                        'output_pipeline_alphalevel',
