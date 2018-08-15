@@ -21,7 +21,7 @@ eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
 pb <- progress::progress_bar$new(
   format = "Processing [:bar] :percent eta: :eta",
-  total = length(output_list_pipeline)*4, clear = FALSE, width = 51)
+  total = length(output_list_pipeline)*2, clear = FALSE, width = 51)
 
 acc_size_df <- data.frame(prop_acc = 0, area = 0, tc = "CMU",
                           sim_type = "sim", cb_type = "circles",
@@ -35,7 +35,7 @@ acc_size_df <- data.frame(prop_acc = 0, area = 0, tc = "CMU",
 if (is.null(names(output_list_pipeline))) {
   warning(paste("output_list_pipeline list missing names.",
           "Renaming output_list_pipeline's entries with test env's names"))
-  b <- load(paste0(data_loc,"Test_Sims_350.Rdata"))
+  b <- load(paste0(data_loc,"Test_Sims_350_geo.Rdata"))
   names(output_list_pipeline) <- names(test_env)
 }
 
@@ -206,22 +206,24 @@ box_plus_scatter <- function(data, x_string, y_string, facet_string, breaks,
 
 # actual graphics -------------
 
+max_large_area <- data_run %>% filter(smart_size == "large") %>% pull(area) %>% max
+max_large_area <- ceiling(max_large_area / 250) * 250
 
 large_acc_vs_area <- data_run %>%
-						filter(smart_size == "large", area < 3250) %>%
+						filter(smart_size == "large", area < max_large_area) %>%
   ggplot() +
   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
   geom_hline(yintercept = 1) +
-  theme_minimal() + scale_x_continuous(breaks = seq(0, 3250, by = 250)) +
+  theme_minimal() + scale_x_continuous(breaks = seq(0, max_large_area, by = 250)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(y = "proportion captured", x = "Area")
 
 large_acc_vs_area2 <- box_plus_scatter(data = data_run %>%
-							filter(smart_size == "large", area < 3250),
+							filter(smart_size == "large", area < max_large_area),
                  x_string = "area", y_string = "prop_acc",
                  facet_string = "cb_type_full",
-                 breaks = seq(0,3309,by = 250),
+                 breaks = seq(0, max_large_area, by = 250),
                  base_gg_obj = large_acc_vs_area,
                  frac = .7, fill = rgb(1, 0.3, 0.3, .7), 
                  color = rgb(1, 0.3, 0.3, .7),
@@ -231,23 +233,26 @@ large_acc_vs_area_final <- large_acc_vs_area2 +
 								geom_smooth(aes(x = area, y = prop_acc))
 
 
-
+max_small_area <- data_run %>% filter(smart_size == "small") %>% pull(area) %>% max
+max_small_area <- ceiling(max_small_area / 500) * 500
 
 small_acc_vs_area <- data_run %>%
-  						filter(smart_size == "small",area < 2400) %>%
+  						filter(smart_size == "small",area < max_small_area) %>%
   ggplot() +   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
   geom_hline(yintercept = 1) +
   theme_minimal() +
-  scale_x_continuous(breaks = seq(0, 2400, by = 125), lim = c(0, 2400)) +
+  scale_x_continuous(breaks = seq(0, max_small_area, by = 500), 
+                     lim = c(0, max_small_area)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(y = "proportion captured", x = "Area")
 
 small_acc_vs_area2 <- box_plus_scatter(
-				data = data_run %>% filter(smart_size == "small",area < 2400),
+				data = data_run %>% filter(smart_size == "small",area < max_small_area),
                  x_string = "area", y_string = "prop_acc",
                  facet_string = "cb_type_full",
-                 breaks = seq(0,2400,by = 125), base_gg_obj = small_acc_vs_area,
+                 breaks = seq(0, max_small_area, by = 500), 
+				base_gg_obj = small_acc_vs_area,
                  frac = .7, fill = rgb(1,0.3,0.3,.7), color = rgb(1,0.3,0.3,.7),
                  alpha = .1)
 
@@ -258,10 +263,12 @@ small_acc_vs_area_final <- small_acc_vs_area2 +
 
 arrangement <- arrangeGrob(large_acc_vs_area_final +
 						labs(title = "Larger Prediction Bands",
-                             x = "Area in square nautical miles (maximum = 3250)"),
+                             x = paste0("Area in square nautical miles (maximum = ",
+                                        max_large_area, ")")),
              small_acc_vs_area_final +
              			labs(title = "Smaller Prediction Bands",
-                              x = "Area in square nautical miles (maximum = 2400)"), ncol = 1)
+                              x = paste0("Area in square nautical miles (maximum = ",
+                                        max_small_area, ")"), ncol = 1))
 
 ggsave(plot = arrangement,
 	   filename = paste0(image_path,"tc_results_area_vs_prop.pdf"),
