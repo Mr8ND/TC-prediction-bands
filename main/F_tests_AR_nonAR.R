@@ -1,3 +1,7 @@
+# This script determines the p-values for block-specific F tests of AR vs non-AR
+# change in bearing and speed regressions. It plots geographical maps with 
+# regions shaded by p-value.
+
 library(tidyverse)
 library(TCcrediblebands)
 library(rworldmap)
@@ -93,299 +97,193 @@ s <- (k * alpha) / (c_m * m)
 
 # Get maximum p-value such that pval[i] < s[i]
 cutoff_bearing <- max(bearing_pvals[bearing_pvals < s])
+cut_bear_ind <- which(bearing_pvals == cutoff_bearing)
+
 cutoff_speed <- max(speed_pvals[speed_pvals < s])
+cut_speed_ind <- which(speed_pvals == cutoff_speed)
 
 # Plot p-values of west block-specific bearing regressions on map ------------------
 
-# Create coordinates of one point per block
-long.w <- c(-95, -85, -75, -65, -55, -45, -35, -25,
-            -95, -85, -75, -65, -55, -45, -35,
-            -95, -85, -75, -65, -55, -45, -45, -30) 
-lat.w <- c(15, 15, 15, 15, 15, 15, 15, 15,
-           25, 25, 25, 25, 25, 25, 25,
-           35, 35, 35, 35, 35, 35, 45, 45)
-get.block <- Vectorize(TCcrediblebands::get_block)
-
-# Create labels with block-specific p-values
-blocks <- get.block(long.w, lat.w, "W")
-pval.labels <- round(bearing_pvals[blocks], 3) %>% as.character
-pval.labels[pval.labels == "0"] <- "< 0.001"
-pval.labels[pval.labels < cutoff_bearing] <- 
-  paste(pval.labels[pval.labels < cutoff_bearing], "(*)")
-
 # Get world map data
 map.world <- map_data(map = "world")
-map.world <- map.world %>% filter(long >= -140, long <= 12, lat >= 0, lat <= 70)
+map.world <- map.world %>% filter(long >= -140, long <= 12, lat >= 0, lat <= 60)
 
-# Plot map and block-specific p-values
+# Rectangle bounds for blocks of TCs moving west
+west_bounds <- data.frame(
+  xmin = c(-120, -90, -80, -70, -60, -50, -40, -30, -120, -90, -80, -70, -60, -50, -40,
+           -120, -90, -80, -70, -60, -50, -120, -40), 
+  xmax = c(-90, -80, -70, -60, -50, -40, -30, 10, -90, -80, -70, -60, -50, -40, 10,
+           -90, -80, -70, -60, -50, -40, -40, 10),
+  ymin = c(0, 0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 20,
+           30, 30, 30, 30, 30, 30, 40, 30),
+  ymax = c(20, 20, 20, 20, 20, 20, 20, 20, 30, 30, 30, 30, 30, 30, 30,
+           40, 40, 40, 40, 40, 40, 65, 65))
+
+# Determine p-value for each block
+get.block <- Vectorize(TCcrediblebands::get_block)
+
+west_bounds <- west_bounds %>% mutate(
+  xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
+  block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "W"),
+  pvals = bearing_pvals[blocks])
+
+# World map w/ regions shaded by p-value
 bearing_west <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
   labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
        subtitle = "Bearing regressions for TCs moving west",
-       caption = paste("(*) indicates rejection of H0 (non-AR) in favor of H1 (AR)",
-          "using \nBenjamini-Yekutieli (dependence-corrected) FDR adjustment"),
        x = "Longitude", y = "Latitude") +
   coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "grey") + 
-  theme(legend.position="none", panel.grid.major = element_blank(), 
+  geom_path(col = "darkgrey") + 
+  theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 16), 
-        plot.subtitle = element_text(hjust = 0.5, size = 14), 
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        axis.title = element_text(size = 14)) +
-  geom_hline(yintercept = 20) +
-  geom_hline(yintercept = 30) +
-  geom_segment(aes(x = -90, y = 9, xend = -90, yend = 20)) + #A1.west
-  geom_segment(aes(x = -80, y = 9, xend = -80, yend = 20)) + #A2.west
-  geom_segment(aes(x = -70, y = 9, xend = -70, yend = 20)) + #A3.west
-  geom_segment(aes(x = -60, y = 9, xend = -60, yend = 20)) + #A4.west
-  geom_segment(aes(x = -50, y = 9, xend = -50, yend = 20)) + #A5.west
-  geom_segment(aes(x = -40, y = 9, xend = -40, yend = 20)) + #A6.west
-  geom_segment(aes(x = -30, y = 9, xend = -30, yend = 20)) + #A7.west
-  # + A8.west is to right +
-  geom_segment(aes(x = -90, y = 20, xend = -90, yend = 30)) + #B1.west
-  geom_segment(aes(x = -80, y = 20, xend = -80, yend = 30)) + #B2.west
-  geom_segment(aes(x = -70, y = 20, xend = -70, yend = 30)) + #B3.west
-  geom_segment(aes(x = -60, y = 20, xend = -60, yend = 30)) + #B4.west
-  geom_segment(aes(x = -50, y = 20, xend = -50, yend = 30)) + #B5.west
-  geom_segment(aes(x = -40, y = 20, xend = -40, yend = 30)) + #B6.west
-  # + B7.west is to right +
-  geom_segment(aes(x = -120, y = 40, xend = -40, yend = 40)) +
-  geom_segment(aes(x = -90, y = 30, xend = -90, yend = 40)) + #C1.west
-  geom_segment(aes(x = -80, y = 30, xend = -80, yend = 40)) + #C2.west
-  geom_segment(aes(x = -70, y = 30, xend = -70, yend = 40)) + #C3.west
-  geom_segment(aes(x = -60, y = 30, xend = -60, yend = 40)) + #C4.west
-  geom_segment(aes(x = -50, y = 30, xend = -50, yend = 40)) + #C5.west
-  geom_segment(aes(x = -40, y = 30, xend = -40, yend = 40)) + #C6.west
-  geom_segment(aes(x = -40, y = 40, xend = -40, yend = 60)) + #D1.west
-  annotate("text", x = long.w, y = lat.w, label = pval.labels, col = "red")
-
-# Save plot
-ggsave(filename = paste0(image_path, "F_tests_bearing_west.png"),
-       plot = bearing_west, width = 10, height = 7)
+        plot.title = element_text(hjust = 0.5, size = 18),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12)) +
+  geom_rect(data = west_bounds, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
+            colour = "black", alpha = 0.5,
+            size = 0.35, inherit.aes = F) +
+  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
+      midpoint = log10(0.5*(bearing_pvals[cut_bear_ind] +
+                              bearing_pvals[cut_bear_ind - 1])),
+      guide = "colourbar", trans = "log10",
+      breaks = c(min(west_bounds$pvals), bearing_pvals[cut_bear_ind], 10^{-6}, 
+                 10^{-9}, max(west_bounds$pvals)),
+      labels = c(signif(min(west_bounds$pvals), 3),
+                 signif(bearing_pvals[cut_bear_ind], 3),
+                 10^{-6}, 10^{-9}, signif(max(west_bounds$pvals), 3))) +
+  labs(fill = "p-values") +
+  ggsave(filename = paste0(image_path, "F_tests_bearing_west_color.png"),
+         width = 8, height = 5)
 
 # Plot p-values of east block-specific bearing regressions on map ------------------
 
-# Create coordinates of one point per block
-long.e <- c(-85, -75, -65, -95, -85, -75, -65, -55, -45, -35,
-            -95, -85, -75, -65, -55, -45, -35, -25,
-            -55, -45, -35, -25, -15, -75, -65, -50, -30, -15) 
-lat.e <- c(15, 15, 15, 25, 25, 25, 25, 25, 25, 25,
-           35, 35, 35, 35, 35, 35, 35, 35,
-           45, 45, 45, 45, 40, 52, 52, 52, 52, 52)
-get.block <- Vectorize(TCcrediblebands::get_block)
+# Rectangle bounds for blocks of TCs moving east
+east_bounds <- data.frame(
+  xmin = c(-120, -80, -70, -60, -50, -40, -120, -90, -80, -70,
+           -120, -90, -80, -70, -60, -50, -40, -30, -20, 
+           -120, -70, -60, -50, -40, -30, -60, -40, -20), 
+  xmax = c(-80, -70, -60, -50, -40, 10, -90, -80, -70, -60,
+           -90, -80, -70, -60, -50, -40, -30, -20, 10,
+           -70, -60, -50, -40, -30, -20, -40, -20, 10),
+  ymin = c(0, 0, 0, 0, 0, 0, 20, 20, 20, 20,
+           30, 30, 30, 30, 30, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 50, 50, 50),
+  ymax = c(20, 20, 20, 30, 30, 30, 30, 30, 30, 30,
+           40, 40, 40, 40, 40, 40, 40, 40, 50, 65, 65, 50, 50, 50, 50, 65, 65, 65))
 
-# Create labels with block-specific p-values
-blocks <- get.block(long.e, lat.e, "E")
-pval.labels <- round(bearing_pvals[blocks], 3) %>% as.character
-pval.labels[pval.labels == "0"] <- "< 0.001"
-pval.labels[pval.labels < cutoff_bearing] <- 
-  paste(pval.labels[pval.labels < cutoff_bearing], "(*)")
+# Determine p-value for each block
+east_bounds <- east_bounds %>% mutate(
+  xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
+  block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "E"),
+  pvals = bearing_pvals[block])
 
-# Get world map data
-map.world <- map_data(map = "world")
-map.world <- map.world %>% filter(long >= -140, long <= 12, lat >= 0, lat <= 70)
-
-# Plot map and block-specific p-values
+# World map w/ regions shaded by p-value
 bearing_east <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
   labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
        subtitle = "Bearing regressions for TCs moving east",
-       caption = paste("(*) indicates rejection of H0 (non-AR) in favor of H1 (AR)",
-          "using \nBenjamini-Yekutieli (dependence-corrected) FDR adjustment"),
        x = "Longitude", y = "Latitude") +
   coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "grey") + 
-  theme(legend.position="none", panel.grid.major = element_blank(), 
+  geom_path(col = "darkgrey") + 
+  theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 16), 
-        plot.subtitle = element_text(hjust = 0.5, size = 14), 
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        axis.title = element_text(size = 14)) +
-  geom_hline(yintercept = 30) +
-  geom_segment(aes(x = -120, y = 20, xend = -60, yend = 20)) +
-  geom_segment(aes(x = -120, y = 30, xend = -60, yend = 30)) +
-  geom_segment(aes(x = -80, y = 9, xend = -80, yend = 20)) +  #A1.east
-  geom_segment(aes(x = -70, y = 9, xend = -70, yend = 20)) +  #A2.east
-  geom_segment(aes(x = -60, y = 9, xend = -60, yend = 20)) +  #A3.east
-  geom_segment(aes(x = -90, y = 20, xend = -90, yend = 30)) + #B1.east
-  geom_segment(aes(x = -80, y = 20, xend = -80, yend = 30)) + #B2.east
-  geom_segment(aes(x = -70, y = 20, xend = -70, yend = 30)) + #B3.east
-  geom_segment(aes(x = -60, y = 20, xend = -60, yend = 30)) + #B4.east
-  geom_segment(aes(x = -60, y = 30, xend = -50, yend = 30)) + #B5.east
-  geom_segment(aes(x = -50, y = 9, xend = -50, yend = 30)) +  #B5.east
-  geom_segment(aes(x = -50, y = 30, xend = -40, yend = 30)) + #B6.east
-  geom_segment(aes(x = -40, y = 9, xend = -40, yend = 30)) +  #B6.east
-  # B7.east is to right +
-  geom_segment(aes(x = -120, y = 40, xend = -20, yend = 40)) +
-  geom_segment(aes(x = -90, y = 30, xend = -90, yend = 40)) + #C1.east
-  geom_segment(aes(x = -80, y = 30, xend = -80, yend = 40)) + #C2.east
-  geom_segment(aes(x = -70, y = 30, xend = -70, yend = 40)) + #C3.east
-  geom_segment(aes(x = -60, y = 30, xend = -60, yend = 40)) + #C4.east
-  geom_segment(aes(x = -50, y = 30, xend = -50, yend = 40)) + #C5.east
-  geom_segment(aes(x = -40, y = 30, xend = -40, yend = 40)) + #C6.east
-  geom_segment(aes(x = -30, y = 30, xend = -30, yend = 40)) + #C7.east
-  geom_segment(aes(x = -20, y = 30, xend = -20, yend = 40)) + #C8.east
-  geom_segment(aes(x = -60, y = 50, xend = -20, yend = 50)) + 
-  geom_segment(aes(x = -60, y = 40, xend = -60, yend = 50)) + #D1.east
-  geom_segment(aes(x = -50, y = 40, xend = -50, yend = 50)) + #D1.east
-  geom_segment(aes(x = -40, y = 40, xend = -40, yend = 50)) + #D2.east
-  geom_segment(aes(x = -30, y = 40, xend = -30, yend = 50)) + #D3.east
-  geom_segment(aes(x = -20, y = 30, xend = -20, yend = 50)) + #D4.east
-  geom_segment(aes(x = -20, y = 10, xend = -20, yend = 50)) + #D5.east
-  geom_segment(aes(x = -70, y = 40, xend = -70, yend = 60)) + #E1.east
-  geom_segment(aes(x = -60, y = 40, xend = -60, yend = 60)) + #E2.east
-  geom_segment(aes(x = -40, y = 50, xend = -40, yend = 60)) + #F1.east
-  geom_segment(aes(x = -20, y = 50, xend = -20, yend = 60)) + #F2.east
-  geom_segment(aes(x = -20, y = 50, xend = 10, yend = 50)) + #F3.east
-  annotate("text", x = long.e, y = lat.e, label = pval.labels, col = "red")
-
-# Save plot
-ggsave(filename = paste0(image_path, "F_tests_bearing_east.png"),
-       plot = bearing_east, width = 10, height = 7)
+        plot.title = element_text(hjust = 0.5, size = 18),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12)) +
+  geom_rect(data = east_bounds, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
+            colour = "black", alpha = 0.5,
+            size = 0.35, inherit.aes = F) +
+  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
+      midpoint = log10(0.5*(bearing_pvals[cut_bear_ind] +
+                              bearing_pvals[cut_bear_ind - 1])),
+      guide = "colourbar", trans = "log10",
+      breaks = c(min(east_bounds$pvals), bearing_pvals[cut_bear_ind], 10^{-6}, 
+                 10^{-9}, 10^{-12}, max(east_bounds$pvals)),
+      labels = c(signif(min(east_bounds$pvals), 3), 
+                 signif(bearing_pvals[cut_bear_ind], 3),
+                 10^{-6}, 10^{-9}, 10^{-12}, signif(max(east_bounds$pvals), 3))) +
+  labs(fill = "p-values") +
+  ggsave(filename = paste0(image_path, "F_tests_bearing_east_color.png"),
+         width = 8, height = 5)
 
 # Plot p-values of west block-specific speed regressions on map ------------------
 
-# Create coordinates of one point per block
-long.w <- c(-95, -85, -75, -65, -55, -45, -35, -25,
-            -95, -85, -75, -65, -55, -45, -35,
-            -95, -85, -75, -65, -55, -45, -45, -30) 
-lat.w <- c(15, 15, 15, 15, 15, 15, 15, 15,
-           25, 25, 25, 25, 25, 25, 25,
-           35, 35, 35, 35, 35, 35, 45, 45)
-get.block <- Vectorize(TCcrediblebands::get_block)
+# Determine p-value for each block
+west_bounds <- west_bounds %>% mutate(
+  xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
+  block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "W"),
+  pvals = speed_pvals[blocks])
 
-# Create labels with block-specific p-values
-blocks <- get.block(long.w, lat.w, "W")
-pval.labels <- round(speed_pvals[blocks], 3) %>% as.character
-pval.labels[pval.labels == "0"] <- "< 0.001"
-pval.labels[pval.labels < cutoff_speed] <- 
-  paste(pval.labels[pval.labels < cutoff_speed], "(*)")
-
-# Get world map data
-map.world <- map_data(map = "world")
-map.world <- map.world %>% filter(long >= -140, long <= 12, lat >= 0, lat <= 70)
-
-# Plot map and block-specific p-values
+# World map w/ regions shaded by p-value
 speed_west <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
   labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
        subtitle = "Speed regressions for TCs moving west",
-       caption = paste("(*) indicates rejection of H0 (non-AR) in favor of H1 (AR)",
-          "using \nBenjamini-Yekutieli (dependence-corrected) FDR adjustment"),
        x = "Longitude", y = "Latitude") +
   coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "grey") + 
-  theme(legend.position="none", panel.grid.major = element_blank(), 
+  geom_path(col = "darkgrey") + 
+  theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 16), 
-        plot.subtitle = element_text(hjust = 0.5, size = 14), 
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        axis.title = element_text(size = 14)) +
-  geom_hline(yintercept = 20) +
-  geom_hline(yintercept = 30) +
-  geom_segment(aes(x = -90, y = 9, xend = -90, yend = 20)) + #A1.west
-  geom_segment(aes(x = -80, y = 9, xend = -80, yend = 20)) + #A2.west
-  geom_segment(aes(x = -70, y = 9, xend = -70, yend = 20)) + #A3.west
-  geom_segment(aes(x = -60, y = 9, xend = -60, yend = 20)) + #A4.west
-  geom_segment(aes(x = -50, y = 9, xend = -50, yend = 20)) + #A5.west
-  geom_segment(aes(x = -40, y = 9, xend = -40, yend = 20)) + #A6.west
-  geom_segment(aes(x = -30, y = 9, xend = -30, yend = 20)) + #A7.west
-  # + A8.west is to right +
-  geom_segment(aes(x = -90, y = 20, xend = -90, yend = 30)) + #B1.west
-  geom_segment(aes(x = -80, y = 20, xend = -80, yend = 30)) + #B2.west
-  geom_segment(aes(x = -70, y = 20, xend = -70, yend = 30)) + #B3.west
-  geom_segment(aes(x = -60, y = 20, xend = -60, yend = 30)) + #B4.west
-  geom_segment(aes(x = -50, y = 20, xend = -50, yend = 30)) + #B5.west
-  geom_segment(aes(x = -40, y = 20, xend = -40, yend = 30)) + #B6.west
-  # + B7.west is to right +
-  geom_segment(aes(x = -120, y = 40, xend = -40, yend = 40)) +
-  geom_segment(aes(x = -90, y = 30, xend = -90, yend = 40)) + #C1.west
-  geom_segment(aes(x = -80, y = 30, xend = -80, yend = 40)) + #C2.west
-  geom_segment(aes(x = -70, y = 30, xend = -70, yend = 40)) + #C3.west
-  geom_segment(aes(x = -60, y = 30, xend = -60, yend = 40)) + #C4.west
-  geom_segment(aes(x = -50, y = 30, xend = -50, yend = 40)) + #C5.west
-  geom_segment(aes(x = -40, y = 30, xend = -40, yend = 40)) + #C6.west
-  geom_segment(aes(x = -40, y = 40, xend = -40, yend = 60)) + #D1.west
-  annotate("text", x = long.w, y = lat.w, label = pval.labels, col = "red")
-
-# Save plot
-ggsave(filename = paste0(image_path, "F_tests_speed_west.png"),
-       plot = speed_west, width = 10, height = 7)
+        plot.title = element_text(hjust = 0.5, size = 18),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12)) +
+  geom_rect(data = west_bounds, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
+            colour = "black", alpha = 0.5,
+            size = 0.35, inherit.aes = F) +
+  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
+      midpoint = log10(0.5*(speed_pvals[cut_speed_ind] +
+                              speed_pvals[cut_speed_ind - 1])),
+      guide = "colourbar", trans = "log10",
+      breaks = c(min(west_bounds$pvals), speed_pvals[cut_speed_ind], 10^{-6}, 
+                 10^{-9}, max(west_bounds$pvals)),
+      labels = c(signif(min(west_bounds$pvals), 3),
+                 signif(speed_pvals[cut_speed_ind], 3),
+                 10^{-6}, 10^{-9}, signif(max(west_bounds$pvals), 3))) +
+  labs(fill = "p-values") +
+  ggsave(filename = paste0(image_path, "F_tests_speed_west_color.png"),
+         width = 8, height = 5)
 
 # Plot p-values of east block-specific speed regressions on map ------------------
 
-# Create coordinates of one point per block
-long.e <- c(-85, -75, -65, -95, -85, -75, -65, -55, -45, -35,
-            -95, -85, -75, -65, -55, -45, -35, -25,
-            -55, -45, -35, -25, -15, -75, -65, -50, -30, -15) 
-lat.e <- c(15, 15, 15, 25, 25, 25, 25, 25, 25, 25,
-           35, 35, 35, 35, 35, 35, 35, 35,
-           45, 45, 45, 45, 40, 52, 52, 52, 52, 52)
-get.block <- Vectorize(TCcrediblebands::get_block)
+# Determine p-value for each block
+east_bounds <- east_bounds %>% mutate(
+  xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
+  block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "E"),
+  pvals = speed_pvals[block])
 
-# Create labels with block-specific p-values
-blocks <- get.block(long.e, lat.e, "E")
-pval.labels <- round(speed_pvals[blocks], 3) %>% as.character
-pval.labels[pval.labels == "0"] <- "< 0.001"
-pval.labels[pval.labels < cutoff_speed] <- 
-  paste(pval.labels[pval.labels < cutoff_speed], "(*)")
-
-# Get world map data
-map.world <- map_data(map = "world")
-map.world <- map.world %>% filter(long >= -140, long <= 12, lat >= 0, lat <= 70)
-
-# Plot map and block-specific p-values
+# World map w/ regions shaded by p-value
 speed_east <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
   labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
        subtitle = "Speed regressions for TCs moving east",
-       caption = paste("(*) indicates rejection of H0 (non-AR) in favor of H1 (AR)",
-          "using \nBenjamini-Yekutieli (dependence-corrected) FDR adjustment"),
        x = "Longitude", y = "Latitude") +
   coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "grey") + 
-  theme(legend.position="none", panel.grid.major = element_blank(), 
+  geom_path(col = "darkgrey") + 
+  theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 16), 
-        plot.subtitle = element_text(hjust = 0.5, size = 14), 
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        axis.title = element_text(size = 14)) +
-  geom_hline(yintercept = 30) +
-  geom_segment(aes(x = -120, y = 20, xend = -60, yend = 20)) +
-  geom_segment(aes(x = -120, y = 30, xend = -60, yend = 30)) +
-  geom_segment(aes(x = -80, y = 9, xend = -80, yend = 20)) +  #A1.east
-  geom_segment(aes(x = -70, y = 9, xend = -70, yend = 20)) +  #A2.east
-  geom_segment(aes(x = -60, y = 9, xend = -60, yend = 20)) +  #A3.east
-  geom_segment(aes(x = -90, y = 20, xend = -90, yend = 30)) + #B1.east
-  geom_segment(aes(x = -80, y = 20, xend = -80, yend = 30)) + #B2.east
-  geom_segment(aes(x = -70, y = 20, xend = -70, yend = 30)) + #B3.east
-  geom_segment(aes(x = -60, y = 20, xend = -60, yend = 30)) + #B4.east
-  geom_segment(aes(x = -60, y = 30, xend = -50, yend = 30)) + #B5.east
-  geom_segment(aes(x = -50, y = 9, xend = -50, yend = 30)) +  #B5.east
-  geom_segment(aes(x = -50, y = 30, xend = -40, yend = 30)) + #B6.east
-  geom_segment(aes(x = -40, y = 9, xend = -40, yend = 30)) +  #B6.east
-  # B7.east is to right +
-  geom_segment(aes(x = -120, y = 40, xend = -20, yend = 40)) +
-  geom_segment(aes(x = -90, y = 30, xend = -90, yend = 40)) + #C1.east
-  geom_segment(aes(x = -80, y = 30, xend = -80, yend = 40)) + #C2.east
-  geom_segment(aes(x = -70, y = 30, xend = -70, yend = 40)) + #C3.east
-  geom_segment(aes(x = -60, y = 30, xend = -60, yend = 40)) + #C4.east
-  geom_segment(aes(x = -50, y = 30, xend = -50, yend = 40)) + #C5.east
-  geom_segment(aes(x = -40, y = 30, xend = -40, yend = 40)) + #C6.east
-  geom_segment(aes(x = -30, y = 30, xend = -30, yend = 40)) + #C7.east
-  geom_segment(aes(x = -20, y = 30, xend = -20, yend = 40)) + #C8.east
-  geom_segment(aes(x = -60, y = 50, xend = -20, yend = 50)) + 
-  geom_segment(aes(x = -60, y = 40, xend = -60, yend = 50)) + #D1.east
-  geom_segment(aes(x = -50, y = 40, xend = -50, yend = 50)) + #D1.east
-  geom_segment(aes(x = -40, y = 40, xend = -40, yend = 50)) + #D2.east
-  geom_segment(aes(x = -30, y = 40, xend = -30, yend = 50)) + #D3.east
-  geom_segment(aes(x = -20, y = 30, xend = -20, yend = 50)) + #D4.east
-  geom_segment(aes(x = -20, y = 10, xend = -20, yend = 50)) + #D5.east
-  geom_segment(aes(x = -70, y = 40, xend = -70, yend = 60)) + #E1.east
-  geom_segment(aes(x = -60, y = 40, xend = -60, yend = 60)) + #E2.east
-  geom_segment(aes(x = -40, y = 50, xend = -40, yend = 60)) + #F1.east
-  geom_segment(aes(x = -20, y = 50, xend = -20, yend = 60)) + #F2.east
-  geom_segment(aes(x = -20, y = 50, xend = 10, yend = 50)) + #F3.east
-  annotate("text", x = long.e, y = lat.e, label = pval.labels, col = "red")
-
-# Save plot
-ggsave(filename = paste0(image_path, "F_tests_speed_east.png"),
-       plot = speed_east, width = 10, height = 7)
-
+        plot.title = element_text(hjust = 0.5, size = 18),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12)) +
+  geom_rect(data = east_bounds, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
+            colour = "black", alpha = 0.5,
+            size = 0.35, inherit.aes = F) +
+  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
+      midpoint = log10(0.5*(speed_pvals[cut_speed_ind] +
+                              speed_pvals[cut_speed_ind - 1])),
+      guide = "colourbar", trans = "log10",
+      breaks = c(min(east_bounds$pvals), speed_pvals[cut_speed_ind], 10^{-6}, 
+                 10^{-9}, 10^{-12}, max(east_bounds$pvals)),
+      labels = c(signif(min(east_bounds$pvals), 3), 
+                 signif(speed_pvals[cut_speed_ind], 3),
+                 10^{-6}, 10^{-9}, 10^{-12}, signif(max(east_bounds$pvals), 3))) +
+  labs(fill = "p-values") +
+  ggsave(filename = paste0(image_path, "F_tests_speed_east_color.png"),
+         width = 8, height = 5)
