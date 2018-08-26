@@ -1,3 +1,6 @@
+# Graphics and Tables for section 5.3: 
+# "Results" (5) > "Prediction Bands to Predict True Tropical Cyclones" (5.3)
+
 library(tidyverse)
 library(reshape2)
 library(xtable)
@@ -5,6 +8,7 @@ library(forcats)
 library(progress)
 library(latex2exp)
 library(gridExtra)
+library(TCcrediblebands)
 
 # Set theme -----------------
 
@@ -22,12 +26,15 @@ latest_full_output_pipeline <- 'output_pipeline_all.Rdata'
 a <- load(paste0(data_loc, latest_full_output_pipeline))
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
+
+
+
+###########################
+# Accuracy vs Size of PBs #
+###########################
+
 # Process Accuracy and Size information ----------------
 
-
-pb <- progress::progress_bar$new(
-  format = "Processing [:bar] :percent eta: :eta",
-  total = length(output_list_pipeline)*4, clear = FALSE, width = 51)
 
 acc_size_df <- data.frame(prop_acc = 0, area = 0, tc = "CMU",
                           sim_type = "sim", cb_type = "circles",
@@ -77,10 +84,7 @@ for (tc in names(output_list_pipeline)) {
                            smart_size = smart_size_vec)
 
     acc_size_df <- rbind(acc_size_df, inner_df)
-    pb$tick()
   }
-
-
 }
 
 acc_size_df <- acc_size_df[-1,] 
@@ -114,7 +118,6 @@ sim_type_graphic_levels <- c("Auto Regression & Logistic Death"   = "Auto_DeathR
                            "Non-Auto Regression & Kernel Death"   = "NoAuto_NoDeathRegs")
 sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
-
 data_run <- acc_size_df %>% mutate(
   cb_type_full = factor(cb_type, levels  = cb_type_graphic_levels,
                         labels = cb_type_graphic_labels),
@@ -124,9 +127,8 @@ data_run <- acc_size_df %>% mutate(
                               labels = cb_type_table_labels),
   sim_type_full_table = factor(sim_type, levels = sim_type_table_levels,
                                labels = sim_type_table_labels)) #%>% 
-#  mutate(area_discrete = cut(x = area, breaks = seq(0, 3309, by = 250)))
 
-# visualization function ------------------
+# Visualization Function ------------------
 
 #' add or create a set of boxplots but discretizing continuous variable
 #'
@@ -212,8 +214,7 @@ box_plus_scatter <- function(data, x_string, y_string, facet_string, breaks,
 }
 
 
-# actual graphics -------------
-
+# Actual Graphics -------------
 
 large_acc_vs_area <- data_run %>%
 						filter(smart_size == "large", area < 3250) %>%
@@ -245,7 +246,7 @@ small_acc_vs_area <- data_run %>%
   						filter(smart_size == "small",area < 2400) %>%
   ggplot() +   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
-  geom_hline(yintercept = 1) 
+  geom_hline(yintercept = 1) +
   scale_x_continuous(breaks = seq(0, 2400, by = 125), lim = c(0, 2400)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(y = "proportion captured", x = "Area")
@@ -261,8 +262,6 @@ small_acc_vs_area2 <- box_plus_scatter(
 small_acc_vs_area_final <- small_acc_vs_area2 +
 								geom_smooth(aes(x = area, y = prop_acc))
 
-
-
 arrangement <- arrangeGrob(large_acc_vs_area_final +
 						labs(title = "Larger Prediction Bands",
                              x = "Area in square nautical miles (maximum = 3250)"),
@@ -274,11 +273,10 @@ ggsave(plot = arrangement,
 	   filename = paste0(image_path,"tc_results_area_vs_prop.pdf"),
 	   device = "pdf", width = 10, height = 6.5, units = "in")
 
-# tables ------------
+# Tables ------------
 
 # ~ bolding solution from https://stackoverflow.com/questions/33218469/boldify-the-contents-of-bottom-row-in-xtable
-bold_somerows <- 
-        function(x) gsub('BOLD(.*)',paste0('\\\\textbf{\\1','}'),x)
+bold_somerows <- function(x) gsub('BOLD(.*)',paste0('\\\\textbf{\\1','}'),x)
 
 # ~ for multistacked headers: https://cran.r-project.org/web/packages/xtable/vignettes/xtableGallery.pdf
 #   page: 27
@@ -293,18 +291,19 @@ bold_somerows <-
 #  
 
 # average proportion captured 
-
 table <- data_run %>% 
   group_by(sim_type_full_table, cb_type_full_table) %>%
   dplyr::summarize(
-    full_acc = sprintf("%.2f",round(mean(prop_acc),2))) %>%
+    full_acc = sprintf("%.2f / %.2f" ,
+                       round(mean(prop_acc),2),
+                       round(median(prop_acc),2)) ) %>%
   dcast(sim_type_full_table ~ cb_type_full_table) %>%
   rename("Simulation Curve Type" = "sim_type_full_table")
 
 xtable1 <- table %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.75in}|"),
                  digits = 2,
-                 caption = paste0("Average proportion of points of ",
-                                  "a true TC captured by the PB."),
+                 caption = paste0("Mean and median proportion ",
+                                  "of points of a true TC captured by the PB."),
                  label = "tab:average_captured")
 
 print(xtable1, 
@@ -312,10 +311,9 @@ print(xtable1,
       include.rownames = FALSE,
       sanitize.text.function = bold_somerows, 
       #^for some reason we need this - even though not used
-      file = paste0(table_path,"tc_average_proportion.tex"))
+      file = paste0(table_path,"tc_average_proportion_update.tex"))
 
 # proportion with capture above .3, .9, =1
-
 
 # ~ adding math in caption from https://cran.r-project.org/web/packages/xtable/vignettes/xtableGallery.pdf
 #   and https://www.sharelatex.com/learn/Mathematical_expressions 
@@ -346,3 +344,5 @@ print(xtable2,
       file = paste0(table_path,"tc_prop_above_p3p9p10.tex"))
 
 
+
+ 
