@@ -184,7 +184,8 @@ bearing_map <- ggplot(all_bounds) +
         plot.subtitle = element_text(hjust = 0.5, size = 16),
         axis.title = element_text(size = 18),
         legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12)) +
+        legend.text = element_text(size = 12),
+        panel.spacing = unit(2, "lines")) +
   geom_rect(data = all_bounds, 
             aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, 
                 fill = bearing_pval), 
@@ -219,7 +220,8 @@ speed_map <- ggplot(all_bounds) +
         plot.subtitle = element_text(hjust = 0.5, size = 16),
         axis.title = element_text(size = 18),
         legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12)) +
+        legend.text = element_text(size = 12),
+        panel.spacing = unit(2, "lines")) +
   geom_rect(data = all_bounds, 
             aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, 
                 fill = speed_pval), 
