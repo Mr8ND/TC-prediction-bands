@@ -4,8 +4,9 @@
 
 library(tidyverse)
 library(TCcrediblebands)
-library(rworldmap)
-library(calibrate)
+library(maps)
+library(maptools)
+# library(calibrate)
 
 # Load Data ------------------
 
@@ -102,65 +103,29 @@ cut_bear_ind <- which(bearing_pvals == cutoff_bearing)
 cutoff_speed <- max(speed_pvals[speed_pvals < s])
 cut_speed_ind <- which(speed_pvals == cutoff_speed)
 
-# Plot p-values of west block-specific bearing regressions on map ------------------
+# Get world map data ------------------
 
-# Get world map data
-map.world <- map_data(map = "world")
-map.world <- map.world %>% filter(long >= -140, long <= 12, lat >= 0, lat <= 60)
+map_world <- maps::map(database = "world", plot = F, fill = T, 
+      col = "transparent", xlim = c(-140, 12), ylim = c(0, 60))
 
-# Rectangle bounds for blocks of TCs moving west
+IDs <- sapply(strsplit(map_world$names, ":"), function(x) x[1])
+
+map_world_sp <- maptools::map2SpatialPolygons(map_world, IDs = IDs,
+ proj4string=CRS("+proj=longlat +datum=WGS84"))
+
+# Data frame with blocks and block-specific p-vals ------------------
+
+# Rectangle bounds for blocks
 west_bounds <- data.frame(
-  xmin = c(-120, -90, -80, -70, -60, -50, -40, -30, -120, -90, -80, -70, -60, -50, -40,
-           -120, -90, -80, -70, -60, -50, -120, -40), 
-  xmax = c(-90, -80, -70, -60, -50, -40, -30, 10, -90, -80, -70, -60, -50, -40, 10,
-           -90, -80, -70, -60, -50, -40, -40, 10),
+  xmin = c(-120, -90, -80, -70, -60, -50, -40, -30, -120, -90, -80, -70, 
+           -60, -50, -40, -120, -90, -80, -70, -60, -50, -120, -40), 
+  xmax = c(-90, -80, -70, -60, -50, -40, -30, 10, -90, -80, -70, -60, 
+           -50, -40, 10, -90, -80, -70, -60, -50, -40, -40, 10),
   ymin = c(0, 0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 20,
            30, 30, 30, 30, 30, 30, 40, 30),
   ymax = c(20, 20, 20, 20, 20, 20, 20, 20, 30, 30, 30, 30, 30, 30, 30,
            40, 40, 40, 40, 40, 40, 65, 65))
 
-# Determine p-value for each block
-get.block <- Vectorize(TCcrediblebands::get_block)
-
-west_bounds <- west_bounds %>% mutate(
-  xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
-  block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "W"),
-  pvals = bearing_pvals[blocks])
-
-# World map w/ regions shaded by p-value
-bearing_west <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
-  labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
-       subtitle = "Bearing regressions for TCs moving west",
-       x = "Longitude", y = "Latitude") +
-  coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "darkgrey") + 
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12)) +
-  geom_rect(data = west_bounds, 
-            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
-            colour = "black", alpha = 0.5,
-            size = 0.35, inherit.aes = F) +
-  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
-      midpoint = log10(0.5*(bearing_pvals[cut_bear_ind] +
-                              bearing_pvals[cut_bear_ind - 1])),
-      guide = "colourbar", trans = "log10",
-      breaks = c(min(west_bounds$pvals), bearing_pvals[cut_bear_ind], 10^{-6}, 
-                 10^{-9}, max(west_bounds$pvals)),
-      labels = c(signif(min(west_bounds$pvals), 3),
-                 signif(bearing_pvals[cut_bear_ind], 3),
-                 10^{-6}, 10^{-9}, signif(max(west_bounds$pvals), 3))) +
-  labs(fill = "p-values") +
-  ggsave(filename = paste0(image_path, "F_tests_bearing_west_color.png"),
-         width = 8, height = 5)
-
-# Plot p-values of east block-specific bearing regressions on map ------------------
-
-# Rectangle bounds for blocks of TCs moving east
 east_bounds <- data.frame(
   xmin = c(-120, -80, -70, -60, -50, -40, -120, -90, -80, -70,
            -120, -90, -80, -70, -60, -50, -40, -30, -20, 
@@ -168,122 +133,105 @@ east_bounds <- data.frame(
   xmax = c(-80, -70, -60, -50, -40, 10, -90, -80, -70, -60,
            -90, -80, -70, -60, -50, -40, -30, -20, 10,
            -70, -60, -50, -40, -30, -20, -40, -20, 10),
-  ymin = c(0, 0, 0, 0, 0, 0, 20, 20, 20, 20,
-           30, 30, 30, 30, 30, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 50, 50, 50),
-  ymax = c(20, 20, 20, 30, 30, 30, 30, 30, 30, 30,
-           40, 40, 40, 40, 40, 40, 40, 40, 50, 65, 65, 50, 50, 50, 50, 65, 65, 65))
+  ymin = c(0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 30, 30, 30, 30, 30, 
+           30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 50, 50, 50),
+  ymax = c(20, 20, 20, 30, 30, 30, 30, 30, 30, 30, 40, 40, 40, 40, 
+           40, 40, 40, 40, 50, 65, 65, 50, 50, 50, 50, 65, 65, 65))
 
-# Determine p-value for each block
-east_bounds <- east_bounds %>% mutate(
-  xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
-  block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "E"),
-  pvals = bearing_pvals[block])
+# Determine bearing/speed p-values for each west-bound block
+get.block <- Vectorize(TCcrediblebands::get_block)
 
-# World map w/ regions shaded by p-value
-bearing_east <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
-  labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
-       subtitle = "Bearing regressions for TCs moving east",
-       x = "Longitude", y = "Latitude") +
-  coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "darkgrey") + 
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12)) +
-  geom_rect(data = east_bounds, 
-            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
-            colour = "black", alpha = 0.5,
-            size = 0.35, inherit.aes = F) +
-  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
-      midpoint = log10(0.5*(bearing_pvals[cut_bear_ind] +
-                              bearing_pvals[cut_bear_ind - 1])),
-      guide = "colourbar", trans = "log10",
-      breaks = c(min(east_bounds$pvals), bearing_pvals[cut_bear_ind], 10^{-6}, 
-                 10^{-9}, 10^{-12}, max(east_bounds$pvals)),
-      labels = c(signif(min(east_bounds$pvals), 3), 
-                 signif(bearing_pvals[cut_bear_ind], 3),
-                 10^{-6}, 10^{-9}, 10^{-12}, signif(max(east_bounds$pvals), 3))) +
-  labs(fill = "p-values") +
-  ggsave(filename = paste0(image_path, "F_tests_bearing_east_color.png"),
-         width = 8, height = 5)
-
-# Plot p-values of west block-specific speed regressions on map ------------------
-
-# Determine p-value for each block
 west_bounds <- west_bounds %>% mutate(
   xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
   block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "W"),
-  pvals = speed_pvals[blocks])
+  bearing_pval = bearing_pvals[block],
+  speed_pval = speed_pvals[block])
 
-# World map w/ regions shaded by p-value
-speed_west <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
-  labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
-       subtitle = "Speed regressions for TCs moving west",
-       x = "Longitude", y = "Latitude") +
-  coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "darkgrey") + 
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12)) +
-  geom_rect(data = west_bounds, 
-            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
-            colour = "black", alpha = 0.5,
-            size = 0.35, inherit.aes = F) +
-  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
-      midpoint = log10(0.5*(speed_pvals[cut_speed_ind] +
-                              speed_pvals[cut_speed_ind - 1])),
-      guide = "colourbar", trans = "log10",
-      breaks = c(min(west_bounds$pvals), speed_pvals[cut_speed_ind], 10^{-6}, 
-                 10^{-9}, max(west_bounds$pvals)),
-      labels = c(signif(min(west_bounds$pvals), 3),
-                 signif(speed_pvals[cut_speed_ind], 3),
-                 10^{-6}, 10^{-9}, signif(max(west_bounds$pvals), 3))) +
-  labs(fill = "p-values") +
-  ggsave(filename = paste0(image_path, "F_tests_speed_west_color.png"),
-         width = 8, height = 5)
+west_bounds$bearing_pval[west_bounds$bearing_pval > cutoff_bearing] <- NA
+west_bounds$speed_pval[west_bounds$speed_pval > cutoff_speed] <- NA
 
-# Plot p-values of east block-specific speed regressions on map ------------------
-
-# Determine p-value for each block
+# Determine bearing/speed p-values for each east-bound block
 east_bounds <- east_bounds %>% mutate(
   xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
   block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "E"),
-  pvals = speed_pvals[block])
+  bearing_pval = bearing_pvals[block],
+  speed_pval = speed_pvals[block])
 
-# World map w/ regions shaded by p-value
-speed_east <- ggplot(map.world, aes(x = long, y = lat, group = group)) +
-  labs(title = "P-values of block-specific F tests for non-AR vs AR models", 
-       subtitle = "Speed regressions for TCs moving east",
-       x = "Longitude", y = "Latitude") +
-  coord_cartesian(xlim=c(-110, 2), ylim=c(9, 60)) +
-  geom_path(col = "darkgrey") + 
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 18),
+east_bounds$bearing_pval[east_bounds$bearing_pval > cutoff_bearing] <- NA
+east_bounds$speed_pval[east_bounds$speed_pval > cutoff_speed] <- NA
+
+# Combine east and west bounds into one data frame
+all_bounds <- rbind(east_bounds, west_bounds) %>%
+  mutate(direction = 
+           c(rep("Bearing Regressions for TCs Moving East", nrow(east_bounds)),
+             rep("Bearing Regressions for TCs Moving West", nrow(west_bounds))))
+
+# Plot p-values of block-specific bearing regressions on map ------------------
+
+bearing_map <- ggplot(all_bounds) +
+  labs(x = "Longitude", y = "Latitude", fill = "p-values",
+       title = "P-Values of Block-Specific F Tests for Non-AR vs AR Bearing Models") +
+  coord_cartesian(xlim = c(-110, 2), ylim = c(9, 60)) +
+  geom_polygon(data = map_world_sp, aes(long, lat, group = group),
+               fill = "white") +
+  geom_path(data = map_world_sp, aes(long, lat, group = group),
+            color = "black") +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 24),
+        strip.text.x = element_text(size = 14),
         plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 14),
+        axis.title = element_text(size = 18),
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 12)) +
-  geom_rect(data = east_bounds, 
-            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = pvals), 
-            colour = "black", alpha = 0.5,
-            size = 0.35, inherit.aes = F) +
-  scale_fill_gradient2(low = "red", high = "#0000ff", mid = "white",
-      midpoint = log10(0.5*(speed_pvals[cut_speed_ind] +
-                              speed_pvals[cut_speed_ind - 1])),
-      guide = "colourbar", trans = "log10",
-      breaks = c(min(east_bounds$pvals), speed_pvals[cut_speed_ind], 10^{-6}, 
-                 10^{-9}, 10^{-12}, max(east_bounds$pvals)),
-      labels = c(signif(min(east_bounds$pvals), 3), 
-                 signif(speed_pvals[cut_speed_ind], 3),
-                 10^{-6}, 10^{-9}, 10^{-12}, signif(max(east_bounds$pvals), 3))) +
-  labs(fill = "p-values") +
-  ggsave(filename = paste0(image_path, "F_tests_speed_east_color.png"),
-         width = 8, height = 5)
+  geom_rect(data = all_bounds, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, 
+                fill = bearing_pval), 
+            colour = "black", alpha = 0.8,
+            size = 0.35, inherit.aes = T) +
+  facet_grid(. ~ direction) +
+  scale_fill_gradient(na.value = "white", low = "red", high = "pink",
+                      trans = "log10",
+                      limits = c(min(min(west_bounds$bearing_pval, na.rm = T), 
+                                     min(east_bounds$bearing_pval, na.rm = T)),
+                                 cutoff_bearing))
+
+ggsave(bearing_map, 
+       filename = paste0(image_path, "F_tests_bearing.pdf"),
+       width = 13, height = 5)
+
+# Plot p-values of block-specific speed regressions on map ------------------
+
+speed_map <- ggplot(all_bounds) +
+  labs(x = "Longitude", y = "Latitude", fill = "p-values",
+       title = "P-Values of Block-Specific F Tests for Non-AR vs AR Speed Models") +
+  coord_cartesian(xlim = c(-110, 2), ylim = c(9, 60)) +
+  geom_polygon(data = map_world_sp, aes(long, lat, group = group),
+               fill = "white") +
+  geom_path(data = map_world_sp, aes(long, lat, group = group),
+            color = "black") +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 24),
+        strip.text.x = element_text(size = 14),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12)) +
+  geom_rect(data = all_bounds, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, 
+                fill = speed_pval), 
+            colour = "black", alpha = 0.8,
+            size = 0.35, inherit.aes = T) +
+  facet_grid(. ~ direction) +
+  scale_fill_gradient(na.value = "white", low = "red", high = "pink",
+                      trans = "log10",
+                      limits = c(min(min(west_bounds$speed_pval, na.rm = T), 
+                                     min(east_bounds$speed_pval, na.rm = T)),
+                                 cutoff_speed))
+
+ggsave(speed_map, 
+       filename = paste0(image_path, "F_tests_speed.pdf"),
+       width = 13, height = 5)
