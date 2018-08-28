@@ -1,4 +1,4 @@
-# Hurricanes_701
+# TC-prediction-bands
 
 This repository stores the documentation for new approaches to predicting 
 credible bands for full paths of tropical storms (TCs) using just a few initial 
