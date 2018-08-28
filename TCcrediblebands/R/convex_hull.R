@@ -58,6 +58,16 @@ get_area_c <- function(data, c_position = 1:2){
 #' @return Vector of boolean values, if the point is inside the polygon, 
 #' Dimensionality is the same as the number of rows in predict_mat
 #' 
+#' @details To account for computer storage of values generating rounding errors
+#' this approach adds noise of \code{50 * .Machine$double.eps} in \emp{x} and 
+#' \emp{y} directions and the point counts as interior if any of these jitters 
+#' or the real point follow inside the polygon.
+#' 
+#' @references Inside this function we use \code{sp}'s \code{point.in.polygon}
+#' with uses the C function InPoly(). InPoly is Copyright (c) 1998 by 
+#' Joseph O'Rourke. It may be freely redistributed in its entirety provided 
+#' that this copyright notice is not removed.
+#' 
 #' @examples
 #' \dontrun{
 #' set.seed(8192)
@@ -80,13 +90,21 @@ get_area_c <- function(data, c_position = 1:2){
 #' 
 #' position_wrt_contour <- points_in_spatial_polygon(spPoly, predict_mat)
 #'}
+#' @export 
 points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 
-  points_in_poly <- sp::point.in.polygon(predict_mat[, lat], 
-                                         predict_mat[, long],
+  eps2 <- 50 * .Machine$double.eps # to account for machine error 
+  x_eps <- c(0, 0, 0, 1, -1) * eps2
+  y_eps <- c(0, 1, -1, 0, 0) * eps2 
+  points_in_poly <- sapply(1:4,
+                           function(i) {sp::point.in.polygon(
+                                          predict_mat[, lat] + x_eps[i], 
+                                         predict_mat[, long] + y_eps[i],
                                 spPoly@polygons[[1]]@Polygons[[1]]@coords[, 1],
-                                spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])
-
+                                spPoly@polygons[[1]]@Polygons[[1]]@coords[, 2])})
+  
+  points_in_poly <- apply(points_in_poly, MARGIN = 1, FUN = mean)
+  
   return(as.numeric(points_in_poly > 0))
 }
 

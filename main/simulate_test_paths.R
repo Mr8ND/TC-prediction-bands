@@ -13,4 +13,4 @@ proc.time() - ptm
 # Each list has length 4 (one for each auto/non-auto death_reg/no_death_reg combo)
 # Each of those 4 lists have length 350 (all simulations from given starting observations)
 test_env <- list2env(test_sims)
-save(test_env, file = "data/generate/Test_Sims_350.Rdata")
+save(test_env, file = "../data/Test_Sims_350.Rdata")

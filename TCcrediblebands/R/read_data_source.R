@@ -41,8 +41,8 @@ convert_long <- function(df){
 #' @export
 pull_data <- function() {
   # Read hurricane data from website
-  hurdat <- readLines(paste0('http://www.aoml.noaa.gov/hrd/hurdat/",
-                             "hurdat2-1851-2016-apr2017.txt'))
+  hurdat <- readLines(paste0('http://www.aoml.noaa.gov/hrd/hurdat/',
+                             'hurdat2-1851-2016-apr2017.txt'))
 
   # Get entries w/ 3 commas in line (signifying a TC title)
   tc_indices <- which(stringr::str_count(hurdat, ",") == 3)

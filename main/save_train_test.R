@@ -1,10 +1,9 @@
 # Code to save .Rdata file with lists train_data, test_data, and new_data (empty)
 
-functions_loc = "../TCcrediblebands/R/"
-source(paste0(functions_loc, "read_data_source.R"))
+library(TCcrediblebands)
 
 # Read in train_names and test_names
-load("data/train_test_names.Rdata")
+load("main/data/train_test_names.Rdata")
 
 # Pull data from HURDAT website
 tc_list <- pull_data()
