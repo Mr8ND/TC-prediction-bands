@@ -6,7 +6,6 @@ library(tidyverse)
 library(TCcrediblebands)
 library(maps)
 library(maptools)
-# library(calibrate)
 
 # Load Data ------------------
 
@@ -170,13 +169,15 @@ all_bounds <- rbind(east_bounds, west_bounds) %>%
 
 bearing_map <- ggplot(all_bounds) +
   labs(x = "Longitude", y = "Latitude", fill = "p-values",
-       title = "P-Values of Block-Specific F Tests for Non-AR vs AR Bearing Models") +
+       title = paste("P-Values of Lag Term in Block-Specific Autoregressive", 
+                     "Bearing Models")) +
   coord_cartesian(xlim = c(-110, 2), ylim = c(9, 60)) +
   geom_polygon(data = map_world_sp, aes(long, lat, group = group),
                fill = "white") +
   geom_path(data = map_world_sp, aes(long, lat, group = group),
             color = "black") +
-  theme(panel.grid.major = element_blank(), 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 24),
@@ -199,20 +200,22 @@ bearing_map <- ggplot(all_bounds) +
                                  cutoff_bearing))
 
 ggsave(bearing_map, 
-       filename = paste0(image_path, "F_tests_bearing.pdf"),
+       filename = paste0(image_path, "f_tests_bearing.pdf"),
        width = 13, height = 5)
 
 # Plot p-values of block-specific speed regressions on map ------------------
 
 speed_map <- ggplot(all_bounds) +
   labs(x = "Longitude", y = "Latitude", fill = "p-values",
-       title = "P-Values of Block-Specific F Tests for Non-AR vs AR Speed Models") +
+       title = paste("P-Values of Lag Term in Block-Specific Autoregressive", 
+                     "Speed Models")) +
   coord_cartesian(xlim = c(-110, 2), ylim = c(9, 60)) +
   geom_polygon(data = map_world_sp, aes(long, lat, group = group),
                fill = "white") +
   geom_path(data = map_world_sp, aes(long, lat, group = group),
             color = "black") +
-  theme(panel.grid.major = element_blank(), 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 24),
@@ -222,9 +225,9 @@ speed_map <- ggplot(all_bounds) +
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 12),
         panel.spacing = unit(2, "lines")) +
-  geom_rect(data = all_bounds, 
-            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, 
-                fill = speed_pval), 
+  geom_rect(data = all_bounds,
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax,
+                fill = speed_pval),
             colour = "black", alpha = 0.8,
             size = 0.35, inherit.aes = T) +
   facet_grid(. ~ direction) +
@@ -235,5 +238,5 @@ speed_map <- ggplot(all_bounds) +
                                  cutoff_speed))
 
 ggsave(speed_map, 
-       filename = paste0(image_path, "F_tests_speed.pdf"),
+       filename = paste0(image_path, "f_tests_speed.pdf"),
        width = 13, height = 5)
