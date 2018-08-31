@@ -22,20 +22,20 @@ train_models <- get_train_models(train)
 
 # Pool all bearing AR/non-AR residuals
 bearing_resids_AR <- lapply(train_models$bearing_regs_auto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>% 
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>% 
                               unlist %>% unname
 
 bearing_resids_nonAR <- lapply(train_models$bearing_regs_nonauto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>%
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Pool all bearing AR/non-AR fits
 bearing_fits_AR <- lapply(train_models$bearing_regs_auto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 bearing_fits_nonAR <- lapply(train_models$bearing_regs_nonauto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Data frames of bearing AR/non-AR residuals and fits
@@ -47,8 +47,9 @@ bearing_nonAR_df <- data.frame(resids = bearing_resids_nonAR,
 
 # Combine data frames of bearing AR/non-AR residuals and fits
 bearing_df <- rbind(bearing_AR_df, bearing_nonAR_df) %>%
-  mutate(model = factor(c(rep("AR Bearing Regressions", nrow(bearing_AR_df)),
-                          rep("Non-AR Bearing Regressions", nrow(bearing_nonAR_df)))))
+  mutate(model = factor(c(
+    rep("Autoregressive Bearing Models", nrow(bearing_AR_df)),
+    rep("Non-Autoregressive Bearing Models", nrow(bearing_nonAR_df)))))
 
 # Plot of pooled bearing AR and non-AR residuals versus fits
 resids_fits_bear <- bearing_df %>% 
@@ -56,7 +57,7 @@ resids_fits_bear <- bearing_df %>%
   geom_point(alpha = 0.1) +
   facet_wrap(~ model) +
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values") +
+       title = "Residuals Versus Fitted Values of Change-in-Bearing Models") +
   theme_minimal() +
   theme(strip.background = element_rect(fill = "grey90", color = NA),
         plot.title = element_text(hjust = 0.5, size = 24),
@@ -74,20 +75,20 @@ ggsave(resids_fits_bear,
 
 # Pool all speed AR/non-AR residuals
 speed_resids_AR <- lapply(train_models$speed_regs_auto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>% 
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>% 
                               unlist %>% unname
 
 speed_resids_nonAR <- lapply(train_models$speed_regs_nonauto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>%
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Pool all speed AR/non-AR fits
 speed_fits_AR <- lapply(train_models$speed_regs_auto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 speed_fits_nonAR <- lapply(train_models$speed_regs_nonauto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Data frames of speed AR/non-AR residuals and fits
@@ -99,8 +100,9 @@ speed_nonAR_df <- data.frame(resids = speed_resids_nonAR,
 
 # Combine data frames of bearing AR/non-AR residuals and fits
 speed_df <- rbind(speed_AR_df, speed_nonAR_df) %>%
-  mutate(model = factor(c(rep("AR Speed Regressions", nrow(speed_AR_df)),
-                          rep("Non-AR Speed Regressions", nrow(speed_nonAR_df)))))
+  mutate(model = factor(c(
+    rep("Autoregressive Speed Models", nrow(speed_AR_df)),
+    rep("Non-Autoregressive Speed Models", nrow(speed_nonAR_df)))))
 
 # Plot of pooled speed AR and non-AR residuals versus fits
 resids_fit_speed <- speed_df %>% 
@@ -108,7 +110,7 @@ resids_fit_speed <- speed_df %>%
   geom_point(alpha = 0.1) +
   facet_wrap(~ model) +
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values") +
+       title = "Residuals Versus Fitted Values of Change-in-Speed Models") +
   theme_minimal() +
   theme(strip.background = element_rect(fill = "grey90", color = NA),
         plot.title = element_text(hjust = 0.5, size = 24),
