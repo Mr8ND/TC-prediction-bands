@@ -60,16 +60,14 @@ resids_fits_bear <- bearing_df %>%
        title = "Residuals Versus Fitted Values of Change-in-Bearing Models") +
   theme_minimal() +
   theme(strip.background = element_rect(fill = "grey90", color = NA),
-        plot.title = element_text(hjust = 0.5, size = 24),
+        plot.title = element_text(hjust = 0.5, size = 18),
         strip.text.x = element_text(size = 14),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12))
 
 ggsave(resids_fits_bear, 
        filename = paste0(image_path, "resids_fit_bear.png"),
-       width = 13, height = 5)
+       width = 10, height = 4)
 
 # Resids vs fits, speed AR and non-AR ------------------
 
@@ -113,16 +111,14 @@ resids_fit_speed <- speed_df %>%
        title = "Residuals Versus Fitted Values of Change-in-Speed Models") +
   theme_minimal() +
   theme(strip.background = element_rect(fill = "grey90", color = NA),
-        plot.title = element_text(hjust = 0.5, size = 24),
+        plot.title = element_text(hjust = 0.5, size = 18),
         strip.text.x = element_text(size = 14),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12))
 
 ggsave(resids_fit_speed,
        filename = paste0(image_path, "resids_fit_speed.png"),
-       width = 13, height = 5)
+       width = 10, height = 4)
 
 # Resids versus fits on individual blocks ------------------
 block_names <- train_models$bearing_regs_auto %>% names

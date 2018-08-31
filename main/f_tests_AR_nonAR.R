@@ -180,10 +180,10 @@ bearing_map <- ggplot(all_bounds) +
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 24),
+        plot.title = element_text(hjust = 0.5, size = 18),
         strip.text.x = element_text(size = 14),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 18),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12),
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 12),
         panel.spacing = unit(2, "lines")) +
@@ -200,8 +200,8 @@ bearing_map <- ggplot(all_bounds) +
                                  cutoff_bearing))
 
 ggsave(bearing_map, 
-       filename = paste0(image_path, "f_tests_bearing.pdf"),
-       width = 13, height = 5)
+       filename = paste0(image_path, "f_tests_bearing.png"),
+       width = 10, height = 4)
 
 # Plot p-values of block-specific speed regressions on map ------------------
 
@@ -218,10 +218,10 @@ speed_map <- ggplot(all_bounds) +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 24),
+        plot.title = element_text(hjust = 0.5, size = 18),
         strip.text.x = element_text(size = 14),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 18),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12),
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 12),
         panel.spacing = unit(2, "lines")) +
@@ -238,5 +238,5 @@ speed_map <- ggplot(all_bounds) +
                                  cutoff_speed))
 
 ggsave(speed_map, 
-       filename = paste0(image_path, "f_tests_speed.pdf"),
-       width = 13, height = 5)
+       filename = paste0(image_path, "f_tests_speed.png"),
+       width = 10, height = 4)
