@@ -165,6 +165,16 @@ all_bounds <- rbind(east_bounds, west_bounds) %>%
            c(rep("Bearing Regressions for TCs Moving East", nrow(east_bounds)),
              rep("Bearing Regressions for TCs Moving West", nrow(west_bounds))))
 
+# Set TC ggplot2 theme ------------------
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
+
 # Plot p-values of block-specific bearing regressions on map ------------------
 
 bearing_map <- ggplot(all_bounds) +
@@ -176,16 +186,10 @@ bearing_map <- ggplot(all_bounds) +
                fill = "white") +
   geom_path(data = map_world_sp, aes(long, lat, group = group),
             color = "black") +
-  theme(strip.background = element_rect(fill = "grey90", color = NA),
-        panel.grid.major = element_blank(), 
+  tc_theme +
+  theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
-        axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12),
         panel.spacing = unit(2, "lines")) +
   geom_rect(data = all_bounds, 
             aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, 
@@ -214,16 +218,10 @@ speed_map <- ggplot(all_bounds) +
                fill = "white") +
   geom_path(data = map_world_sp, aes(long, lat, group = group),
             color = "black") +
-  theme(strip.background = element_rect(fill = "grey90", color = NA),
-        panel.grid.major = element_blank(),
+  tc_theme +
+  theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
-        axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12),
         panel.spacing = unit(2, "lines")) +
   geom_rect(data = all_bounds,
             aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax,

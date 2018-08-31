@@ -18,6 +18,16 @@ train <- train_data
 # Train models on training data ------------------
 train_models <- get_train_models(train)
 
+# Set TC ggplot2 theme ------------------
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
+
 # Resids vs fits, bearing AR and non-AR ------------------
 
 # Pool all bearing AR/non-AR residuals
@@ -58,12 +68,7 @@ resids_fits_bear <- bearing_df %>%
   facet_wrap(~ model) +
   labs(x = "Fitted Values", y = "Residuals", 
        title = "Residuals Versus Fitted Values of Change-in-Bearing Models") +
-  theme_minimal() +
-  theme(strip.background = element_rect(fill = "grey90", color = NA),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
-        axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12))
+  tc_theme
 
 ggsave(resids_fits_bear, 
        filename = paste0(image_path, "resids_fit_bear.png"),
@@ -109,12 +114,7 @@ resids_fit_speed <- speed_df %>%
   facet_wrap(~ model) +
   labs(x = "Fitted Values", y = "Residuals", 
        title = "Residuals Versus Fitted Values of Change-in-Speed Models") +
-  theme_minimal() +
-  theme(strip.background = element_rect(fill = "grey90", color = NA),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
-        axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12))
+  tc_theme
 
 ggsave(resids_fit_speed,
        filename = paste0(image_path, "resids_fit_speed.png"),
