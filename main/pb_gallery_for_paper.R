@@ -256,5 +256,5 @@ grob_vis <- arrangeGrob(graphic_kde + tc_theme,
 
 ggsave(plot = grob_vis,
        filename = paste0(image_path,
-                         "PB_gallery.png"),
+                         "pb_gallery.png"),
        device = "png", width = 9, height = 6/7*9, units = "in")
