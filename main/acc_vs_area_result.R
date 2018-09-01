@@ -10,11 +10,17 @@ library(latex2exp)
 library(gridExtra)
 library(TCcrediblebands)
 
-# Set theme -----------------
+# theme -----------------
 
-theme_set(theme_minimal() +
-  theme(strip.background = element_rect(fill = "grey90", color = NA))
-  )
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        strip.text.y = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
 
 # Load Data ------------------
 
@@ -95,27 +101,27 @@ acc_size_df <- acc_size_df %>%
 
 
 cb_type_table_levels <- c("Kernel Density Estimate" = "kde",
-                          "Spherical Ball Covering" = "bubble_ci",
-                          "Delta Ball Covering"     = "delta_ball",
+                          "Spherical" = "bubble_ci",
+                          "Delta Ball"     = "delta_ball",
                           "Convex Hull"             = "convex_hull")
 cb_type_table_labels <- names(cb_type_table_levels)
 
 cb_type_graphic_levels <- c("Kernel Density Estimate" = "kde",
-                            "Spherical Ball Covering" = "bubble_ci",
-                            "Delta Ball Covering"     = "delta_ball",
+                            "Spherical" = "bubble_ci",
+                            "Delta Ball"     = "delta_ball",
                             "Convex Hull"             = "convex_hull")
 cb_type_graphic_labels <- names(cb_type_graphic_levels)
 
-sim_type_table_levels <- c("Auto \\& Logistic"     = "Auto_DeathRegs",
-                           "Auto \\& Kernel"       = "Auto_NoDeathRegs",
-                           "Non-Auto \\& Logistic" = "NoAuto_DeathRegs",
-                           "Non-Auto \\& Kernel"   = "NoAuto_NoDeathRegs")
+sim_type_table_levels <- c("AR \\& Logistic"     = "Auto_DeathRegs",
+                           "AR \\& Kernel"       = "Auto_NoDeathRegs",
+                           "Non-AR \\& Logistic" = "NoAuto_DeathRegs",
+                           "Non-AR \\& Kernel"   = "NoAuto_NoDeathRegs")
 sim_type_table_labels <- names(sim_type_table_levels)
 
-sim_type_graphic_levels <- c("Auto Regression & Logistic Death"   = "Auto_DeathRegs",
-                           "Auto Regression & Kernel Death"       = "Auto_NoDeathRegs",
-                           "Non-Auto Regression & Logistic Death" = "NoAuto_DeathRegs",
-                           "Non-Auto Regression & Kernel Death"   = "NoAuto_NoDeathRegs")
+sim_type_graphic_levels <- c("Autoregression & Logistic Death"   = "Auto_DeathRegs",
+                           "Autoregression & Kernel Death"       = "Auto_NoDeathRegs",
+                           "Non-Autoregression & Logistic Death" = "NoAuto_DeathRegs",
+                           "Non-Autoregression & Kernel Death"   = "NoAuto_NoDeathRegs")
 sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
 data_run <- acc_size_df %>% mutate(
@@ -221,7 +227,7 @@ large_acc_vs_area <- data_run %>%
   ggplot() +
   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
-  geom_hline(yintercept = 1) +
+  geom_hline(yintercept = 1) +  tc_theme +
   scale_x_continuous(breaks = seq(0, 3250, by = 250)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(y = "proportion captured", x = "Area")
@@ -246,7 +252,7 @@ small_acc_vs_area <- data_run %>%
   						filter(smart_size == "small",area < 2400) %>%
   ggplot() +   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
-  geom_hline(yintercept = 1) +
+  geom_hline(yintercept = 1) +  tc_theme +
   scale_x_continuous(breaks = seq(0, 2400, by = 125), lim = c(0, 2400)) +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(y = "proportion captured", x = "Area")
@@ -265,13 +271,13 @@ small_acc_vs_area_final <- small_acc_vs_area2 +
 arrangement <- arrangeGrob(large_acc_vs_area_final +
 						labs(title = "Larger Prediction Bands",
                              x = "Area in square nautical miles (maximum = 3250)"),
-             small_acc_vs_area_final +
+             small_acc_vs_area_final + 
              			labs(title = "Smaller Prediction Bands",
                               x = "Area in square nautical miles (maximum = 2400)"), ncol = 1)
 
 ggsave(plot = arrangement,
-	   filename = paste0(image_path,"tc_results_area_vs_prop.pdf"),
-	   device = "pdf", width = 10, height = 6.5, units = "in")
+	   filename = paste0(image_path,"tc_results_area_vs_prop.png"),
+	   device = "png", width = 10, height = 6.5, units = "in")
 
 # Tables ------------
 
@@ -302,8 +308,14 @@ table <- data_run %>%
 
 xtable1 <- table %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.75in}|"),
                  digits = 2,
-                 caption = paste0("Mean and median proportion ",
-                                  "of points of a true TC captured by the PB."),
+                 caption = paste("Mean and median proportion",
+                                 "of points of a true TC captured by the PB.",
+                                 "PBs based on 350 simulated curves; created",
+                                 "with either Autoregressive (AR) or",
+                                 "Non-Autoregressive (AR) models for changes",
+                                 "in bearing and speed and with either a",
+                                 "Kernel-based lysis model (Kernel) or",
+                                 "Logistic-based lysis models (Logistic)."),
                  label = "tab:average_captured")
 
 print(xtable1, 
@@ -332,9 +344,15 @@ table2 <- data_run %>%
 
 
 xtable2 <- xtable(table2, align = c("r|R{1.2in}||L{.95in}L{.95in}|L{.95in}L{.95in}|"),
-                 caption = paste0("Proportion of points of TCs with proportion",
-                                  " of point captured  \\((\\geq .3) / ",
-                                  "(\\geq .9)\\) \\(\\textbf{(= 1)}\\)"),
+                 caption = paste("Proportion of points of TCs with proportion",
+                                  "of point captured  \\((\\geq .3) /",
+                                  "(\\geq .9)\\) \\(\\textbf{(= 1)}\\).",
+                                 "PBs based on 350 simulated curves; created",
+                                 "with either Autoregressive (AR) or",
+                                 "Non-Autoregressive (AR) models for changes",
+                                 "in bearing and speed and with either a",
+                                 "Kernel-based lysis model (Kernel) or",
+                                 "Logistic-based lysis models (Logistic)."),
                  label = "tab:prop_captured")
 
 print(xtable2, 

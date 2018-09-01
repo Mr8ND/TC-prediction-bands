@@ -18,30 +18,50 @@ simulation_validation_pipeline100 <- simulation_validation_pipeline
 # renaming vectors ------------------
 
 cb_type_table_levels <- c("Kernel Density Estimate" = "kde",
-                          "Spherical Ball Covering" = "bubble_ci",
-                          "Delta Ball Covering"     = "delta_ball",
+                          "Spherical" = "bubble_ci",
+                          "Delta Ball"     = "delta_ball",
                           "Convex Hull"             = "convex_hull")
 cb_type_table_labels <- names(cb_type_table_levels)
 
 cb_type_graphic_levels <- c("Kernel Density Estimate" = "kde",
-                            "Spherical Ball Covering" = "bubble_ci",
-                            "Delta Ball Covering"     = "delta_ball",
+                            "Spherical" = "bubble_ci",
+                            "Delta Ball"     = "delta_ball",
                             "Convex Hull"             = "convex_hull")
 cb_type_graphic_labels <- names(cb_type_graphic_levels)
 
-sim_type_table_levels <- c("Auto \\& Logistic"     = "Auto_DeathRegs",
-                           "Auto \\& Kernel"       = "Auto_NoDeathRegs",
-                           "Non-Auto \\& Logistic" = "NoAuto_DeathRegs",
-                           "Non-Auto \\& Kernel"   = "NoAuto_NoDeathRegs")
+sim_type_table_levels <- c("AR \\& Logistic"     = "Auto_DeathRegs",
+                           "AR \\& Kernel"       = "Auto_NoDeathRegs",
+                           "Non-AR \\& Logistic" = "NoAuto_DeathRegs",
+                           "Non-AR \\& Kernel"   = "NoAuto_NoDeathRegs")
 sim_type_table_labels <- names(sim_type_table_levels)
 
-sim_type_graphic_levels <- c("Auto Regression & Logistic Death"   = "Auto_DeathRegs",
-                           "Auto Regression & Kernel Death"       = "Auto_NoDeathRegs",
-                           "Non-Auto Regression & Logistic Death" = "NoAuto_DeathRegs",
-                           "Non-Auto Regression & Kernel Death"   = "NoAuto_NoDeathRegs")
+sim_type_graphic_levels <- c("Autoregression & Logistic-based Lysis"   = "Auto_DeathRegs",
+                           "Autoregression & Kernel-based Lysis"       = "Auto_NoDeathRegs",
+                           "Non-Autoregression & Logistic-based Lysis" = "NoAuto_DeathRegs",
+                           "Non-Autoregression & Kernel-based Lysis"   = "NoAuto_NoDeathRegs")
 sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
+# color selection --------------------
 
+# old colors (prettier)
+pb_color_vec_val_old <- c("#0300D8", "#BF0700", "#00E5E5", "#CB00C5")
+names(pb_color_vec_val_old) <- c("bubble_ci","kde", "convex_hull", "delta_ball")
+pb_color_vec_pb_pres_old <- c("#00E5E5","#CB00C5" ,"#0300D8", "#BF0700")
+names(pb_color_vec_pres_old) <- c("kde", "bubble_ci", "delta_ball", "convex_hull")
+
+# current colors
+pb_color_vec <- c("#1b9e77","#d95f02","#7570b3", "#e7298a")
+names(pb_color_vec) <- c("convex_hull", "bubble_ci", "delta_ball", "kde")
+
+# define theme -----------------------
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
 
 # summary functions ------------------
 
@@ -296,13 +316,11 @@ single_mat25 <- make_mat_cleaner(single_mat25)
 
 save(df_list_tc, df_list_tc50, df_list_tc25,
      single_mat, single_mat50, single_mat25,
-     file = paste0("main/data/sim_validation_results_summary_data",
-                   Sys.Date(),
-                   ".Rdata"))
+     file = paste0("main/data/sim_validation_results_summary_data.Rdata"))
 
 # loading data -----------
 # (if you've already run the above)
-### b <- load("main/data/sim_validation_results_summary_data2018-07-14.Rdata")
+### b <- load("main/data/sim_validation_results_summary_data.Rdata")
 
 
 
@@ -335,34 +353,34 @@ all_data_uniform_graph <- all_data_three %>%
 uniform_pb_assessment <- all_data_uniform_graph %>% ggplot() +
   geom_boxplot(aes(y = prop_captured_curves,
                    fill = forcats::fct_relevel(cb_type_graph,
-                                      "Spherical Ball Covering",
+                                      "Spherical",
                                       "Kernel Density Estimate",
                                       "Convex Hull",
-                                      "Delta Ball Covering"),
+                                      "Delta Ball"),
                    color = forcats::fct_relevel(cb_type_graph,
-                                      "Spherical Ball Covering",
+                                      "Spherical",
                                       "Kernel Density Estimate",
                                       "Convex Hull",
-                                      "Delta Ball Covering"),
+                                      "Delta Ball"),
                    x = factor(num_curves)), alpha = .5) +
   facet_grid(~sim_type_graph, labeller = label_wrap_gen(width = 18)) +
   geom_hline(yintercept = .9, linetype = "dashed") +
   guides(fill = guide_legend(reverse = TRUE),
          color = guide_legend(reverse = TRUE)) +
-  theme_minimal() +
-  scale_y_continuous(breaks = c(0,.25,.5,.75,.9,1)) +
-  theme(strip.background = element_rect(fill = "grey90", color = NA)) +
+  scale_y_continuous(breaks = c(0,.25,.5,.75,.9,1)) + 
+   tc_theme +
   labs(x = "Number of Curves Examined",
        y = "Proportion of Curves Captured",
        fill = "Prediction Band Type",
-       color = "Prediction Band Type") +
-  scale_color_manual(values = c("#d7191c", "#fdae61",
-                                "#2b83ba", "#abdda4")) +
-  scale_fill_manual(values = c("#d7191c", "#fdae61",
-                                "#2b83ba", "#abdda4"))
+       color = "Prediction Band Type",
+       title = "Average Uniform Containment per Curve") +
+  scale_color_manual(values = as.vector(pb_color_vec[c("bubble_ci", "kde",
+                                             "convex_hull", "delta_ball")])) +
+  scale_fill_manual(values = as.vector(pb_color_vec[c("bubble_ci", "kde",
+                                            "convex_hull", "delta_ball")]))
 
 ggsave(plot = uniform_pb_assessment,
-       file = paste0(image_path,"sim_unif_cb_boxplot.pdf"), device = "pdf",
+       file = paste0(image_path,"sim_unif_cb_boxplot.png"), device = "png",
        width = 10, height = 6.5, units = "in")
 
 # pointwise PB
@@ -370,34 +388,40 @@ ggsave(plot = uniform_pb_assessment,
 pointwise_pb_assessment <- all_data_pointwise_graph %>% ggplot() +
   geom_boxplot(aes(y = prop_captured,
                    fill = forcats::fct_relevel(cb_type_graph,
-                                      "Spherical Ball Covering",
+                                      "Spherical",
                                       "Kernel Density Estimate",
                                       "Convex Hull",
-                                      "Delta Ball Covering"),
+                                      "Delta Ball"),
                    color = forcats::fct_relevel(cb_type_graph,
-                                      "Spherical Ball Covering",
+                                      "Spherical",
                                       "Kernel Density Estimate",
                                       "Convex Hull",
-                                      "Delta Ball Covering"),
+                                      "Delta Ball"),
                    x = factor(num_curves)), alpha = .5) +
   facet_grid(~ sim_type_graph, labeller = label_wrap_gen(width = 18)) +
   geom_hline(yintercept = .9, linetype = "dashed") +
   guides(fill = guide_legend(reverse = TRUE),
          color = guide_legend(reverse = TRUE)) +
-  theme_minimal() +
   scale_y_continuous(breaks = c(0,.25,.5,.75,.9,1)) +
-  theme(strip.background = element_rect(fill = "grey90", color = NA)) +
+  tc_theme +
   labs(x = "Number of Curves Examined",
        y = "Proportion of Points of Curves Captured",
        fill = "Prediction Band Type",
-       color = "Prediction Band Type") +
-  scale_color_manual(values = c("#d7191c", "#fdae61",
-                                "#2b83ba", "#abdda4")) +
-  scale_fill_manual(values = c("#d7191c", "#fdae61",
-                                "#2b83ba", "#abdda4"))
+       color = "Prediction Band Type",
+       title = "Average Point-wise Containment per Curve") +
+  scale_color_manual(values = as.vector(
+                                pb_color_vec[c("bubble_ci","kde", 
+                                               "convex_hull", "delta_ball")])) +
+  scale_fill_manual(values = as.vector(
+    pb_color_vec[c("bubble_ci","kde", 
+                   "convex_hull", "delta_ball")]))
+
+
+
+
 
 ggsave(plot = pointwise_pb_assessment,
-       file = paste0(image_path,"sim_pw_cb_boxplot.pdf"), device = "pdf",
+       file = paste0(image_path,"sim_pw_cb_boxplot.png"), device = "png",
        width = 10, height = 6.5, units = "in")
 
 
@@ -433,23 +457,25 @@ df_area2 <- make_mat_cleaner(df_area)
 
 df_area2 %>% ggplot() +
   geom_density(aes(x = area, color = forcats::fct_relevel(cb_type_graph,
-                                        "Spherical Ball Covering",
+                                        "Spherical",
                                         "Kernel Density Estimate",
-                                        "Delta Ball Covering",
+                                        "Delta Ball",
                                         "Convex Hull"))) +
   facet_wrap( ~ sim_type_graph, labeller = label_wrap_gen(width = 25)) +
   theme_minimal() +
   theme(strip.background = element_rect(fill = "grey90", color = NA)) +
-  scale_color_manual(values = c("#d7191c", "#fdae61",
-                                "#abdda4", "#2b83ba")) +
+  scale_color_manual(values = as.vector(pb_color_vec[c("bubble_ci", "kde",
+                                             "delta_ball", "convex_hull")])) +
+  tc_theme + 
   theme(legend.position = "bottom") +
-  labs(color = "Prediction Band",
+  labs(color = "Prediction Band Type",
        x = "Area of Prediction Band",
-       y = "Density") +
+       y = "Density",
+       title = "Distribution of Area of Prediction Bands") +
   guides(color =  guide_legend(override.aes =
                                 list(size = 3)))
 
-ggsave(paste0(image_path,"sim_area_density.pdf"), device = "pdf",
+ggsave(paste0(image_path,"sim_area_density.png"), device = "png",
        width = 10, height = 6.5, units = "in")
 
 
@@ -516,9 +542,16 @@ bold_somerows <-
 
 xtable_time <- df_time4 %>% xtable(
                 align = c("r|R{1.2in}||L{.95in}L{.95in}|L{.9in}L{.9in}|"),
-                 caption =paste0("Average time fitting one Prediction Band",
-                                 " \\(\\pm\\) 1 standard deviation with 350",
-                                 " simulated curves. Time in seconds."),
+                 caption = paste0("Average time (in seconds) it takes to",
+                                  " fit one Prediction Band with 350",
+                                  " simulated curves, \\(\\pm\\) 1 standard",
+                                  " deviation. Based on simulated curves",
+                                  " created with either Autoregressive (AR)",
+                                  " or Non-Autoregressive (AR) models for",
+                                  " changes in bearing and speed and with",
+                                  " either a Kernel-based lysis model (Kernel)",
+                                  " or Logistic-based lysis models (Logistic)."
+                                  ),
                  label = "tab:time_fitting")
 
 print(xtable_time, 
@@ -578,10 +611,17 @@ df_time_p4 <- df_time_p3 %>% group_by(sim_type_table, cb_type_table) %>%
 
 xtable_time_p <- df_time_p4 %>% xtable(
                  align = c("r|R{1.2in}||L{.95in}L{.9in}|L{.8in}L{.8in}|"),
-                 caption = paste0("Average time assessing if 100 curves were",
-                                  " inside a PB \\(\\pm\\) 1 standard",
+                 caption = paste0("Average time (in seconds) it takes to ", 
+                                  " assess the containment of a 100 curves",
+                                  " inside a PB, \\(\\pm\\) 1 standard",
                                   " deviation. PBs based on 350 simulated",
-                                  " curves. Time in seconds."),
+                                  " curves; created with either",
+                                  " Autoregressive (AR)",
+                                  " or Non-Autoregressive (AR) models for",
+                                  " changes in bearing and speed and with",
+                                  " either a Kernel-based lysis model (Kernel)",
+                                  " or Logistic-based lysis models (Logistic)."
+                                  ),
                  label = "tab:time_prediction100")
 
 
