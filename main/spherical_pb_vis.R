@@ -8,11 +8,22 @@ library(gridExtra)
 library(TCcrediblebands)
 library(ggforce)
 
-# Set theme -----------------
+# theme -----------------
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
 
-theme_set(theme_minimal() +
-            theme(strip.background = element_rect(fill = "grey90", color = NA))
-)
+# Color selection ------------
+
+pb_color_vec <- c("#1b9e77","#d95f02","#7570b3", "#e7298a")
+names(pb_color_vec) <- c("convex_hull", "bubble_ci", "delta_ball", "kde")
+
+selected_color <- pb_color_vec["bubble_ci"]
 
 # Load Data ------------------
 
@@ -69,10 +80,10 @@ vis_spheres <- ggplot() + geom_circle(data = circle_df,
                            r = radius),
                        color = "red") +
   geom_point(data = circle_df,
-             aes(x = lon, y = lat), color = "red") + 
+             aes(x = lon, y = lat), color = selected_color) + 
   labs(x = "Latitude",
        y = "Longitude",
-       title = "Union of Spheres")
+       title = "Union of Spheres") 
 
 # contour ----------------
 
@@ -87,21 +98,24 @@ vis_contour <- TCcrediblebands::ggvis_bubble_data(
        y = "Longitude",
        title = "Contour Visualization") +
   geom_point(data = circle_df[-nrow(circle_df),],
-             aes(x = lon, y = lat), color = "red") 
+             aes(x = lon, y = lat), color = selected_color) 
 
 # full arrangment of graphics ---------------
 
 arrange_vis <- arrangeGrob(vis_sim_curves + 
-                             ylim(range(sim_curves_df$lat) + c(0, 1)) + 
-                             xlim(range(sim_curves_df$long)),
+                             ylim(range(sim_curves_df$lat) + c(-20, 21)) + 
+                             xlim(range(sim_curves_df$long)) +
+                             tc_theme,
                         vis_spheres + 
-                          ylim(range(sim_curves_df$lat) + c(0, 1)) + 
-                          xlim(range(sim_curves_df$long)),
+                          ylim(range(sim_curves_df$lat) + c(-20, 21)) + 
+                          xlim(range(sim_curves_df$long))  +
+                          tc_theme,
                         vis_contour + 
-                          ylim(range(sim_curves_df$lat) + c(0, 1)) + 
-                          xlim(range(sim_curves_df$long)), 
+                          ylim(range(sim_curves_df$lat) + c(-20, 21)) + 
+                          xlim(range(sim_curves_df$long)) +
+                          tc_theme, 
                         nrow = 1)
 
 ggsave(plot = arrange_vis,
-       filename = paste0(image_path,"spherical_ball_vis.pdf"),
-       device = "pdf", width = 10, height = 2, units = "in")
+       filename = paste0(image_path,"spherical_ball_vis.png"),
+       device = "png", width = 10, height = 3.5, units = "in")

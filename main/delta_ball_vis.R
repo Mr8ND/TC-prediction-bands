@@ -6,6 +6,16 @@ library(sp)
 library(gridExtra)
 library(ggforce)
 
+# theme -----------------------
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
+
 # data generation -----------------
 
 set.seed(1991)
@@ -151,20 +161,20 @@ e <- output_lines %>% ggplot(aes(x = x, y = y, group = idx)) +
 
 
 # final graphics ---------------------
-theme_set(theme_minimal() + theme(plot.title = element_text(hjust = 0.5)))
 arrange_vis <- arrangeGrob(
 			 a + labs(title = "Raw data\n",
-					  x = "x", y = "y"),
+					  x = "x", y = "y") + tc_theme,
 			 b + labs(title = "Delta Ball around each point\n",
-					  x = "x", y = "y"),
+					  x = "x", y = "y") + tc_theme,
 			 c + labs(title = "Delaunay Triangulation\n",
-					  x = "x", y = "y"),
-			 d + labs(title = "Removal of Lines not covered\nby Delta Ball",
-					  x = "x", y = "y"),
+					  x = "x", y = "y") + tc_theme,
+			 d + labs(title = "Removal of lines not covered\nby Delta Ball",
+					  x = "x", y = "y") + tc_theme,
 			 e + labs(title = "Removal of Inner Lines\n",
-					  x = "x", y = "y"),nrow = 2)
+					  x = "x", y = "y") + tc_theme,
+			 nrow = 2)
 
 image_path <- "report/images/"
 ggsave(plot = arrange_vis,
-	   filename = paste0(image_path,"delta_ball_vis.pdf"),
-	   device = "pdf", width = 10, height = 6.5, units = "in")
+	   filename = paste0(image_path,"delta_ball_vis.png"),
+	   device = "png", width = 10, height = 6.5, units = "in")

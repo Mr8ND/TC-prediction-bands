@@ -6,14 +6,15 @@ library(progress)
 library(gridExtra)
 library(TCcrediblebands)
 library(ggmap)
+library(grid)
 
 # parameters ----------------
 train_curve_alpha <- .1
 # train_curve_color = "black" (looks programmed in)
 zoom <- 4
-true_curve_color <- "green"
-pb_color_vec <- c("#00E5E5","#CB00C5" ,"#0300D8", "#BF0700")
-names(pb_color_vec) <- c("kde", "bubble_ci", "delta_ball", "convex_hull")
+true_curve_color <- "#ffff00"
+pb_color_vec <- c("#1b9e77","#d95f02","#7570b3", "#e7298a")
+names(pb_color_vec) <- c("convex_hull", "bubble_ci", "delta_ball", "kde")
 image_loc <- "images_shiny/"
 
 # Load Data ------------------
@@ -30,12 +31,21 @@ b <- load(paste0(data_loc,"raw_data.Rdata"))
 c <- load(paste0(data_loc,"Test_Sims_350.Rdata"))
 names(output_list_pipeline) <- names(test_env)
 
-#####################
-# start of graphics #
-#####################
+############
+# graphics #
+############
 
+# theme
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
 
-# KDE (non auto kernel)--------------------
+# KDE (non auto kernel) --------------------
 tc = "AL181984" # number 9
 kde_true_tc <- test_data[[tc]]
 kde_train_curves_nonauto_kernel <- test_env[[tc]][["NoAuto_NoDeathRegs"]] %>% 
@@ -59,13 +69,12 @@ base_graph_kde <- ggmap::ggmap(map)
 graphic_kde <- ggvis_paths(data_out = kde_train_curves_nonauto_kernel,
                                 alpha = .1,
                                 base_graph = base_graph_kde)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = kde_true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL181984",
-       subtitle = "Non Auto Regressive Curves\n  with Kernel-based Lysis") 
+  labs(caption = "TC #AL181984: Non-Autoregressive Curves\n  with Kernel-based Lysis") 
 
 kde_contour_dfs_nonauto_kernel <- TCcrediblebands::contour_list_to_df(
   output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["kde"]][["contour"]])
@@ -84,9 +93,15 @@ convex_train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>%
 
 # base map <<<<<<<
 latrange <- range(c(convex_true_tc$lat, 
-                    convex_train_curves_auto_logistic$lat))
+                    convex_train_curves_auto_logistic$lat,
+                    output_list_pipeline %>% .[[tc]] %>% 
+                      .[["Auto_DeathRegs"]] %>% .[["convex_hull"]] %>% 
+                      .[["structure"]] %>% .[,"lat"]))
 lonrange <- range(c(convex_true_tc$long, 
-                    convex_train_curves_auto_logistic$long))
+                    convex_train_curves_auto_logistic$long,
+                    output_list_pipeline %>% .[[tc]] %>% 
+                      .[["Auto_DeathRegs"]] %>% .[["convex_hull"]] %>% 
+                      .[["structure"]] %>% .[,"long"]))
 
 ocean <- c(left = lonrange[1], bottom = latrange[1],
            right = lonrange[2], top = latrange[2])
@@ -100,13 +115,12 @@ base_graph_convex <- ggmap::ggmap(map)
 graphic_convex <- ggvis_paths(data_out = convex_train_curves_auto_logistic,
                            alpha = .1,
                            base_graph = base_graph_convex)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = convex_true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL071995",
-       subtitle = "Auto Regressive Curves\n  with Logistic-based Lysis") 
+  labs(caption = "TC #AL071995: Autoregressive Curves\n  with Logistic-based Lysis") 
 
 graphic_convex  <- TCcrediblebands::ggvis_convex_hull(
   output_lines = output_list_pipeline[[tc]][["Auto_DeathRegs"]][["convex_hull"]][["structure"]],
@@ -137,13 +151,12 @@ base_graph_delta <- ggmap::ggmap(map)
 graphic_delta <- ggvis_paths(data_out = delta_train_curves_auto_logistic,
                               alpha = .1,
                               base_graph = base_graph_delta)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = delta_true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL032009",
-       subtitle = "Auto Regressive Curves\n  with Kernel-based Lysis") 
+  labs(caption = "TC #AL032009: Autoregressive Curves\n  with Kernel-based Lysis") 
 
 graphic_delta <-  TCcrediblebands::ggvis_delta_ball_contour(
   output_lines = output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["delta_ball"]][["structure"]],
@@ -175,13 +188,12 @@ graphic_spherical <- ggvis_paths(data_out = spherical_train_curves_noauto_logist
                                    alpha = .1,
                                    base_graph = base_graph_spherical
                                    )  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = spherical_true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL032016",
-       subtitle = "Non Auto Regressive Curves\n  with Logistic-based Lysis") 
+  labs(caption = "TC #AL032016: Non-Autoregressive Curves\n  with Logistic-based Lysis") 
 
 bubble_plot_data_nonauto_logistic <- output_list_pipeline[[tc]] %>%
   .[["NoAuto_DeathRegs"]] %>% .[["bubble_ci"]] %>%
@@ -193,15 +205,16 @@ graphic_spherical <- TCcrediblebands::ggvis_bubble_data(
   base_graph = graphic_spherical, 
   color = pb_color_vec["bubble_ci"],
   connect = TRUE, 
-  centers = FALSE) 
+  centers = FALSE,
+  linewidth = .5) 
 
 # legend ------
 
-pre_leg_vis <- data.frame(PB.Method = rep(c("KDE",
+pre_leg_vis <- data.frame(PB.Method = rep(c("Kernel Density Estimate",
                            "Spherical",
                            "Convex Hull",
                            "Delta Ball"),2) %>%
-                            factor(levels = c("KDE",
+                            factor(levels = c("Kernel Density Estimate",
                                               "Spherical",
                                               "Convex Hull",
                                               "Delta Ball")),
@@ -210,9 +223,13 @@ pre_leg_vis <- data.frame(PB.Method = rep(c("KDE",
   rename(`PB Method` = PB.Method) %>%
 ggplot() +
   geom_line(aes(x = x, y = y, color = `PB Method`)) +
-  guides(color = guide_legend(nrow = 1)) +
+  guides(color = guide_legend(nrow = 1, 
+                              override.aes =
+                                list(size = 2))) +
   theme(legend.position = "bottom") +
-  scale_color_manual(values = as.vector(pb_color_vec[c(1:2,4,3)]))
+  scale_color_manual(values = as.vector(pb_color_vec[c("kde", "bubble_ci", 
+                                                       "convex_hull", "delta_ball")])) +
+  labs(color = "Prediction Band Method") 
 leg_vis <- GGally::grab_legend(pre_leg_vis)
 
 layout_matrix <- matrix(c(1,1,1,1, 2,2,2,2,
@@ -226,14 +243,18 @@ layout_matrix <- matrix(c(1,1,1,1, 2,2,2,2,
                           3,3,3,3, 4,4,4,4,
                          
                           5,5,5,5, 5,5,5,5),
-                       ncol = 8, byrow = T)
+                       ncol = 8 , byrow = T)
 
-grob_vis <- arrangeGrob(graphic_kde, graphic_spherical,
-                        graphic_convex, graphic_delta,
+grob_vis <- arrangeGrob(graphic_kde + tc_theme, 
+                        graphic_spherical + tc_theme,
+                        graphic_convex + tc_theme,
+                        graphic_delta + tc_theme,
                         leg_vis,
-                        layout_matrix = layout_matrix)
+                        layout_matrix = layout_matrix,
+                        top = textGrob("Prediction Band Examples",
+                                           gp = gpar(fontsize = 18)))
 
 ggsave(plot = grob_vis,
        filename = paste0(image_path,
-                         "PB_gallery.pdf"),
-       device = "pdf", width = 7, height = 6, units = "in")
+                         "pb_gallery.png"),
+       device = "png", width = 9, height = 6/7*9, units = "in")
