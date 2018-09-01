@@ -18,24 +18,34 @@ train <- train_data
 # Train models on training data ------------------
 train_models <- get_train_models(train)
 
+# Set TC ggplot2 theme ------------------
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
+
 # Resids vs fits, bearing AR and non-AR ------------------
 
 # Pool all bearing AR/non-AR residuals
 bearing_resids_AR <- lapply(train_models$bearing_regs_auto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>% 
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>% 
                               unlist %>% unname
 
 bearing_resids_nonAR <- lapply(train_models$bearing_regs_nonauto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>%
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Pool all bearing AR/non-AR fits
 bearing_fits_AR <- lapply(train_models$bearing_regs_auto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 bearing_fits_nonAR <- lapply(train_models$bearing_regs_nonauto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Data frames of bearing AR/non-AR residuals and fits
@@ -47,8 +57,9 @@ bearing_nonAR_df <- data.frame(resids = bearing_resids_nonAR,
 
 # Combine data frames of bearing AR/non-AR residuals and fits
 bearing_df <- rbind(bearing_AR_df, bearing_nonAR_df) %>%
-  mutate(model = factor(c(rep("AR Bearing Regressions", nrow(bearing_AR_df)),
-                          rep("Non-AR Bearing Regressions", nrow(bearing_nonAR_df)))))
+  mutate(model = factor(c(
+    rep("Autoregressive Bearing Models", nrow(bearing_AR_df)),
+    rep("Non-Autoregressive Bearing Models", nrow(bearing_nonAR_df)))))
 
 # Plot of pooled bearing AR and non-AR residuals versus fits
 resids_fits_bear <- bearing_df %>% 
@@ -56,38 +67,31 @@ resids_fits_bear <- bearing_df %>%
   geom_point(alpha = 0.1) +
   facet_wrap(~ model) +
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values") +
-  theme_minimal() +
-  theme(strip.background = element_rect(fill = "grey90", color = NA),
-        plot.title = element_text(hjust = 0.5, size = 24),
-        strip.text.x = element_text(size = 14),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+       title = "Residuals Versus Fitted Values of Change-in-Bearing Models") +
+  tc_theme
 
 ggsave(resids_fits_bear, 
        filename = paste0(image_path, "resids_fit_bear.png"),
-       width = 13, height = 5)
+       width = 10, height = 4)
 
 # Resids vs fits, speed AR and non-AR ------------------
 
 # Pool all speed AR/non-AR residuals
 speed_resids_AR <- lapply(train_models$speed_regs_auto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>% 
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>% 
                               unlist %>% unname
 
 speed_resids_nonAR <- lapply(train_models$speed_regs_nonauto, 
-                            FUN = function(x) resid(x, na.action = na.exclude)) %>%
+                      FUN = function(x) resid(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Pool all speed AR/non-AR fits
 speed_fits_AR <- lapply(train_models$speed_regs_auto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 speed_fits_nonAR <- lapply(train_models$speed_regs_nonauto, 
-                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
 # Data frames of speed AR/non-AR residuals and fits
@@ -99,8 +103,9 @@ speed_nonAR_df <- data.frame(resids = speed_resids_nonAR,
 
 # Combine data frames of bearing AR/non-AR residuals and fits
 speed_df <- rbind(speed_AR_df, speed_nonAR_df) %>%
-  mutate(model = factor(c(rep("AR Speed Regressions", nrow(speed_AR_df)),
-                          rep("Non-AR Speed Regressions", nrow(speed_nonAR_df)))))
+  mutate(model = factor(c(
+    rep("Autoregressive Speed Models", nrow(speed_AR_df)),
+    rep("Non-Autoregressive Speed Models", nrow(speed_nonAR_df)))))
 
 # Plot of pooled speed AR and non-AR residuals versus fits
 resids_fit_speed <- speed_df %>% 
@@ -108,19 +113,12 @@ resids_fit_speed <- speed_df %>%
   geom_point(alpha = 0.1) +
   facet_wrap(~ model) +
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values") +
-  theme_minimal() +
-  theme(strip.background = element_rect(fill = "grey90", color = NA),
-        plot.title = element_text(hjust = 0.5, size = 24),
-        strip.text.x = element_text(size = 14),
-        plot.subtitle = element_text(hjust = 0.5, size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+       title = "Residuals Versus Fitted Values of Change-in-Speed Models") +
+  tc_theme
 
 ggsave(resids_fit_speed,
        filename = paste0(image_path, "resids_fit_speed.png"),
-       width = 13, height = 5)
+       width = 10, height = 4)
 
 # Resids versus fits on individual blocks ------------------
 block_names <- train_models$bearing_regs_auto %>% names
