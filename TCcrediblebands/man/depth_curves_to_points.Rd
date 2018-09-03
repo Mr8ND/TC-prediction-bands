@@ -10,7 +10,8 @@ depth_curves_to_points(data_list, alpha, dist_mat = NULL, c_position = 1:2,
 \arguments{
 \item{data_list}{list of hurricanes}
 
-\item{alpha}{for credible band (related to depth)}
+\item{alpha}{for credible band (related to depth). Takes value in (0, 1.0), 
+for a 95\% PB, set alpha to .05.}
 
 \item{dist_mat}{distance matrix (otherwise is calculated)}
 
@@ -21,7 +22,7 @@ depth_curves_to_points(data_list, alpha, dist_mat = NULL, c_position = 1:2,
 \item{verbose}{if the distance matrix is verbose}
 
 \item{...}{other parameters in distance calculation through 
-`distMatrixPath_innersq`}
+\code{\link{distMatrixPath_innersq}}}
 }
 \value{
 data frame with points in desired curves

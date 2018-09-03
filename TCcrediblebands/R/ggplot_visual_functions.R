@@ -29,22 +29,30 @@ data_plot_paths_basic <- function(test_list, c_position = 1:2) {
   
 }
 
-#' Visualize TC Paths (with ggplot)
+#' Visualize TC Paths (with \code{ggplot})
 #'
-#' Note / TODO: 
-#' Function currently uses geom_path - assumed euclidean space for map :/
-#'
-#' @param data_out data frame with correct path information same as outputed 
-#'       from data_plot_sc_paths functions
+#' @param data_out data frame with correct path information same as outputted 
+#'       from \code{\link{data_plot_paths_basic}} functions. If supplied with a 
+#'       list of data frames of paths of TCs (like inputted into 
+#'       \code{\link{data_plot_paths_basic}}), then the function will apply
+#'       \code{\link{data_plot_paths_basic}} first. \emph{Note: will assume
+#'       "\code{c_position = 1:2}" unless altered in \code{...}, see 
+#'       documentation for \code{\link{data_plot_paths_basic}} for details.}
 #' @param zoom map zoom for ggmap
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
 #' @param alpha opacity of curves 
+#' @param ... can pass \code{c_position} values if desirable
 #'
 #' @return ggplot visualisation of the curve
 #' @export
 ggvis_paths <- function(data_out, zoom = 4,
-                        base_graph = NULL, alpha = .01){
+                        base_graph = NULL, alpha = .01, ...){
+  
+  if (class(data_out) == "list"){
+    data_out <- data_plot_paths_basic(test_list = data_out, ...)
+  }
+
   if (is.null(base_graph)) {
     latrange <- range(data_out$lat)
     lonrange <- range(data_out$long)
@@ -58,7 +66,8 @@ ggvis_paths <- function(data_out, zoom = 4,
   
   # final map ---------------
   ggout <- base_graph + ggplot2::geom_path(data = data_out, 
-                                  ggplot2::aes_string(x = 'long', y = 'lat', group = 'curve'),
+                                  ggplot2::aes_string(x = 'long', y = 'lat', 
+                                                      group = 'curve'),
                                   alpha = alpha) 
   
   return(ggout)
@@ -67,7 +76,7 @@ ggvis_paths <- function(data_out, zoom = 4,
 
 # KDE contour visualization functions -----------------------
 
-#' Title
+#' Create list of data frames to visualize KDE contour
 #'
 #' @param contour_list unnamed list of contour elements, of 
 #' \itemize{
@@ -94,19 +103,63 @@ contour_list_to_df <- function(contour_list){
 
 
 
-#' Create ggplot of contour
+#' Create ggplot of kde set of contour
 #' 
-#' @param level_contour_list list of  data frame of level contours
+#' @param level_contour_list list of data frame of level contours that can be 
+#'        be produced from putting the a list object into the 
+#'        function \code{\link{contour_list_to_df}}, which expects to take in
+#'        the \code{contour} piece of objects outputed by the 
+#'        \code{\link{kde_from_tclist}}. 
+#'        
+#'        \emph{Note: If one inserts a list
+#'        of data frames or matrices (assumed to a list of TCs), that this 
+#'        function will attempt to create the kde PB using 
+#'        \code{\link{kde_from_tclist}} and process to data and make the visual.
+#'        If one inserts a list with sub-elements named \code{contour}, 
+#'        \code{area}, \code{kde_object} (assumed to be output from 
+#'        \code{\link{kde_from_tclist}}), then the function will apply 
+#'        \code{\link{contour_list_to_df}} to the \code{contour} component. 
+#'        If you are making this function create the full KDE PB, please make
+#'        sure to pass a \code{alpha_level} in to make the object (see 
+#'        \code{\link{kde_from_tclist}} for details). }
+#'        
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
-#' @param zoom map zoom for ggmap
+#' @param zoom map zoom for \code{\link[ggmap]{ggmap}}
 #' @param color color of band
-#' @param ... interior ggpath parameters
+#' @param ... interior \code{\link[ggplot2]{geom_path}} or 
+#'        \code{\link{kde_from_tclist}} parameters.
 #'
 #' @return ggplot object of contour and data points.
 #' @export
+#' @examples 
+#' # doesn't like looking for sample_sim
+#' \donttest{
+#' kde_list_object <- kde_from_tclist(sample_sim, alpha = .05)
+#' level_contour_list <- contour_list_to_df(kde_list_object$contour)
+#' 
+#' # standard usage of the function
+#' ggvis_kde_contour(level_contour_list, color = "red")
+#' 
+#' # using the KDE PB object:
+#' ggvis_kde_contour(kde_list_object, color = "blue")
+#' 
+#' # using the simulated curves:
+#' ggvis_kde_contour(sample_sim, color = "purple", alpha_level = .05)
+#' }
 ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
                               zoom = 4, color = "pink", ...){
+  
+   
+  if (all(c("contour", "area", "kde_object") %in% names(level_contour_list))) {
+    #^object is from kde_from_tclist function
+    level_contour_list <- contour_list_to_df(level_contour_list$contour)
+  } else if (!all(c("x", "y", "level") %in% names(level_contour_list[[1]]))){
+    #^if object is a list of TCs
+    kde_list_object <- kde_from_tclist(level_contour_list, ...)
+    level_contour_list <- contour_list_to_df(kde_list_object$contour)
+  } 
+
   
   if (is.null(base_graph)) {
     latrange <- range(sapply(level_contour_list, function(df){
@@ -135,18 +188,54 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
 
 #' Visualize delta ball exterior centers (with ggplot)
 #'
-#' @param output_lines data frame of exterior lines (not ordered)
+#' \strong{This function needs to be corrected. Lat and Lon seem to be switched 
+#' around. Goes all the way back to \code{delta_ball_wrapper}}
+#'
+#' @param output_lines data frame of exterior lines (not ordered) of the form
+#'        returned from \code{\link{delta_ball_wrapper}} or the \code{structure}
+#'        element in the returned list from \code{\link{delta_structure}}.
 #' @param base_graph ggplot object for base graph 
 #'       (created from output_lines otherwise)
-#' @param zoom map zoom for ggmap
+#' @param zoom map zoom for \code{\link[ggmap]{ggmap}}
 #' @param color color of band
-#' @param ... interior ggpath parameters
+#' @param ... interior \code{\link[ggplot2]{geom_path}} parameters or 
+#'        also to pass \emph{only} the \code{alpha} input for the 
+#'        \code{\link{delta_structure}} function.
 #'
 #' @return ggplot object of contours
 #' @export
-#'
+#' @examples 
+#' \donttest{
+#' # takes as while
+#' sample_sim_small <- list()
+#' for (i in 1:25){
+#'   sample_sim_small[[i]] <- sample_sim[[i]]
+#'   }
+#' 
+#' delta_PB <- delta_structure(sample_sim_small, alpha = .05, area_ci_n = 1,
+#'                             verbose = TRUE) 
+#' 
+#' # for now since delta_ball_wrapper seems to be wrong
+#' ggvis_delta_ball_contour(delta_PB$structure, color = "red", base_graph = ggplot())
+#' 
+#' ggvis_delta_ball_contour(sample_sim_small, alpha = .05, 
+#'                          base_graph = ggplot(), color = "red")
+#' }
 ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
                                      color = "pink", ...){
+  dots <- list(...)
+
+  if (class(output_lines)  == "list") {
+    #^ assume this means that the object is a list of simulated curves
+    
+    delta_info <- delta_structure(output_lines, alpha = dots$alpha,
+                                        area_ci_n = 1)
+    output_lines <- delta_info$structure
+    dots$alpha <- NULL
+  }
+  
+  ... <- unlist(dots)
+
   if (is.null(base_graph)) {
     latrange <- range(output_lines$lat)
     lonrange <- range(output_lines$lon)
@@ -160,7 +249,7 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ggout <- base_graph + 
     ggplot2::geom_line(data = output_lines, 
-                       ggplot2::aes_string(x = 'lat', y = 'lon', group = 'idx'),
+                       ggplot2::aes_string(y = 'lon', x = 'lat', group = 'idx'),
                        color = color, ...)
   
   return(ggout)
@@ -169,23 +258,67 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
 # Convex Hull visualation function ---------------------------
 
 
-#' Visualize delta ball exterior centers (with ggplot)
+#' Visualize delta ball exterior centers (with \code{ggplot})
 #'
-#' @description 
-#' Basically the same of \code{\link{ggvis_delta_ball_contour}}
-#'
-#' @param output_lines data frame of exterior lines
+#' @param output_lines data frame of exterior lines, should be ordered 
+#'        correctly, structure of that return of 
+#'        \code{\link{convex_hull_structure}}'s \code{poly_df} attribute. One 
+#'        can also either pass the list output from 
+#'        \code{\link{convex_hull_structure}} or a list of simulated curves.
+#'        If it recieves a list that is not the output of 
+#'        \code{\link{convex_hull_structure}} it will assume it is a list of 
+#'        simulated curves and 
+#'        the function will use \code{\link{convex_hull_structure}} to create 
+#'        the correct convex hull PB to visualize. \emph{Note: if passing the 
+#'        full list of TCs, you will need to pass in an \code{alpha} parameter 
+#'        like that required in \code{\link{convex_hull_structure}}.}
 #' @param base_graph ggplot object for base graph 
 #'       (created from output_lines otherwise)
-#' @param zoom map zoom for ggmap
+#' @param zoom map zoom for \code{\link[ggmap]{ggmap}}
 #' @param color color of band
-#' @param ... interior ggpath parameters
+#' @param ... interior \code{\link[ggplot2]{geom_path}} or the 
+#'        \code{convex_hull_structure} parameters \emph{(Note: at this time,
+#'        only the required \code{alpha} parameter will be accepted for the
+#'        \code{convex_hull_structure} function)}
 #'
-#' @return ggplot object of contour
+#' @return \code{ggplot} object of contour
 #' @export
-#'
+#' 
+#' @details Very similar function to \code{\link{ggvis_delta_ball_contour}}
+#' 
+#' @examples 
+#' \donttest{
+#' # takes as while
+#' sample_sim_small <- list()
+#' for (i in 1:25){
+#'   sample_sim_small[[i]] <- sample_sim[[i]]
+#'   }
+#' 
+#' convex_PB <- convex_hull_structure(sample_sim_small, alpha = .05)
+#' output_lines <- convex_PB$poly_df
+#' 
+#' # standard approach:
+#' ggvis_convex_hull(output_lines, color = "red")
+#' 
+#' ggvis_convex_hull(convex_PB, color = "blue")
+#' 
+#' ggvis_convex_hull(sample_sim_small, color = "purple", alpha = .05)
+#' }
 ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
                                      color = "pink", ...){
+  
+  dots <- list(...)
+  if (class(output_lines) == "list") {
+    if ("poly_df" %in% names(output_lines)) {
+      output_lines <- output_lines$poly_df
+    } else{
+      output_lines <- convex_hull_structure(output_lines, 
+                                            alpha = dots$alpha)$poly_df
+      dots$alpha <- NULL
+    }
+  }
+  
+  ... <- unlist(dots)
   
   names(output_lines)[names(output_lines) == "long"] <- "lon"
   
@@ -212,26 +345,87 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 # Bubble visualization functions -------------------------
 
 
-#' Plot lines for bubble data 
+#' Plot lines for Spherical PB
+#' 
+#' \strong{Warning: this function does lat and lon in reverse. This 
+#' goes back beyond the wrapper \code{\link{bubble_ci_from_tclist}}}
 #'
 #' @param bubble_plot_data list of center points, positive and negative 
-#' tangential points 
-#' (each a n x 2 data frame)
+#'        tangential points (each a n x 2 data frame), similar to the 
+#'        \code{bubble_CI_object} element in the output of the return from
+#'        \code{\link{bubble_ci_from_tclist}}. One can also input a list of 
+#'        TCs and the function will create the needed structure using 
+#'        \code{\link{bubble_ci_from_tclist}}. \emph{If using a list of TCs, 
+#'        must include a \code{alpha_level} in \code{...} parameters.}
 #' @param base_graph plot to add to
 #' @param centers boolean to decide whether to also plot centers (as points)
 #' @param connect boolean to connect the left and right final tangential points
 #' @param color color of band
 #' @param linewidth width of line
-#' @param zoom map zoom for ggmap
-#' @param ... Interior ggpath parameters
+#' @param zoom map zoom for \code{\link[ggmap]{ggmap}}
+#' @param ... Interior \code{\link[ggplot2]{geom_path}} or the 
+#'        \code{bubble_ci_from_tclist} parameters \emph{(Note: at this time,
+#'        only the required \code{alpha_level} parameter will be accepted for the
+#'        \code{bubble_ci_from_tclist} function)}
 #'
-#' @return ggplot object with curves on it
+#' @return \code{ggplot} object with curves on it
 #' @export
 #'
+#' @examples
+#' \donttest{
+#' # takes as while
+#' sample_sim_small <- list()
+#' for (i in 1:25){
+#'   sample_sim_small[[i]] <- sample_sim[[i]]
+#'   }
+#' 
+#' dflist_13pointsreduction <- thirteen_points_listable(sample_sim_small, 
+#'                                                     c_position = 1:2)
+#' dist_matrix_13pointsreduction <- distMatrixPath_innersq(
+#'   dflist_13pointsreduction)
+
+#' depth_vector <- depth_function(dist_matrix_13pointsreduction)
+#' depth_vector_idx <- which(depth_vector == max(depth_vector))[1]
+#' 
+#' spherical_PB <- bubble_ci_from_tclist(sample_sim_small, 
+#'                                           center_idx = depth_vector_idx,
+#'                                           alpha_level = .05)
+#' 
+#' bubble_plot_data <- spherical_PB$bubble_CI_object
+#' 
+#' # standard approach:
+#' ggvis_bubble_data(bubble_plot_data, color = "red", base_graph = ggplot())
+#' 
+#' ggvis_bubble_data(sample_sim_small, color = "purple", alpha_level = .05,
+#'                   base_graph = ggplot())
+#' }
 ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
                               centers = FALSE, connect = TRUE,
                               color = "pink", linewidth = 1, zoom = 4,
                               ...){
+  
+  dots <- list(...)
+  
+  if (!all(c("positive", "negative", "center") %in% names(bubble_plot_data))) {
+    dflist_13pointsreduction <- thirteen_points_listable(bubble_plot_data, 
+                                                         c_position = 1:2,
+                                                         verbose = FALSE)
+    dist_matrix_13pointsreduction <- distMatrixPath_innersq(
+                                                  dflist_13pointsreduction,
+                                                  verbose = FALSE)
+    
+    depth_vector <- depth_function(dist_matrix_13pointsreduction)
+    depth_vector_idx <- which(depth_vector == max(depth_vector))[1]
+    
+    spherical_PB <- bubble_ci_from_tclist(bubble_plot_data, 
+                                              center_idx = depth_vector_idx,
+                                              alpha_level = dots$alpha_level)
+    bubble_plot_data <- spherical_PB$bubble_CI_object
+    dots$alpha_level <- NULL
+  }
+  
+  ... <- unlist(dots)
+  
   data_plot_lower <- data.frame(bubble_plot_data$positive)
   names(data_plot_lower)[1:2] <- c("lat", "lon")
   data_plot_upper <- data.frame(bubble_plot_data$negative)
@@ -252,9 +446,11 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   } 
   
   ggout <- base_graph + 
-    ggplot2::geom_path(data = data_plot_lower, ggplot2::aes_string(x = 'lat', y = 'lon'), 
+    ggplot2::geom_path(data = data_plot_lower, 
+                       ggplot2::aes_string(x = 'lat', y = 'lon'), 
               color = color, size = linewidth, ...) +
-    ggplot2::geom_path(data = data_plot_upper, ggplot2::aes_string(x = 'lat', y = 'lon'), 
+    ggplot2::geom_path(data = data_plot_upper, 
+                       ggplot2::aes_string(x = 'lat', y = 'lon'), 
               color = color, size = linewidth, ...) 
   
   if (centers) {

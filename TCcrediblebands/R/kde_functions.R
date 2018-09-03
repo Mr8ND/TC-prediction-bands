@@ -127,6 +127,9 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
 
 #' Selection of specific countour level from KDE object
 #' 
+#' \strong{WARNING: I believe this should actually be a value between .01 to 
+#' .99. Please update \code{ggvis_kde_contour}'s examples if you change this.}
+#' 
 #' @description 
 #' This function extracts a specific level of contour from a kde object.
 #' 
@@ -294,7 +297,7 @@ points_in_contour_list <- function(cont_list, predict_mat, long = 1, lat = 2){
 #' \item{contour}{List of contour(s) at the specified level}
 #' \item{area}{Contour area}
 #' \item{kde_object}{Full KDE Object (from \code{\link[ks]{kde}})}
-#' 
+#' @export
 kde_from_tclist <- function(dflist, alpha_level, h_band = NULL, 
                             long = 1, lat = 2,
                             grid_size = rep(1000,2)) {

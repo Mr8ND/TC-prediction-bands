@@ -18,8 +18,10 @@ get_area_inner(data, query, size, delta, alpha = 0.05)
 \item{alpha}{alpha level for 2 sided confidence interval estimate}
 }
 \value{
+\describe{
 \item{area}{estimated area of union of balls}
 \item{area_ci}{vector with lower and upper confidence interval estimate}
+}
 }
 \description{
 Inner function to estimate the area of union of balls with 

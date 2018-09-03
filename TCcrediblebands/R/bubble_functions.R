@@ -74,7 +74,7 @@ create_CI_bubble_step_track <- function(df_points_step_track, center_idx,
                             "m", output_length, "Length")
   }
   
-  # In order to select the level, we select the closest (1-alpha)% of them
+  # In order to select the level, we select the closest (1-alpha)\% of them
   ordered_path_prob_df <- data.frame(cbind(df_points_step_track, distance_vec))
   ordered_path_prob_df <- ordered_path_prob_df[
                                         order(ordered_path_prob_df[, 3]), ]
@@ -446,14 +446,18 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' @description
 #' This function is a wrapper to determine CI bubble for list of simulated TCs
 #' 
+#' \strong{Warning: this function does lat and lon in reverse. This 
+#' goes further back, and goes forward to effection the graphing function
+#' \code{\link{ggvis_bubble_data}}.}
+#' 
 #' @param dflist List of simulated TCs
 #' @param center_idx Index of the path that needs to be considered as a center
 #' @param alpha_level Alpha level of the bubble CI
 #' @param long Column index of the longitude
 #' @param lat Column index of the latitude
 #' @param unit_measure Unit of measure used for distance
-#' @param alpha_ci_level Fraction for confidence interval of area estimates based on uniform
-#' sampling distribution.
+#' @param alpha_ci_level Fraction for confidence interval of area estimates 
+#' based on uniform sampling distribution.
 #' 
 #' @return
 #' \item{bubble_CI_object}{A list of matrices, each with prediction and, 
@@ -479,7 +483,8 @@ bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1,
 
     area_list <- get_area_diff_radius(bubble_ci_structure, 
                                   alpha = alpha_ci_level,
-                                  unit_measure = unit_measure)
+                                  unit_measure = unit_measure,
+                                  verbose = FALSE)
 
     return(list('bubble_CI_object' = bubble_ci_structure, 
                 'area' = area_list$area))

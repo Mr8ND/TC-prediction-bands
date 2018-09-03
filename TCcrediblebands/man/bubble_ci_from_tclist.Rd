@@ -18,8 +18,8 @@ bubble_ci_from_tclist(dflist, center_idx, alpha_level = 0.1, long = 1,
 
 \item{lat}{Column index of the latitude}
 
-\item{alpha_ci_level}{Fraction for confidence interval of area estimates based on uniform
-sampling distribution.}
+\item{alpha_ci_level}{Fraction for confidence interval of area estimates 
+based on uniform sampling distribution.}
 
 \item{unit_measure}{Unit of measure used for distance}
 }
@@ -34,4 +34,8 @@ a specific 1-alpha_level countour, see the \code{\link{bubbleCI}} }
 }
 \description{
 This function is a wrapper to determine CI bubble for list of simulated TCs
+
+\strong{Warning: this function does lat and lon in reverse. This 
+goes further back, and goes forward to effection the graphing function
+\code{\link{ggvis_bubble_data}}.}
 }

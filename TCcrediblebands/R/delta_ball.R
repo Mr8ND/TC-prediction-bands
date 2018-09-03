@@ -6,8 +6,11 @@
 #' @param data continuous data frame of individual points (in each row)
 #' @param dist_mat distance matrix, calculated otherwise via euclidean distance
 #'
-#' @return \item{dist_mat}{distance matrix between points}
+#' @return 
+#' \describe{
+#' \item{dist_mat}{distance matrix between points}
 #' \item{mm_delta}{the minimum distance (delta)}
+#' }
 #' @export
 get_delta <- function(data, dist_mat = NULL){
 
@@ -31,8 +34,11 @@ get_delta <- function(data, dist_mat = NULL){
 #' @param data continuous data frame of individual points (in each row)
 #' @param n number of points drawn
 #'
-#' @return \item{box_points}{data frame of uniformly randomly drawn points}
+#' @return 
+#' \describe{
+#' \item{box_points}{data frame of uniformly randomly drawn points}
 #' \item{size}{the size of the box from which points are drawn}
+#' }
 #' 
 #' @export
 get_box_points <- function(data, n = 10000){
@@ -62,8 +68,10 @@ get_box_points <- function(data, n = 10000){
 #' @param alpha alpha level for 2 sided confidence interval estimate
 #'
 #' @return 
+#' \describe{
 #' \item{area}{estimated area of union of balls}
 #' \item{area_ci}{vector with lower and upper confidence interval estimate}
+#' }
 get_area_inner <- function(data, query, size, delta, alpha = .05){
   n = nrow(query)
   neighbor <- RANN::nn2(data = data, query = query,
@@ -89,9 +97,10 @@ get_area_inner <- function(data, query, size, delta, alpha = .05){
 #' @param alpha alpha level for 2 sided confidence interval estimate
 #'
 #' @return 
+#' \describe{
 #' \item{area}{estimated area of union of balls}
 #' \item{area_ci}{vector with lower and upper confidence interval estimate}
-#' 
+#' }
 #' @export
 get_area <- function(data, delta, n = 10000, alpha = .05){
   
@@ -238,10 +247,12 @@ steps_along_2d_line <- function(line, n_steps = 1000){
 #' on both sides, that will be checked to approximate all points along the line
 #'
 #' @return 
+#' \describe{
 #' \item{lines_mat}{lines of edges that are kept (each edge has 2 rows and 
 #' share an index). These edges are within the union of the balls.}
 #' \item{removed_mat}{lines of edges that should be removed (i.e. are not 
 #' with the union of balls.)}
+#' }
 #' @export
 get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
   ## this function gets lines that are included within the balls
@@ -310,6 +321,9 @@ remove_duplicates_func <- function(data_raw){
 }
 
 #' Run delta ball analysis 
+#' 
+#' \strong{See comment at bottom of function: this function I think does the 
+#' incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}}
 #' 
 #' @description Run delta ball analysis and get outline of points. Runs all 
 #' analyses to get dataframe with regular lines. Part of the approach in 
@@ -397,30 +411,33 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
                      dplyr::left_join(index_mapping, by = c("id" = "nt")))$dl
   
   output_lines <- desired_lines %>% dplyr::filter(idx %in% select_lines)
-  names(output_lines)[1:2] = c("lon","lat")
+  names(output_lines)[1:2] = c("lon","lat") ## COME HERE: I THINK THIS IS WRONG...
   return(output_lines)
 }
 
 #' Performs delta ball approach
 #'
 #' @param data_list list of hurricanes
-#' @param alpha for credible band (related to depth)
+#' @param alpha for credible band (related to depth). Takes value in (0, 1.0), 
+#'        for a 95\% PB, set alpha to .05.
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param data_deep_points data deep points from depth function 
-#' (otherwise calculated)
+#'        (otherwise calculated)
 #' @param c_position Columns position of long/lat pair
 #' @param depth_vector Vector with depth values
 #' @param area_ci_n number of observations to estimate area of covering
 #' @param area_ci_alpha alpha level for confidence interval of area of covering
 #' @param verbose if the distance matrix is verbose
 #' @param ... other parameters in distance calculation through 
-#' `distMatrixPath_innersq`
+#'        \code{\link{distMatrixPath_innersq}}
 #'
 #' @return 
+#' \describe{
 #' \item{structure}{data frame of non-ordered lines of contour}
 #' \item{area}{estimated error of contour area (float)}
 #' \item{area_ci}{area confidence interval (vector)}
 #' \item{delta}{optimal delta for covering}
+#' }
 #' @export
 delta_structure <- function(data_list, alpha, dist_mat = NULL, 
                             data_deep_points = NULL,

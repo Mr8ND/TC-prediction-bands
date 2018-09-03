@@ -26,8 +26,8 @@ polygon or not
 }
 \details{
 To account for computer storage of values generating rounding errors
-this approach adds noise of \code{50 * .Machine$double.eps} in \emp{x} and 
-\emp{y} directions and the point counts as interior if any of these jitters 
+this approach adds noise of \code{50 * .Machine$double.eps} in \emph{x} and 
+\emph{y} directions and the point counts as interior if any of these jitters 
 or the real point follow inside the polygon.
 }
 \examples{
