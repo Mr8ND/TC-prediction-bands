@@ -21,6 +21,10 @@ level.
 This function extracts a specific level of contour from a kde object.
 }
 \details{
+\strong{WARNING: I believe this should actually be a value between .01 to 
+.99. Please update \code{ggvis_kde_contour}'s examples if you change this.}
+
+
 Only works for some levels that the kde object calculated originally.
 }
 \examples{

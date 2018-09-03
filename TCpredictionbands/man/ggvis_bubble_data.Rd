@@ -2,15 +2,19 @@
 % Please edit documentation in R/ggplot_visual_functions.R
 \name{ggvis_bubble_data}
 \alias{ggvis_bubble_data}
-\title{Plot lines for bubble data}
+\title{Plot lines for Spherical PB}
 \usage{
 ggvis_bubble_data(bubble_plot_data, base_graph = NULL, centers = FALSE,
   connect = TRUE, color = "pink", linewidth = 1, zoom = 4, ...)
 }
 \arguments{
 \item{bubble_plot_data}{list of center points, positive and negative 
-tangential points 
-(each a n x 2 data frame)}
+tangential points (each a n x 2 data frame), similar to the 
+\code{bubble_CI_object} element in the output of the return from
+\code{\link{bubble_ci_from_tclist}}. One can also input a list of 
+TCs and the function will create the needed structure using 
+\code{\link{bubble_ci_from_tclist}}. \emph{If using a list of TCs, 
+must include a \code{alpha_level} in \code{...} parameters.}}
 
 \item{base_graph}{plot to add to}
 
@@ -22,13 +26,45 @@ tangential points
 
 \item{linewidth}{width of line}
 
-\item{zoom}{map zoom for ggmap}
+\item{zoom}{map zoom for \code{\link[ggmap]{ggmap}}}
 
-\item{...}{Interior ggpath parameters}
+\item{...}{Interior \code{\link[ggplot2]{geom_path}} or the 
+\code{bubble_ci_from_tclist} parameters \emph{(Note: at this time,
+only the required \code{alpha_level} parameter will be accepted for the
+\code{bubble_ci_from_tclist} function)}}
 }
 \value{
-ggplot object with curves on it
+\code{ggplot} object with curves on it
 }
 \description{
-Plot lines for bubble data
+\strong{Warning: this function does lat and lon in reverse. This 
+goes back beyond the wrapper \code{\link{bubble_ci_from_tclist}}}
+}
+\examples{
+\donttest{
+# takes as while
+sample_sim_small <- list()
+for (i in 1:25){
+  sample_sim_small[[i]] <- sample_sim[[i]]
+  }
+
+dflist_13pointsreduction <- thirteen_points_listable(sample_sim_small, 
+                                                    c_position = 1:2)
+dist_matrix_13pointsreduction <- distMatrixPath_innersq(
+  dflist_13pointsreduction)
+depth_vector <- depth_function(dist_matrix_13pointsreduction)
+depth_vector_idx <- which(depth_vector == max(depth_vector))[1]
+
+spherical_PB <- bubble_ci_from_tclist(sample_sim_small, 
+                                          center_idx = depth_vector_idx,
+                                          alpha_level = .05)
+
+bubble_plot_data <- spherical_PB$bubble_CI_object
+
+# standard approach:
+ggvis_bubble_data(bubble_plot_data, color = "red", base_graph = ggplot())
+
+ggvis_bubble_data(sample_sim_small, color = "purple", alpha_level = .05,
+                  base_graph = ggplot())
+}
 }

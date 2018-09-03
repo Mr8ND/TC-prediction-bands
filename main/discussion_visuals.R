@@ -14,11 +14,15 @@ library(gridExtra)
 library(TCpredictionbands)
 library(GGally)
 
-# Set theme -----------------
-
-theme_set(theme_minimal() +
-            theme(strip.background = element_rect(fill = "grey90", color = NA))
-)
+# Theme -----------------
+tc_theme <- theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
 
 # Load Data ------------------
 
@@ -27,18 +31,18 @@ image_path <- "report/images/"
 table_path <- "report/tables/"
 zoom = 4
 
-true_curve_color = "green"
+true_curve_color = "#ffff00"
 smooth_color = "blue"
-pb_color_vec <- c("#00E5E5","#CB00C5" ,"#0300D8", "#BF0700")
-names(pb_color_vec) <- c("kde", "bubble_ci", "delta_ball", "convex_hull")
+pb_color_vec <- c("#1b9e77","#d95f02","#7570b3", "#e7298a")
+names(pb_color_vec) <- c("convex_hull", "bubble_ci", "delta_ball", "kde")
 
 auto_vs_non_color_vec <- c("black", "grey70")
 quantile5_colors <- colorRampPalette(c("red", "grey","blue"))(6)
 
-sim_type_graphic_levels <- c("Auto Regression & Logistic Death"   = "Auto_DeathRegs",
-                             "Auto Regression & Kernel Death"       = "Auto_NoDeathRegs",
-                             "Non-Auto Regression & Logistic Death" = "NoAuto_DeathRegs",
-                             "Non-Auto Regression & Kernel Death"   = "NoAuto_NoDeathRegs")
+sim_type_graphic_levels <- c("Autoregression & Logistic-based Lysis"   = "Auto_DeathRegs",
+                             "Autoregression & Kernel-based Lysis"       = "Auto_NoDeathRegs",
+                             "Non-Autoregression & Logistic-based Lysis" = "NoAuto_DeathRegs",
+                             "Non-Autoregression & Kernel-based Lysis"   = "NoAuto_NoDeathRegs")
 sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
 
@@ -72,13 +76,13 @@ train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_p
 
 xx1_crazy_curve <- ggvis_paths(data_out = train_curves_auto_logistic,
             alpha = .1)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL112004",
-       subtitle = "Auto-Regressive Cures\n  with Locally-based Logistic Lysis")
+  labs(caption = "TC #AL112004: Autoregressive Curves\n with Logistic-Based Lysis",
+       title = "Example of a more \"Wiggly\" TC") + tc_theme
 
 
 # simulated curve, extreme turning: qqplot, change in bearing --------
@@ -199,9 +203,9 @@ for (region in names(train_models[["speed_regs_nonauto"]])) {
 speed_regs_nonauto_df <- speed_regs_nonauto_df[-1,]
 
 bearing_regs_all <- rbind(bearing_regs_auto_df %>% select(.resid) %>%
-                                 mutate(reg = "Auto-Regressive"),
+                                 mutate(reg = "Autoregressive"),
                                bearing_regs_nonauto_df %>% select(.resid) %>%
-                                 mutate(reg = "Non-Auto-Regressive"))
+                                 mutate(reg = "Non-Autoregressive"))
 
 
 # <<<<<<<<<< end data creation
@@ -211,28 +215,30 @@ xx1_qq_bearing <- ggplot(bearing_regs_all,
   geom_qq(alpha = 1) +
   geom_qq_line() + 
   scale_color_manual(values = auto_vs_non_color_vec) +
-  labs(x = "Theoretical Quantile values",
-       y = "Residual Quantile values",
+  labs(x = "Theoretical Quantile Values",
+       y = "Residual Quantile Values",
        color = "Model Type",
-       title = "Change in Bearing Model QQplot")
+       title = "Change in Bearing Model \nQuantile-Quantile Plot") +
+  tc_theme
   
 
 # simulated curve, extreme turning: qqplot, change in speed -------------
   
 speed_regs_all <- rbind(speed_regs_auto_df %>% select(.resid) %>%
-                          mutate(reg = "Auto-Regressive"),
+                          mutate(reg = "Autoregressive"),
                         speed_regs_nonauto_df %>% select(.resid) %>%
-                          mutate(reg = "Non-Auto-Regressive"))
+                          mutate(reg = "Non-Autoregressive"))
 
 xx1_qq_speed <- ggplot(speed_regs_all, 
                          aes(sample = .resid, color = reg)) +
   geom_qq(alpha = 1) +
   geom_qq_line() + 
   scale_color_manual(values = auto_vs_non_color_vec) +
-  labs(x = "Theoretical Quantile values",
-       y = "Residual Quantile values",
+  labs(x = "Theoretical Quantile Values",
+       y = "Residual Quantile Values",
        color = "Model Type",
-       title = "Change in Speed Model QQplot")
+       title = "Change in Speed Model \nQuantile-Quantile Plot") +
+  tc_theme
 
 # simulated curve, extreme turning: final graphic (xx1) ---------  
 
@@ -243,8 +249,9 @@ xx1_layout_matrix <- matrix(c(1,1,1,1, 2,2,2,2, 3,3,3,3,
                               1,1,1,1, 2,2,2,2, 3,3,3,3,
                               1,1,1,1, 2,2,2,2, 3,3,3,3,
                               
+                              1,1,1,1, 4,4,4,4, 4,4,4,4,
                               5,5,5,5, 4,4,4,4, 4,4,4,4),
-                        nrow = 5, byrow = T)
+                        nrow = 6, byrow = T)
 
 xx1 <- arrangeGrob(xx1_crazy_curve,
                    xx1_qq_bearing + no_leg,
@@ -252,12 +259,13 @@ xx1 <- arrangeGrob(xx1_crazy_curve,
                    grab_legend(xx1_qq_bearing +
                                  guides(color = guide_legend(nrow = 1))),
                    ggplot(),
+                   heights = c(1,1,1,1,.3,.7),
                    layout_matrix = xx1_layout_matrix
                    )
 
 ggsave(plot = xx1,
        filename = paste0(image_path,"simulation_turning_discussion_graphic.png"),
-       device = "p", width = 10, height = 4, units = "in")
+       device = "png", width = 10, height = 4, units = "in")
 
 #######################################
 # simulation curves, lengths (plot 2) #
@@ -316,6 +324,7 @@ xx2 <- sim_length_vs_length_df %>% ggplot() +
                   color = factor(quantile)),
               se = F) +
   scale_color_manual(values = quantile5_colors) +
+  tc_theme +
   theme(legend.position = "bottom") +
   guides(color = guide_legend(nrow = 1)) +
   labs(x = "Survival Time of True Curve",
@@ -325,8 +334,8 @@ xx2 <- sim_length_vs_length_df %>% ggplot() +
 
 
 ggsave(plot = xx2,
-       filename = paste0(image_path,"simulation_length_discussion_graphic.pdf"),
-       device = "pdf", width = 10, height = 6, units = "in")
+       filename = paste0(image_path,"simulation_length_discussion_graphic.png"),
+       device = "png", width = 10, height = 6, units = "in")
 
 
 
@@ -385,12 +394,13 @@ xx3 <- prop_vs_length_df %>% ggplot() +
               color = smooth_color) +
   labs(y = "Survival time for deepest simulated curve",
        x = "Survival time of true curve",
-       title = "Survival times between true curve and spherical PB center")
+       title = "Survival times between true curve and spherical PB center") +
+  tc_theme
 
 ggsave(plot = xx3,
        filename = paste0(image_path,
-                         "spherical_depth_length_discussion_graphic.pdf"),
-       device = "pdf", width = 10, height = 4, units = "in")
+                         "spherical_depth_length_discussion_graphic.png"),
+       device = "png", width = 10, height = 6, units = "in")
 
 
 
@@ -407,13 +417,12 @@ train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_p
 
 xx4_branching_curve <- ggvis_paths(data_out = train_curves_auto_logistic,
                                alpha = .1)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL011965",
-       subtitle = "Auto-Regressive Curves\n  with Locally-based Logistic Lysis") 
+  labs(caption = "TC #AL011965: Autoregressive Curves\n  with Logistic-based Lysis") 
 
 bubble_plot_data_auto_logistic <- output_list_pipeline[[tc]] %>%
   .[["Auto_DeathRegs"]] %>% .[["bubble_ci"]] %>%
@@ -426,6 +435,8 @@ xx4_branching_curve <- TCpredictionbands::ggvis_bubble_data(
   color = pb_color_vec["bubble_ci"],
   connect = TRUE, 
   centers = FALSE) 
+
+xx4_branching_curve <- xx4_branching_curve + tc_theme
 
 # spherical PBs, branching and curving: curving problem --------
 
@@ -451,13 +462,12 @@ base_graph_xx4_curve <- ggmap::ggmap(map)
 xx4_curving_curve <- ggvis_paths(data_out = train_curves_auto_logistic,
                                  alpha = .1,
                                  base_graph = base_graph_xx4_curve)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL072010",
-       subtitle = "Auto-Regressive Curves\n  with Locally-based Logistic Lysis") 
+  labs(caption = "TC #AL072010: Autoregressive Curves\n  with Logistic-based Lysis") 
 
 bubble_plot_data_auto_logistic <- output_list_pipeline[[tc]] %>%
   .[["Auto_DeathRegs"]] %>% .[["bubble_ci"]] %>%
@@ -471,6 +481,8 @@ xx4_curving_curve <- TCpredictionbands::ggvis_bubble_data(
   connect = TRUE, 
   centers = FALSE) 
 
+xx4_curving_curve <- xx4_curving_curve + tc_theme
+
 xx4_layout_matrix <- matrix(c(1,1,1,1, 3,3,3,3,
                               1,1,1,1, 2,2,2,2,
                               1,1,1,1, 2,2,2,2, 
@@ -482,12 +494,15 @@ xx4_layout_matrix <- matrix(c(1,1,1,1, 3,3,3,3,
 xx4 <- arrangeGrob(xx4_branching_curve, xx4_curving_curve,
              ggplot(), ggplot(),
              layout_matrix = xx4_layout_matrix,
-             heights = c(.5,1,1,1,.5))
+             heights = c(.5,1,1,1,.5),
+             top = textGrob(paste("Visualization of Drawbacks of",
+                                  "Spherical Prediction Bands"),
+                            gp = gpar(fontsize = 18)))
 
 ggsave(plot = xx4,
        filename = paste0(image_path,
-                         "spherical_branching_curving_discussion_graphic.pdf"),
-       device = "pdf", width = 10, height = 5, units = "in")
+                         "spherical_branching_curving_discussion_graphic.png"),
+       device = "png", width = 10, height = 5, units = "in")
 
 
 
@@ -519,13 +534,12 @@ base_graph_xx5_patchy <- ggmap::ggmap(map)
 xx5_patchy_curve <- ggvis_paths(data_out = train_curves_auto_kernel,
                                 alpha = .1,
                                 base_graph = base_graph_xx5_patchy)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL162005",
-       subtitle = "Auto-Regressive Curves\n  with Kernel-based Lysis") 
+  labs(caption = "TC #AL162005: Autoregressive Curves\n  with Kernel-based Lysis") 
 
 kde_contour_dfs_auto_kernel <- TCpredictionbands::contour_list_to_df(
   output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["kde"]][["contour"]])
@@ -534,6 +548,8 @@ xx5_patchy_curve <- TCpredictionbands::ggvis_kde_contour(
                                                   kde_contour_dfs_auto_kernel,
                                                   base_graph = xx5_patchy_curve,
                                                   color = pb_color_vec["kde"])
+
+xx5_patchy_curve <- xx5_patchy_curve  + tc_theme
 
 # KDE PBs, patchy and outliers: outlier -----------
 
@@ -559,13 +575,12 @@ base_graph_xx5_outlier <- ggmap::ggmap(map)
 xx5_outlier_curve <- ggvis_paths(data_out = train_curves_nonauto_kernel,
                                 alpha = .1,
                                 base_graph = base_graph_xx5_outlier)  + 
-  labs(x = "", y = "") +
+  labs(x = "Longitude", y = "Latitude") +
   ggplot2::geom_path(data = true_tc,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(title = "TC #AL192012",
-       subtitle = "Auto-Regressive Curves\n  with Kernel-based Lysis") 
+  labs(caption = "TC #AL192012: Autoregressive Curves\n  with Kernel-based Lysis") 
 
 kde_contour_dfs_auto_kernel <- TCpredictionbands::contour_list_to_df(
   output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["kde"]][["contour"]])
@@ -575,13 +590,17 @@ xx5_outlier_curve <- TCpredictionbands::ggvis_kde_contour(
   base_graph = xx5_outlier_curve,
   color = pb_color_vec["kde"])
 
+xx5_outlier_curve <- xx5_outlier_curve + tc_theme
 
 xx5 <- arrangeGrob(xx5_patchy_curve, xx5_outlier_curve,
-                   nrow = 1)
+                   nrow = 1,
+                   top = textGrob(paste("Visualization of Drawbacks of",
+                                        "KDE Prediction Bands"),
+                                  gp = gpar(fontsize = 18)))
 
 ggsave(plot = xx5,
        filename = paste0(image_path,
-                         "kde_patchy_outlier_discussion_graphic.pdf"),
-       device = "pdf", width = 10, height = 5, units = "in")
+                         "kde_patchy_outlier_discussion_graphic.png"),
+       device = "png", width = 10, height = 5, units = "in")
 
 

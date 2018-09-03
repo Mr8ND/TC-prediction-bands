@@ -16,8 +16,10 @@ get_area(data, delta, n = 10000, alpha = 0.05)
 \item{alpha}{alpha level for 2 sided confidence interval estimate}
 }
 \value{
+\describe{
 \item{area}{estimated area of union of balls}
 \item{area_ci}{vector with lower and upper confidence interval estimate}
+}
 }
 \description{
 Wrapper function to estimate the area of union of balls with 

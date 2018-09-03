@@ -2,26 +2,62 @@
 % Please edit documentation in R/ggplot_visual_functions.R
 \name{ggvis_convex_hull}
 \alias{ggvis_convex_hull}
-\title{Visualize delta ball exterior centers (with ggplot)}
+\title{Visualize delta ball exterior centers (with \code{ggplot})}
 \usage{
 ggvis_convex_hull(output_lines, base_graph = NULL, zoom = 4,
   color = "pink", ...)
 }
 \arguments{
-\item{output_lines}{data frame of exterior lines}
+\item{output_lines}{data frame of exterior lines, should be ordered 
+correctly, structure of that return of 
+\code{\link{convex_hull_structure}}'s \code{poly_df} attribute. One 
+can also either pass the list output from 
+\code{\link{convex_hull_structure}} or a list of simulated curves.
+If it recieves a list that is not the output of 
+\code{\link{convex_hull_structure}} it will assume it is a list of 
+simulated curves and 
+the function will use \code{\link{convex_hull_structure}} to create 
+the correct convex hull PB to visualize. \emph{Note: if passing the 
+full list of TCs, you will need to pass in an \code{alpha} parameter 
+like that required in \code{\link{convex_hull_structure}}.}}
 
 \item{base_graph}{ggplot object for base graph 
 (created from output_lines otherwise)}
 
-\item{zoom}{map zoom for ggmap}
+\item{zoom}{map zoom for \code{\link[ggmap]{ggmap}}}
 
 \item{color}{color of band}
 
-\item{...}{interior ggpath parameters}
+\item{...}{interior \code{\link[ggplot2]{geom_path}} or the 
+\code{convex_hull_structure} parameters \emph{(Note: at this time,
+only the required \code{alpha} parameter will be accepted for the
+\code{convex_hull_structure} function)}}
 }
 \value{
-ggplot object of contour
+\code{ggplot} object of contour
 }
 \description{
-Basically the same of \code{\link{ggvis_delta_ball_contour}}
+Visualize delta ball exterior centers (with \code{ggplot})
+}
+\details{
+Very similar function to \code{\link{ggvis_delta_ball_contour}}
+}
+\examples{
+\donttest{
+# takes as while
+sample_sim_small <- list()
+for (i in 1:25){
+  sample_sim_small[[i]] <- sample_sim[[i]]
+  }
+
+convex_PB <- convex_hull_structure(sample_sim_small, alpha = .05)
+output_lines <- convex_PB$poly_df
+
+# standard approach:
+ggvis_convex_hull(output_lines, color = "red")
+
+ggvis_convex_hull(convex_PB, color = "blue")
+
+ggvis_convex_hull(sample_sim_small, color = "purple", alpha = .05)
+}
 }

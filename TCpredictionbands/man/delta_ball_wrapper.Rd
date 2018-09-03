@@ -22,3 +22,7 @@ Run delta ball analysis and get outline of points. Runs all
 analyses to get dataframe with regular lines. Part of the approach in 
 "Computing Polygonal Surfaces from Unions of Balls" by Tam and Heidrich.
 }
+\details{
+\strong{See comment at bottom of function: this function I think does the 
+incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}}
+}

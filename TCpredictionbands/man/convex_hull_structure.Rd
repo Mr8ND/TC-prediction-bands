@@ -28,9 +28,11 @@ convex_hull_structure(data_list, alpha, dist_mat = NULL,
 \code{\link{distMatrixPath_innersq}}}
 }
 \value{
+\describe{
 \item{polygon}{dataframe}
 \item{size}{area of the convex hull}
 \item{poly}{spatial polygon object of convex hull}
+}
 }
 \description{
 Convex Hull creation

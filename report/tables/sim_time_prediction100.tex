@@ -1,17 +1,17 @@
-% latex table generated in R 3.4.3 by xtable 1.8-2 package
-% Sat Jul 14 23:04:37 2018
+ tc)% latex table generated in R 3.4.3 by xtable 1.8-2 package
+% Fri Aug 31 21:05:54 2018
 \begin{table}[ht!]
 \centering
 \begin{tabular}{|R{1.2in}||L{.95in}L{.9in}|L{.8in}L{.8in}|}
   \hline
-Simulation Curve Type & Kernel Density Estimate & Spherical Ball Covering & Delta Ball Covering & Convex Hull \\ 
+Simulation Curve Type & Kernel Density Estimate & Spherical & Delta Ball & Convex Hull \\ 
   \hline
-Auto \& Logistic & 1.16 \(\pm\) 1.55 & 1.98 \(\pm\) 0.96 & 0.51 \(\pm\) 0.21 & 0.05 \(\pm\) 0.02 \\ 
-  Auto \& Kernel & 1.31 \(\pm\) 1.92 & 1.72 \(\pm\) 0.28 & 0.48 \(\pm\) 0.07 & 0.05 \(\pm\) 0.01 \\ 
-  Non-Auto \& Logistic & 1.04 \(\pm\) 1.55 & 1.97 \(\pm\) 0.98 & 0.50 \(\pm\) 0.21 & 0.05 \(\pm\) 0.01 \\ 
-  Non-Auto \& Kernel & 1.29 \(\pm\) 2.19 & 1.74 \(\pm\) 0.28 & 0.48 \(\pm\) 0.07 & 0.05 \(\pm\) 0.01 \\ 
+AR \& Logistic & 1.16 \(\pm\) 1.55 & 1.98 \(\pm\) 0.96 & 0.51 \(\pm\) 0.21 & 0.05 \(\pm\) 0.02 \\ 
+  AR \& Kernel & 1.31 \(\pm\) 1.92 & 1.72 \(\pm\) 0.28 & 0.48 \(\pm\) 0.07 & 0.05 \(\pm\) 0.01 \\ 
+  Non-AR \& Logistic & 1.04 \(\pm\) 1.55 & 1.97 \(\pm\) 0.98 & 0.50 \(\pm\) 0.21 & 0.05 \(\pm\) 0.01 \\ 
+  Non-AR \& Kernel & 1.29 \(\pm\) 2.19 & 1.74 \(\pm\) 0.28 & 0.48 \(\pm\) 0.07 & 0.05 \(\pm\) 0.01 \\ 
    \hline
 \end{tabular}
-\caption{Average time assessing if 100 curves were inside a PB \(\pm\) 1 standard deviation. PBs based on 350 simulated curves. Time in seconds.} 
+\caption{Average time (in seconds) it takes to  assess the containment of a 100 curves inside a PB, \(\pm\) 1 standard deviation. PBs based on 350 simulated curves; created with either Autoregressive (AR) or Non-Autoregressive (AR) models for changes in bearing and speed and with either a Kernel-based lysis model (Kernel) or Logistic-based lysis models (Logistic).} 
 \label{tab:time_prediction100}
 \end{table}

@@ -17,10 +17,12 @@ get_lines(delaunay_tri_data, data_raw, delta, n_steps = 100)
 on both sides, that will be checked to approximate all points along the line}
 }
 \value{
+\describe{
 \item{lines_mat}{lines of edges that are kept (each edge has 2 rows and 
 share an index). These edges are within the union of the balls.}
 \item{removed_mat}{lines of edges that should be removed (i.e. are not 
 with the union of balls.)}
+}
 }
 \description{
 Figure out which edges in the delaunay diagram are within the 

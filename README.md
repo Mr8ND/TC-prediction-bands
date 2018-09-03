@@ -23,7 +23,7 @@ available when we developed with package.
 
 ### Running files
 All files in `main` are meant to be run from the upper projection location 
-(`Hurricanes_701`).
+(`TC-prediction-bands`).
 
 ### `TCpredictionbands` package
 
