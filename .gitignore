@@ -13,3 +13,5 @@ main/interval_pipeline_checker.R
 code/*
 paper/*
 .Rproj.user
+TCpredictionbands.Rcheck/
+TCpredictionbands_0.1.tar.gz
