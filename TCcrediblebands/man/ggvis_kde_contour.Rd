@@ -43,8 +43,6 @@ ggplot object of contour and data points.
 Create ggplot of kde set of contour
 }
 \examples{
-# doesn't like looking for sample_sim
-\donttest{
 kde_list_object <- kde_from_tclist(sample_sim, alpha = .05)
 level_contour_list <- contour_list_to_df(kde_list_object$contour)
 
@@ -56,5 +54,4 @@ ggvis_kde_contour(kde_list_object, color = "blue")
 
 # using the simulated curves:
 ggvis_kde_contour(sample_sim, color = "purple", alpha_level = .05)
-}
 }
