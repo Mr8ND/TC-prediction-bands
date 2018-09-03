@@ -11,7 +11,8 @@ delta_structure(data_list, alpha, dist_mat = NULL, data_deep_points = NULL,
 \arguments{
 \item{data_list}{list of hurricanes}
 
-\item{alpha}{for credible band (related to depth)}
+\item{alpha}{for credible band (related to depth). Takes value in (0, 1.0), 
+for a 95\% PB, set alpha to .05.}
 
 \item{dist_mat}{distance matrix (otherwise is calculated)}
 
@@ -29,13 +30,15 @@ delta_structure(data_list, alpha, dist_mat = NULL, data_deep_points = NULL,
 \item{verbose}{if the distance matrix is verbose}
 
 \item{...}{other parameters in distance calculation through 
-`distMatrixPath_innersq`}
+\code{\link{distMatrixPath_innersq}}}
 }
 \value{
+\describe{
 \item{structure}{data frame of non-ordered lines of contour}
 \item{area}{estimated error of contour area (float)}
 \item{area_ci}{area confidence interval (vector)}
 \item{delta}{optimal delta for covering}
+}
 }
 \description{
 Performs delta ball approach

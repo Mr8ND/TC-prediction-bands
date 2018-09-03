@@ -12,3 +12,4 @@ main/data/*
 main/interval_pipeline_checker.R
 code/*
 paper/*
+.Rproj.user

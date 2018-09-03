@@ -8,20 +8,43 @@ ggvis_delta_ball_contour(output_lines, base_graph = NULL, zoom = 4,
   color = "pink", ...)
 }
 \arguments{
-\item{output_lines}{data frame of exterior lines (not ordered)}
+\item{output_lines}{data frame of exterior lines (not ordered) of the form
+returned from \code{\link{delta_ball_wrapper}} or the \code{structure}
+element in the returned list from \code{\link{delta_structure}}.}
 
 \item{base_graph}{ggplot object for base graph 
 (created from output_lines otherwise)}
 
-\item{zoom}{map zoom for ggmap}
+\item{zoom}{map zoom for \code{\link[ggmap]{ggmap}}}
 
 \item{color}{color of band}
 
-\item{...}{interior ggpath parameters}
+\item{...}{interior \code{\link[ggplot2]{geom_path}} parameters or 
+also to pass \emph{only} the \code{alpha} input for the 
+\code{\link{delta_structure}} function.}
 }
 \value{
 ggplot object of contours
 }
 \description{
-Visualize delta ball exterior centers (with ggplot)
+\strong{This function needs to be corrected. Lat and Lon seem to be switched 
+around. Goes all the way back to \code{delta_ball_wrapper}}
+}
+\examples{
+\donttest{
+# takes as while
+sample_sim_small <- list()
+for (i in 1:25){
+  sample_sim_small[[i]] <- sample_sim[[i]]
+  }
+
+delta_PB <- delta_structure(sample_sim_small, alpha = .05, area_ci_n = 1,
+                            verbose = TRUE) 
+
+# for now since delta_ball_wrapper seems to be wrong
+ggvis_delta_ball_contour(delta_PB$structure, color = "red", base_graph = ggplot())
+
+ggvis_delta_ball_contour(sample_sim_small, alpha = .05, 
+                         base_graph = ggplot(), color = "red")
+}
 }

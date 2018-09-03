@@ -59,8 +59,8 @@ get_area_c <- function(data, c_position = 1:2){
 #' Dimensionality is the same as the number of rows in predict_mat
 #' 
 #' @details To account for computer storage of values generating rounding errors
-#' this approach adds noise of \code{50 * .Machine$double.eps} in \emp{x} and 
-#' \emp{y} directions and the point counts as interior if any of these jitters 
+#' this approach adds noise of \code{50 * .Machine$double.eps} in \emph{x} and 
+#' \emph{y} directions and the point counts as interior if any of these jitters 
 #' or the real point follow inside the polygon.
 #' 
 #' @references Inside this function we use \code{sp}'s \code{point.in.polygon}
@@ -124,9 +124,11 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 #' \code{\link{distMatrixPath_innersq}}
 #'
 #' @return 
+#' \describe{
 #' \item{polygon}{dataframe}
 #' \item{size}{area of the convex hull}
 #' \item{poly}{spatial polygon object of convex hull}
+#' }
 #' @export
 convex_hull_structure <- function(data_list, alpha, dist_mat = NULL,
                                   data_deep_points = NULL, 

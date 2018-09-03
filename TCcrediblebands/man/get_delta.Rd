@@ -12,8 +12,10 @@ get_delta(data, dist_mat = NULL)
 \item{dist_mat}{distance matrix, calculated otherwise via euclidean distance}
 }
 \value{
+\describe{
 \item{dist_mat}{distance matrix between points}
 \item{mm_delta}{the minimum distance (delta)}
+}
 }
 \description{
 Find the minimum distance (delta) such that all points are 

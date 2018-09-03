@@ -2,13 +2,18 @@
 % Please edit documentation in R/ggplot_visual_functions.R
 \name{ggvis_paths}
 \alias{ggvis_paths}
-\title{Visualize TC Paths (with ggplot)}
+\title{Visualize TC Paths (with \code{ggplot})}
 \usage{
-ggvis_paths(data_out, zoom = 4, base_graph = NULL, alpha = 0.01)
+ggvis_paths(data_out, zoom = 4, base_graph = NULL, alpha = 0.01, ...)
 }
 \arguments{
-\item{data_out}{data frame with correct path information same as outputed 
-from data_plot_sc_paths functions}
+\item{data_out}{data frame with correct path information same as outputted 
+from \code{\link{data_plot_paths_basic}} functions. If supplied with a 
+list of data frames of paths of TCs (like inputted into 
+\code{\link{data_plot_paths_basic}}), then the function will apply
+\code{\link{data_plot_paths_basic}} first. \emph{Note: will assume
+"\code{c_position = 1:2}" unless altered in \code{...}, see 
+documentation for \code{\link{data_plot_paths_basic}} for details.}}
 
 \item{zoom}{map zoom for ggmap}
 
@@ -16,11 +21,12 @@ from data_plot_sc_paths functions}
 (created from data_out otherwise)}
 
 \item{alpha}{opacity of curves}
+
+\item{...}{can pass \code{c_position} values if desirable}
 }
 \value{
 ggplot visualisation of the curve
 }
 \description{
-Note / TODO: 
-Function currently uses geom_path - assumed euclidean space for map :/
+Visualize TC Paths (with \code{ggplot})
 }

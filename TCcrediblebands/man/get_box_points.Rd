@@ -12,8 +12,10 @@ get_box_points(data, n = 10000)
 \item{n}{number of points drawn}
 }
 \value{
+\describe{
 \item{box_points}{data frame of uniformly randomly drawn points}
 \item{size}{the size of the box from which points are drawn}
+}
 }
 \description{
 Inner function to get uniform sampling of points in box around 
