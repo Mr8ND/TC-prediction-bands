@@ -2,7 +2,7 @@
 
 library(progress)
 
-functions_loc <- '../TCcrediblebands/R/'
+functions_loc <- '../TCpredictionbands/R/'
 data_loc <- "data/"
 
 desired_functions <- c("path_functions.R","thirteen_point_compression.R",

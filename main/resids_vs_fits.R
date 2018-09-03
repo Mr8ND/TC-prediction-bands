@@ -6,7 +6,7 @@
 # bearing/non-AR, speed/AR, speed/non-AR on individual blocks.
 
 library(tidyverse)
-library(TCcrediblebands)
+library(TCpredictionbands)
 
 # Load Data ------------------
 data_loc <- "main/data/"

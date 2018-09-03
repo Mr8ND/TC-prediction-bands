@@ -8,7 +8,7 @@ library(tidyverse)
 
 #' Install from Github ----------------------------------
 
-library(TCcrediblebands)
+library(TCpredictionbands)
 
 #' Getting information from user ---------------------------
 

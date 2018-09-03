@@ -1,6 +1,6 @@
 # Code to save .Rdata file with lists train_data, test_data, and new_data (empty)
 
-library(TCcrediblebands)
+library(TCpredictionbands)
 
 # Read in train_names and test_names
 load("main/data/train_test_names.Rdata")

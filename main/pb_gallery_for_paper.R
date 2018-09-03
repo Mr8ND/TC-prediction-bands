@@ -4,7 +4,7 @@ library(xtable)
 library(forcats)
 library(progress)
 library(gridExtra)
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(ggmap)
 
 # parameters ----------------
@@ -67,10 +67,10 @@ graphic_kde <- ggvis_paths(data_out = kde_train_curves_nonauto_kernel,
   labs(title = "TC #AL181984",
        subtitle = "Non Auto Regressive Curves\n  with Kernel-based Lysis") 
 
-kde_contour_dfs_nonauto_kernel <- TCcrediblebands::contour_list_to_df(
+kde_contour_dfs_nonauto_kernel <- TCpredictionbands::contour_list_to_df(
   output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["kde"]][["contour"]])
 
-graphic_kde <- TCcrediblebands::ggvis_kde_contour(
+graphic_kde <- TCpredictionbands::ggvis_kde_contour(
   kde_contour_dfs_nonauto_kernel,
   base_graph = graphic_kde,
   color = pb_color_vec["kde"])
@@ -108,7 +108,7 @@ graphic_convex <- ggvis_paths(data_out = convex_train_curves_auto_logistic,
   labs(title = "TC #AL071995",
        subtitle = "Auto Regressive Curves\n  with Logistic-based Lysis") 
 
-graphic_convex  <- TCcrediblebands::ggvis_convex_hull(
+graphic_convex  <- TCpredictionbands::ggvis_convex_hull(
   output_lines = output_list_pipeline[[tc]][["Auto_DeathRegs"]][["convex_hull"]][["structure"]],
   color = pb_color_vec["convex_hull"],
   base_graph = graphic_convex)
@@ -145,7 +145,7 @@ graphic_delta <- ggvis_paths(data_out = delta_train_curves_auto_logistic,
   labs(title = "TC #AL032009",
        subtitle = "Auto Regressive Curves\n  with Kernel-based Lysis") 
 
-graphic_delta <-  TCcrediblebands::ggvis_delta_ball_contour(
+graphic_delta <-  TCpredictionbands::ggvis_delta_ball_contour(
   output_lines = output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["delta_ball"]][["structure"]],
   color = pb_color_vec["delta_ball"],
   base_graph = graphic_delta)
@@ -188,7 +188,7 @@ bubble_plot_data_nonauto_logistic <- output_list_pipeline[[tc]] %>%
   .[["bubble_structure"]] %>%
   sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
 
-graphic_spherical <- TCcrediblebands::ggvis_bubble_data(
+graphic_spherical <- TCpredictionbands::ggvis_bubble_data(
   bubble_plot_data = bubble_plot_data_nonauto_logistic,
   base_graph = graphic_spherical, 
   color = pb_color_vec["bubble_ci"],

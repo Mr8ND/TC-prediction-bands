@@ -3,7 +3,7 @@
 # regions shaded by p-value.
 
 library(tidyverse)
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(maps)
 library(maptools)
 # library(calibrate)
@@ -19,7 +19,7 @@ train <- train_data
 # Block-specific bearing/speed regressions ------------------
 
 # Append path regression variables to training data (auto=T for most general)
-train <- lapply(train, FUN = TCcrediblebands::get_reg_df, auto = T)
+train <- lapply(train, FUN = TCpredictionbands::get_reg_df, auto = T)
 
 # Put training data in a single data frame
 train_unlist <- do.call("rbind", train) 
@@ -139,7 +139,7 @@ east_bounds <- data.frame(
            40, 40, 40, 40, 50, 65, 65, 50, 50, 50, 50, 65, 65, 65))
 
 # Determine bearing/speed p-values for each west-bound block
-get.block <- Vectorize(TCcrediblebands::get_block)
+get.block <- Vectorize(TCpredictionbands::get_block)
 
 west_bounds <- west_bounds %>% mutate(
   xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,

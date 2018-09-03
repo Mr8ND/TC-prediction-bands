@@ -4,7 +4,7 @@ library(xtable)
 library(forcats)
 library(progress)
 library(gridExtra)
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(ggmap)
 
 # args -----------------
@@ -128,34 +128,34 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 
     	for (pb in which_pb) {
     		if(pb == "kde") {
-    			kde_contour_dfs_auto_ker <- TCcrediblebands::contour_list_to_df(
+    			kde_contour_dfs_auto_ker <- TCpredictionbands::contour_list_to_df(
         						    output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["kde"]][["contour"]])
-      			ggout_auto_ker <- TCcrediblebands::ggvis_kde_contour(kde_contour_dfs_auto_ker,
+      			ggout_auto_ker <- TCpredictionbands::ggvis_kde_contour(kde_contour_dfs_auto_ker,
       								base_graph = ggout_auto_ker,
                                  	color = color_vec[pb])
 
-      			kde_contour_dfs_auto_bin <- TCcrediblebands::contour_list_to_df(
+      			kde_contour_dfs_auto_bin <- TCpredictionbands::contour_list_to_df(
         						    output_list_pipeline[[tc]][["Auto_DeathRegs"]][["kde"]][["contour"]])
-      			ggout_auto_bin <- TCcrediblebands::ggvis_kde_contour(kde_contour_dfs_auto_bin,
+      			ggout_auto_bin <- TCpredictionbands::ggvis_kde_contour(kde_contour_dfs_auto_bin,
       								base_graph = ggout_auto_bin,
                                  	color = color_vec[pb])
 
-      			kde_contour_dfs_nonauto_ker <- TCcrediblebands::contour_list_to_df(
+      			kde_contour_dfs_nonauto_ker <- TCpredictionbands::contour_list_to_df(
         						    output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["kde"]][["contour"]])
-      			ggout_nonauto_ker <- TCcrediblebands::ggvis_kde_contour(kde_contour_dfs_nonauto_ker,
+      			ggout_nonauto_ker <- TCpredictionbands::ggvis_kde_contour(kde_contour_dfs_nonauto_ker,
       								base_graph = ggout_nonauto_ker,
                                  	color = color_vec[pb])
 
-      			kde_contour_dfs_nonauto_bin <- TCcrediblebands::contour_list_to_df(
+      			kde_contour_dfs_nonauto_bin <- TCpredictionbands::contour_list_to_df(
         						    output_list_pipeline[[tc]][["NoAuto_DeathRegs"]][["kde"]][["contour"]])
-      			ggout_nonauto_bin <- TCcrediblebands::ggvis_kde_contour(kde_contour_dfs_nonauto_bin,
+      			ggout_nonauto_bin <- TCpredictionbands::ggvis_kde_contour(kde_contour_dfs_nonauto_bin,
       								base_graph = ggout_nonauto_bin,
                                  	color = color_vec[pb])
 	    		}
 	    	if (pb == "bubble_ci") {
 	    		bubble_plot_data_auto_ker <- output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
         											sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
-		      	ggout_auto_ker <- TCcrediblebands::ggvis_bubble_data(
+		      	ggout_auto_ker <- TCpredictionbands::ggvis_bubble_data(
 		        					bubble_plot_data = bubble_plot_data_auto_ker,
 		        					base_graph = ggout_auto_ker, 
 		        					color = color_vec[pb],
@@ -164,7 +164,7 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 
 		      	bubble_plot_data_auto_bin <- output_list_pipeline[[tc]][["Auto_DeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
         											sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
-		      	ggout_auto_bin <- TCcrediblebands::ggvis_bubble_data(
+		      	ggout_auto_bin <- TCpredictionbands::ggvis_bubble_data(
 		        					bubble_plot_data = bubble_plot_data_auto_bin,
 		        					base_graph = ggout_auto_bin, 
 		        					color = color_vec[pb],
@@ -173,7 +173,7 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 
 		      	bubble_plot_data_nonauto_ker <- output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
         											sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
-		      	ggout_nonauto_ker <- TCcrediblebands::ggvis_bubble_data(
+		      	ggout_nonauto_ker <- TCpredictionbands::ggvis_bubble_data(
 		        					bubble_plot_data = bubble_plot_data_nonauto_ker,
 		        					base_graph = ggout_nonauto_ker, 
 		        					color = color_vec[pb],
@@ -182,7 +182,7 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 
 		      	bubble_plot_data_nonauto_bin <- output_list_pipeline[[tc]][["NoAuto_DeathRegs"]][["bubble_ci"]][["bubble_structure"]] %>%
         											sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
-		      	ggout_nonauto_bin <- TCcrediblebands::ggvis_bubble_data(
+		      	ggout_nonauto_bin <- TCpredictionbands::ggvis_bubble_data(
 		        					bubble_plot_data = bubble_plot_data_nonauto_bin,
 		        					base_graph = ggout_nonauto_bin, 
 		        					color = color_vec[pb],
@@ -190,37 +190,37 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 		        					centers = FALSE) 
 	    		}
     		if(pb == "delta_ball") {
-	    		ggout_auto_ker <-  TCcrediblebands::ggvis_delta_ball_contour(
+	    		ggout_auto_ker <-  TCpredictionbands::ggvis_delta_ball_contour(
 	    						   	output_lines = output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["delta_ball"]][["structure"]],
 	                               	color = color_vec[pb],
 	                               	base_graph = ggout_auto_ker)
-	    		ggout_auto_bin <-  TCcrediblebands::ggvis_delta_ball_contour(
+	    		ggout_auto_bin <-  TCpredictionbands::ggvis_delta_ball_contour(
 	    						   	output_lines = output_list_pipeline[[tc]][["Auto_DeathRegs"]][["delta_ball"]][["structure"]],
 	                               	color = color_vec[pb],
 	                               	base_graph = ggout_auto_bin)
-	    		ggout_nonauto_ker <-  TCcrediblebands::ggvis_delta_ball_contour(
+	    		ggout_nonauto_ker <-  TCpredictionbands::ggvis_delta_ball_contour(
 	    						   	output_lines = output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["delta_ball"]][["structure"]],
 	                               	color = color_vec[pb],
 	                               	base_graph = ggout_nonauto_ker)
-	    		ggout_nonauto_bin <-  TCcrediblebands::ggvis_delta_ball_contour(
+	    		ggout_nonauto_bin <-  TCpredictionbands::ggvis_delta_ball_contour(
 	    						   	output_lines = output_list_pipeline[[tc]][["NoAuto_DeathRegs"]][["delta_ball"]][["structure"]],
 	                               	color = color_vec[pb],
 	                               	base_graph = ggout_nonauto_bin)
 	    		}
 	    	if (pb == "convex_hull") {
-	    		ggout_auto_ker  <- TCcrediblebands::ggvis_convex_hull(
+	    		ggout_auto_ker  <- TCpredictionbands::ggvis_convex_hull(
 	    							output_lines = output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["convex_hull"]][["structure"]],
                                     color = color_vec[pb],
                                     base_graph = ggout_auto_ker)
-	    		ggout_auto_bin  <- TCcrediblebands::ggvis_convex_hull(
+	    		ggout_auto_bin  <- TCpredictionbands::ggvis_convex_hull(
 	    							output_lines = output_list_pipeline[[tc]][["Auto_DeathRegs"]][["convex_hull"]][["structure"]],
                                     color = color_vec[pb],
                                     base_graph = ggout_auto_bin)
-	    		ggout_nonauto_ker  <- TCcrediblebands::ggvis_convex_hull(
+	    		ggout_nonauto_ker  <- TCpredictionbands::ggvis_convex_hull(
 	    							output_lines = output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["convex_hull"]][["structure"]],
                                     color = color_vec[pb],
                                     base_graph = ggout_nonauto_ker)
-	    		ggout_nonauto_bin  <- TCcrediblebands::ggvis_convex_hull(
+	    		ggout_nonauto_bin  <- TCpredictionbands::ggvis_convex_hull(
 	    							output_lines = output_list_pipeline[[tc]][["NoAuto_DeathRegs"]][["convex_hull"]][["structure"]],
                                     color = color_vec[pb],
                                     base_graph = ggout_nonauto_bin)

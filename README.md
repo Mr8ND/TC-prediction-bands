@@ -16,23 +16,23 @@ As is generally the case in papers today, our analysis is replicable. The files
 in the `main/` folder store the necessary files to run our analysis. The viewer 
 should note that the analysis pipeline takes a long while and should decide if 
 they would like the full results or just test out the analysis on a few samples. 
-Additionally, the R package `TCcrediblebands`, which is included in this repo 
-provides the user with the ability to analysis different generated curves with 
-our credible band approaches and also TC paths that were not available when 
-we developed with package.
+Additionally, the R package `TCpredictionbands`, which is included in this
+repo, provides the user with the ability to analysis different generated
+curves with our credible band approaches and also TC paths that were not
+available when we developed with package.
 
 ### Running files
 All files in `main` are meant to be run from the upper projection location 
 (`Hurricanes_701`).
 
-### `TCcrediblebands` package
+### `TCpredictionbands` package
 
 To install the latest version please do
 
 ```r
 library(devtools)
-devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
-library(TCcrediblebands)
+devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCpredictionbands')
+library(TCpredictionbands)
 ```
 
 ## Comments

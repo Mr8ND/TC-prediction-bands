@@ -4,8 +4,8 @@ data_loc  <- "main/data/"
 # Install from Github ----------------------------------
 
 library(devtools)
-devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
-library(TCcrediblebands)
+devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCpredictionbands')
+library(TCpredictionbands)
 
 # Training Data Load -------------------------
 

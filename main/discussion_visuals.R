@@ -11,7 +11,7 @@ library(forcats)
 library(progress)
 library(latex2exp)
 library(gridExtra)
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(GGally)
 
 # Set theme -----------------
@@ -420,7 +420,7 @@ bubble_plot_data_auto_logistic <- output_list_pipeline[[tc]] %>%
   .[["bubble_structure"]] %>%
   sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
 
-xx4_branching_curve <- TCcrediblebands::ggvis_bubble_data(
+xx4_branching_curve <- TCpredictionbands::ggvis_bubble_data(
   bubble_plot_data = bubble_plot_data_auto_logistic,
   base_graph = xx4_branching_curve, 
   color = pb_color_vec["bubble_ci"],
@@ -464,7 +464,7 @@ bubble_plot_data_auto_logistic <- output_list_pipeline[[tc]] %>%
   .[["bubble_structure"]] %>%
   sapply(function(x) if (class(x) == "matrix") {data.frame(x)}else{x})
 
-xx4_curving_curve <- TCcrediblebands::ggvis_bubble_data(
+xx4_curving_curve <- TCpredictionbands::ggvis_bubble_data(
   bubble_plot_data = bubble_plot_data_auto_logistic,
   base_graph = xx4_curving_curve, 
   color = pb_color_vec["bubble_ci"],
@@ -527,10 +527,10 @@ xx5_patchy_curve <- ggvis_paths(data_out = train_curves_auto_kernel,
   labs(title = "TC #AL162005",
        subtitle = "Auto-Regressive Curves\n  with Kernel-based Lysis") 
 
-kde_contour_dfs_auto_kernel <- TCcrediblebands::contour_list_to_df(
+kde_contour_dfs_auto_kernel <- TCpredictionbands::contour_list_to_df(
   output_list_pipeline[[tc]][["Auto_NoDeathRegs"]][["kde"]][["contour"]])
 
-xx5_patchy_curve <- TCcrediblebands::ggvis_kde_contour(
+xx5_patchy_curve <- TCpredictionbands::ggvis_kde_contour(
                                                   kde_contour_dfs_auto_kernel,
                                                   base_graph = xx5_patchy_curve,
                                                   color = pb_color_vec["kde"])
@@ -567,10 +567,10 @@ xx5_outlier_curve <- ggvis_paths(data_out = train_curves_nonauto_kernel,
   labs(title = "TC #AL192012",
        subtitle = "Auto-Regressive Curves\n  with Kernel-based Lysis") 
 
-kde_contour_dfs_auto_kernel <- TCcrediblebands::contour_list_to_df(
+kde_contour_dfs_auto_kernel <- TCpredictionbands::contour_list_to_df(
   output_list_pipeline[[tc]][["NoAuto_NoDeathRegs"]][["kde"]][["contour"]])
 
-xx5_outlier_curve <- TCcrediblebands::ggvis_kde_contour(
+xx5_outlier_curve <- TCpredictionbands::ggvis_kde_contour(
   kde_contour_dfs_auto_kernel,
   base_graph = xx5_outlier_curve,
   color = pb_color_vec["kde"])

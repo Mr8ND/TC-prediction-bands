@@ -1,6 +1,6 @@
 library(tidyverse)
 library(gridExtra)
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(progress)
 library(forcats)
 library(reshape2)

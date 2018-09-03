@@ -14,9 +14,9 @@ data_loc  <- "main/data/"
 
 library(devtools)
 library(methods)
-#devtools::install_github(repo = 'benjaminleroy/Hurricanes_701/TCcrediblebands')
-#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
-library(TCcrediblebands)
+#devtools::install_github(repo = 'benjaminleroy/Hurricanes_701/TCpredictionbands')
+#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCpredictionbands')
+library(TCpredictionbands)
 
 
 # loading SCA Structure ------------------

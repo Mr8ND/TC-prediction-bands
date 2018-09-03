@@ -1,7 +1,7 @@
 # Code to store names of train and test TCs in .Rdata file.
 # Storing names will make train and test split reproducible.
 
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(splitstackshape)
 
 # Make train and test names reproducible

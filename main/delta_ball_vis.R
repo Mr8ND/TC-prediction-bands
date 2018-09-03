@@ -1,6 +1,6 @@
 # creation of example of what delta ball does visualzation
 library(tidyverse)
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(clusterSim)
 library(sp)
 library(gridExtra)
@@ -96,7 +96,7 @@ tuples_of_tri <- data.frame(rbind(tri_matrix[,c(1,2)],
 dplyr::mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
 
 
-# hidden function in TCcrediblebands -------------
+# hidden function in TCpredictionbands -------------
 remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
 
   # Hack to make R CMD check not fail

@@ -8,7 +8,7 @@ library(forcats)
 library(progress)
 library(latex2exp)
 library(gridExtra)
-library(TCcrediblebands)
+library(TCpredictionbands)
 
 # Set theme -----------------
 

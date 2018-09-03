@@ -5,7 +5,7 @@ library(forcats)
 library(progress)
 library(latex2exp)
 library(gridExtra)
-library(TCcrediblebands)
+library(TCpredictionbands)
 library(ggforce)
 
 # Set theme -----------------
@@ -76,7 +76,7 @@ vis_spheres <- ggplot() + geom_circle(data = circle_df,
 
 # contour ----------------
 
-vis_contour <- TCcrediblebands::ggvis_bubble_data(
+vis_contour <- TCpredictionbands::ggvis_bubble_data(
   bubble_plot_data = spherical_ball,
   base_graph = ggplot(), 
   color = 'red',

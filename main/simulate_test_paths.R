@@ -1,4 +1,4 @@
-functions_loc = "../TCcrediblebands/R/"
+functions_loc = "../TCpredictionbands/R/"
 source(paste0(functions_loc, "regression_functions.R")) 
 source(paste0(functions_loc, "creating_curves.R"))
 source(paste0(functions_loc, "read_data_source.R"))

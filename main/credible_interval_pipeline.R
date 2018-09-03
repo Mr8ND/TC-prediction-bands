@@ -4,8 +4,8 @@ library(methods)
 
 #' Install from Github ----------------------------------
 
-#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCcrediblebands')
-library(TCcrediblebands)
+#devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCpredictionbands')
+library(TCpredictionbands)
 
 #' Loading all the data --------------------------------------
 

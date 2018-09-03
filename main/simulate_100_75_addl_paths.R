@@ -1,5 +1,5 @@
 library(methods)
-library(TCcrediblebands)
+library(TCpredictionbands)
 load("data/raw_data.Rdata") # contains train_data and test_data
 
 ##### Generate 100 additional simulated curves for each test TC #####

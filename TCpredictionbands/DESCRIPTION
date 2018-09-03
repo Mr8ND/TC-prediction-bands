@@ -1,4 +1,4 @@
-Package: TCcrediblebands
+Package: TCpredictionbands
 Title: Tropical Cyclone Simulation-based Credible Bands
 Version: 0.1
 Authors@R: c(
