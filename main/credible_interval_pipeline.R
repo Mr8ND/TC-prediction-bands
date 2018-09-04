@@ -15,6 +15,7 @@ true_curve_conversion_function <- function(df){
   return(output_df)
 }
 
+#' Need to change the ones here below
 data_loc <- "main/data/"
 load(paste0(data_loc, 'Test_Sims_350.Rdata'))
 load(paste0(data_loc, 'raw_data.Rdata'))

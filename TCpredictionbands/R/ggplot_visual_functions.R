@@ -251,7 +251,7 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
   return(ggout)
 }
 
-# Convex Hull visualation function ---------------------------
+# Convex Hull visualization function ---------------------------
 
 
 #' Visualize delta ball exterior centers (with \code{ggplot})
