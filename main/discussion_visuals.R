@@ -18,11 +18,13 @@ library(GGally)
 tc_theme <- theme_minimal() + 
   theme(strip.background = element_rect(fill = "grey90", color = NA),
         plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
+        strip.text.x = element_text(size = 13),
+        strip.text.y = element_text(size = 13),
         axis.title = element_text(size = 14),
         axis.text = element_text(size = 12), 
         legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+        legend.text = element_text(size = 12),
+        plot.caption = element_text(size = 10))
 
 # Load Data ------------------
 
@@ -82,7 +84,7 @@ xx1_crazy_curve <- ggvis_paths(data_out = train_curves_auto_logistic,
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
   labs(caption = "TC #AL112004: Autoregressive Curves\n with Logistic-Based Lysis",
-       title = "Example of a more \"Wiggly\" TC") + tc_theme
+       title = "Example of a \"Wiggly\" TC") + tc_theme
 
 
 # simulated curve, extreme turning: qqplot, change in bearing --------
@@ -202,9 +204,9 @@ for (region in names(train_models[["speed_regs_nonauto"]])) {
 
 speed_regs_nonauto_df <- speed_regs_nonauto_df[-1,]
 
-bearing_regs_all <- rbind(bearing_regs_auto_df %>% select(.resid) %>%
+bearing_regs_all <- rbind(bearing_regs_auto_df[, ".resid", drop = F] %>%
                                  mutate(reg = "Autoregressive"),
-                               bearing_regs_nonauto_df %>% select(.resid) %>%
+                          bearing_regs_nonauto_df[, ".resid", drop = F] %>%
                                  mutate(reg = "Non-Autoregressive"))
 
 
@@ -218,15 +220,15 @@ xx1_qq_bearing <- ggplot(bearing_regs_all,
   labs(x = "Theoretical Quantile Values",
        y = "Residual Quantile Values",
        color = "Model Type",
-       title = "Change in Bearing Model \nQuantile-Quantile Plot") +
+       title = "Change in Bearing \nQuantile-Quantile Plot") +
   tc_theme
   
 
 # simulated curve, extreme turning: qqplot, change in speed -------------
   
-speed_regs_all <- rbind(speed_regs_auto_df %>% select(.resid) %>%
+speed_regs_all <- rbind(speed_regs_auto_df[, ".resid", drop = F] %>%
                           mutate(reg = "Autoregressive"),
-                        speed_regs_nonauto_df %>% select(.resid) %>%
+                        speed_regs_nonauto_df[, ".resid", drop = F] %>%
                           mutate(reg = "Non-Autoregressive"))
 
 xx1_qq_speed <- ggplot(speed_regs_all, 
@@ -237,7 +239,7 @@ xx1_qq_speed <- ggplot(speed_regs_all,
   labs(x = "Theoretical Quantile Values",
        y = "Residual Quantile Values",
        color = "Model Type",
-       title = "Change in Speed Model \nQuantile-Quantile Plot") +
+       title = "Change in Speed \nQuantile-Quantile Plot") +
   tc_theme
 
 # simulated curve, extreme turning: final graphic (xx1) ---------  
@@ -253,12 +255,14 @@ xx1_layout_matrix <- matrix(c(1,1,1,1, 2,2,2,2, 3,3,3,3,
                               5,5,5,5, 4,4,4,4, 4,4,4,4),
                         nrow = 6, byrow = T)
 
+white_box <- ggplot() + theme( panel.background = element_rect(fill = "white"))
+
 xx1 <- arrangeGrob(xx1_crazy_curve,
                    xx1_qq_bearing + no_leg,
                    xx1_qq_speed + no_leg, 
                    grab_legend(xx1_qq_bearing +
                                  guides(color = guide_legend(nrow = 1))),
-                   ggplot(),
+                   white_box,
                    heights = c(1,1,1,1,.3,.7),
                    layout_matrix = xx1_layout_matrix
                    )
@@ -392,9 +396,9 @@ xx3 <- prop_vs_length_df %>% ggplot() +
   facet_wrap(~ type, nrow = 2) +
   geom_smooth(aes(x = length_true, y = length_deep),
               color = smooth_color) +
-  labs(y = "Survival time for deepest simulated curve",
-       x = "Survival time of true curve",
-       title = "Survival times between true curve and spherical PB center") +
+  labs(y = "Survival Time for Deepest Simulated Curve",
+       x = "Survival Time of True Curve",
+       title = "Survival Times of Deepest Spherical PB Curves versus True Curves") +
   tc_theme
 
 ggsave(plot = xx3,
@@ -434,7 +438,7 @@ xx4_branching_curve <- TCpredictionbands::ggvis_bubble_data(
   base_graph = xx4_branching_curve, 
   color = pb_color_vec["bubble_ci"],
   connect = TRUE, 
-  centers = FALSE) 
+  centers = FALSE)
 
 xx4_branching_curve <- xx4_branching_curve + tc_theme
 
@@ -491,8 +495,10 @@ xx4_layout_matrix <- matrix(c(1,1,1,1, 3,3,3,3,
                               1,1,1,1, 4,4,4,4),
                             nrow = 5, byrow = T)
 
+white_box <- ggplot() + theme( panel.background = element_rect(fill = "white"))
+
 xx4 <- arrangeGrob(xx4_branching_curve, xx4_curving_curve,
-             ggplot(), ggplot(),
+             white_box, white_box,
              layout_matrix = xx4_layout_matrix,
              heights = c(.5,1,1,1,.5),
              top = textGrob(paste("Visualization of Drawbacks of",

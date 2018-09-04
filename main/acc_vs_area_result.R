@@ -15,12 +15,13 @@ library(TCpredictionbands)
 tc_theme <- theme_minimal() + 
   theme(strip.background = element_rect(fill = "grey90", color = NA),
         plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
-        strip.text.y = element_text(size = 14),
+        strip.text.x = element_text(size = 13),
+        strip.text.y = element_text(size = 13),
         axis.title = element_text(size = 14),
         axis.text = element_text(size = 12), 
         legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+        legend.text = element_text(size = 12),
+        plot.caption = element_text(size = 10))
 
 # Load Data ------------------
 
@@ -230,7 +231,7 @@ large_acc_vs_area <- data_run %>%
   geom_hline(yintercept = 1) +  tc_theme +
   scale_x_continuous(breaks = seq(0, 3250, by = 250)) +
   theme(axis.text.x = element_text(angle = 90)) +
-  labs(y = "proportion captured", x = "Area")
+  labs(y = "Proportion Captured", x = "Area")
 
 large_acc_vs_area2 <- box_plus_scatter(data = data_run %>%
 							filter(smart_size == "large", area < 3250),
@@ -250,12 +251,14 @@ large_acc_vs_area_final <- large_acc_vs_area2 +
 
 small_acc_vs_area <- data_run %>%
   						filter(smart_size == "small",area < 2400) %>%
-  ggplot() +   geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
+  ggplot() +   
+  geom_point(aes(x = area, y = prop_acc2),alpha = .15) +
   facet_grid(~cb_type_full, scales = "free_x" ) +
-  geom_hline(yintercept = 1) +  tc_theme +
+  geom_hline(yintercept = 1) +  
+  tc_theme +
   scale_x_continuous(breaks = seq(0, 2400, by = 125), lim = c(0, 2400)) +
   theme(axis.text.x = element_text(angle = 90)) +
-  labs(y = "proportion captured", x = "Area")
+  labs(y = "Proportion Captured", x = "Area")
 
 small_acc_vs_area2 <- box_plus_scatter(
 				data = data_run %>% filter(smart_size == "small",area < 2400),
@@ -270,10 +273,10 @@ small_acc_vs_area_final <- small_acc_vs_area2 +
 
 arrangement <- arrangeGrob(large_acc_vs_area_final +
 						labs(title = "Larger Prediction Bands",
-                             x = "Area in square nautical miles (maximum = 3250)"),
+                             x = "Area in Square Nautical Miles (maximum = 3250)"),
              small_acc_vs_area_final + 
              			labs(title = "Smaller Prediction Bands",
-                              x = "Area in square nautical miles (maximum = 2400)"), ncol = 1)
+                              x = "Area in Square Nautical Miles (maximum = 2400)"), ncol = 1)
 
 ggsave(plot = arrangement,
 	   filename = paste0(image_path,"tc_results_area_vs_prop.png"),

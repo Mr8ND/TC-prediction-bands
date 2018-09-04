@@ -161,19 +161,24 @@ east_bounds$speed_pval[east_bounds$speed_pval > cutoff_speed] <- NA
 
 # Combine east and west bounds into one data frame
 all_bounds <- rbind(east_bounds, west_bounds) %>%
-  mutate(direction = 
+  mutate(direction_bearing = 
            c(rep("Bearing Regressions for TCs Moving East", nrow(east_bounds)),
-             rep("Bearing Regressions for TCs Moving West", nrow(west_bounds))))
+             rep("Bearing Regressions for TCs Moving West", nrow(west_bounds))),
+         direction_speed = 
+           c(rep("Speed Regressions for TCs Moving East", nrow(east_bounds)),
+             rep("Speed Regressions for TCs Moving West", nrow(west_bounds))))
 
 # Set TC ggplot2 theme ------------------
 tc_theme <- theme_minimal() + 
   theme(strip.background = element_rect(fill = "grey90", color = NA),
         plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
+        strip.text.x = element_text(size = 13),
+        strip.text.y = element_text(size = 13),
         axis.title = element_text(size = 14),
         axis.text = element_text(size = 12), 
         legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+        legend.text = element_text(size = 12),
+        plot.caption = element_text(size = 10))
 
 # Plot p-values of block-specific bearing regressions on map ------------------
 
@@ -196,7 +201,7 @@ bearing_map <- ggplot(all_bounds) +
                 fill = bearing_pval), 
             colour = "black", alpha = 0.8,
             size = 0.35, inherit.aes = T) +
-  facet_grid(. ~ direction) +
+  facet_grid(. ~ direction_bearing) +
   scale_fill_gradient(na.value = "white", low = "red", high = "pink",
                       trans = "log10",
                       limits = c(min(min(west_bounds$bearing_pval, na.rm = T), 
@@ -228,7 +233,7 @@ speed_map <- ggplot(all_bounds) +
                 fill = speed_pval),
             colour = "black", alpha = 0.8,
             size = 0.35, inherit.aes = T) +
-  facet_grid(. ~ direction) +
+  facet_grid(. ~ direction_speed) +
   scale_fill_gradient(na.value = "white", low = "red", high = "pink",
                       trans = "log10",
                       limits = c(min(min(west_bounds$speed_pval, na.rm = T), 

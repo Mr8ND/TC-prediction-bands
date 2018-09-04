@@ -39,11 +39,13 @@ names(output_list_pipeline) <- names(test_env)
 tc_theme <- theme_minimal() + 
   theme(strip.background = element_rect(fill = "grey90", color = NA),
         plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
+        strip.text.x = element_text(size = 13),
+        strip.text.y = element_text(size = 13),
         axis.title = element_text(size = 14),
         axis.text = element_text(size = 12), 
         legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+        legend.text = element_text(size = 12),
+        plot.caption = element_text(size = 10))
 
 # KDE (non auto kernel) --------------------
 tc = "AL181984" # number 9
@@ -226,10 +228,11 @@ ggplot() +
   guides(color = guide_legend(nrow = 1, 
                               override.aes =
                                 list(size = 2))) +
+  tc_theme +
   theme(legend.position = "bottom") +
   scale_color_manual(values = as.vector(pb_color_vec[c("kde", "bubble_ci", 
                                                        "convex_hull", "delta_ball")])) +
-  labs(color = "Prediction Band Method") 
+  labs(color = "Prediction Band Type") 
 leg_vis <- GGally::grab_legend(pre_leg_vis)
 
 layout_matrix <- matrix(c(1,1,1,1, 2,2,2,2,
@@ -257,4 +260,5 @@ grob_vis <- arrangeGrob(graphic_kde + tc_theme,
 ggsave(plot = grob_vis,
        filename = paste0(image_path,
                          "pb_gallery.png"),
-       device = "png", width = 9, height = 6/7*9, units = "in")
+       device = "png", width = 10, height = 6/7*10, units = "in")
+

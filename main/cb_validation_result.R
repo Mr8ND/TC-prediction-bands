@@ -35,10 +35,12 @@ sim_type_table_levels <- c("AR \\& Logistic"     = "Auto_DeathRegs",
                            "Non-AR \\& Kernel"   = "NoAuto_NoDeathRegs")
 sim_type_table_labels <- names(sim_type_table_levels)
 
-sim_type_graphic_levels <- c("Autoregression & Logistic-based Lysis"   = "Auto_DeathRegs",
-                           "Autoregression & Kernel-based Lysis"       = "Auto_NoDeathRegs",
-                           "Non-Autoregression & Logistic-based Lysis" = "NoAuto_DeathRegs",
-                           "Non-Autoregression & Kernel-based Lysis"   = "NoAuto_NoDeathRegs")
+sim_type_graphic_levels <- 
+  c("Autoregression & Logistic-based Lysis"     = "Auto_DeathRegs",
+    "Autoregression & Kernel-based Lysis"       = "Auto_NoDeathRegs",
+    "Non-Autoregression & Logistic-based Lysis" = "NoAuto_DeathRegs",
+    "Non-Autoregression & Kernel-based Lysis"   = "NoAuto_NoDeathRegs")
+
 sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
 # color selection --------------------
@@ -57,11 +59,13 @@ names(pb_color_vec) <- c("convex_hull", "bubble_ci", "delta_ball", "kde")
 tc_theme <- theme_minimal() + 
   theme(strip.background = element_rect(fill = "grey90", color = NA),
         plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text.x = element_text(size = 14),
+        strip.text.x = element_text(size = 13),
+        strip.text.y = element_text(size = 13),
         axis.title = element_text(size = 14),
         axis.text = element_text(size = 12), 
         legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12))
+        legend.text = element_text(size = 12),
+        plot.caption = element_text(size = 10))
 
 # summary functions ------------------
 
@@ -368,7 +372,7 @@ uniform_pb_assessment <- all_data_uniform_graph %>% ggplot() +
   guides(fill = guide_legend(reverse = TRUE),
          color = guide_legend(reverse = TRUE)) +
   scale_y_continuous(breaks = c(0,.25,.5,.75,.9,1)) + 
-   tc_theme +
+  tc_theme +
   labs(x = "Number of Curves Examined",
        y = "Proportion of Curves Captured",
        fill = "Prediction Band Type",
@@ -408,17 +412,13 @@ pointwise_pb_assessment <- all_data_pointwise_graph %>% ggplot() +
        y = "Proportion of Points of Curves Captured",
        fill = "Prediction Band Type",
        color = "Prediction Band Type",
-       title = "Average Point-wise Containment per Curve") +
+       title = "Average Pointwise Containment per Curve") +
   scale_color_manual(values = as.vector(
                                 pb_color_vec[c("bubble_ci","kde", 
                                                "convex_hull", "delta_ball")])) +
   scale_fill_manual(values = as.vector(
     pb_color_vec[c("bubble_ci","kde", 
                    "convex_hull", "delta_ball")]))
-
-
-
-
 
 ggsave(plot = pointwise_pb_assessment,
        file = paste0(image_path,"sim_pw_cb_boxplot.png"), device = "png",
@@ -437,8 +437,8 @@ eval(parse(text = paste0("output_list_pipeline <- ",a)))
 df_area <- data.frame(area = -99, tc = "ben", cb_type = "ben",
                       sim_type = "ben") %>%
               mutate(tc = as.character(tc),
-                     cb_type = as.character(cb),
-                     sim_type = as.character(sim))
+                     cb_type = as.character(cb_type),
+                     sim_type = as.character(sim_type))
 
 for (tc in 1:length(output_list_pipeline)) {
   for (sim in names(output_list_pipeline[[tc]])) {
@@ -462,8 +462,6 @@ df_area2 %>% ggplot() +
                                         "Delta Ball",
                                         "Convex Hull"))) +
   facet_wrap( ~ sim_type_graph, labeller = label_wrap_gen(width = 25)) +
-  theme_minimal() +
-  theme(strip.background = element_rect(fill = "grey90", color = NA)) +
   scale_color_manual(values = as.vector(pb_color_vec[c("bubble_ci", "kde",
                                              "delta_ball", "convex_hull")])) +
   tc_theme + 
