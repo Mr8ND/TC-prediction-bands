@@ -5,8 +5,6 @@ data/*
 !spec/*.Rhistory
 __pycache__/
 !spec/*__pycache__/
-TCpredictionbands/data/*
-!TCpredictionbands/data/README.md
 main/data/*
 !main/data/README.md
 main/interval_pipeline_checker.R
