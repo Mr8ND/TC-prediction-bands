@@ -467,6 +467,7 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
 #' \item{area_vector}{cumulative area as one steps along the CB,
 #' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
+#' @export
 bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1, 
                                  long = 1, lat = 2, alpha_ci_level = .05,
                                  unit_measure = 'nautical mile') {

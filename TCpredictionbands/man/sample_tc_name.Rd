@@ -11,6 +11,7 @@ in \code{sample_sim}.}
 sample_tc_name
 }
 \description{
-Name of sample TC, AL032009
+"AL032009" means that the TC was in the Atlantic Basin (AL), the 3rd TC that
+ year (03), in year 2009 (2009).
 }
 \keyword{datasets}

@@ -13,7 +13,7 @@
 sample_sim
 }
 \description{
-A list of simulated curves, each element in the list is matrix
+A list of simulated curvesx, each element in the list is matrix
 (with different length), given the format below.
  
 Created by using the first 3 points of \code{sample_tc}, with

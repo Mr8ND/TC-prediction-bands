@@ -31,10 +31,9 @@ ggplot object of contours
 around. Goes all the way back to \code{delta_ball_wrapper}}
 }
 \examples{
-\donttest{
 # takes as while
 sample_sim_small <- list()
-for (i in 1:25){
+for (i in 1:10){
   sample_sim_small[[i]] <- sample_sim[[i]]
   }
 
@@ -42,9 +41,9 @@ delta_PB <- delta_structure(sample_sim_small, alpha = .05, area_ci_n = 1,
                             verbose = TRUE) 
 
 # for now since delta_ball_wrapper seems to be wrong
-ggvis_delta_ball_contour(delta_PB$structure, color = "red", base_graph = ggplot())
+ggvis_delta_ball_contour(delta_PB$structure, color = "red", 
+                         base_graph = ggplot2::ggplot())
 
 ggvis_delta_ball_contour(sample_sim_small, alpha = .05, 
-                         base_graph = ggplot(), color = "red")
-}
+                         base_graph = ggplot2::ggplot(), color = "red")
 }

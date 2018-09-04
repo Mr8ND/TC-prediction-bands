@@ -43,10 +43,9 @@ Visualize delta ball exterior centers (with \code{ggplot})
 Very similar function to \code{\link{ggvis_delta_ball_contour}}
 }
 \examples{
-\donttest{
 # takes as while
 sample_sim_small <- list()
-for (i in 1:25){
+for (i in 1:10){
   sample_sim_small[[i]] <- sample_sim[[i]]
   }
 
@@ -59,5 +58,4 @@ ggvis_convex_hull(output_lines, color = "red")
 ggvis_convex_hull(convex_PB, color = "blue")
 
 ggvis_convex_hull(sample_sim_small, color = "purple", alpha = .05)
-}
 }

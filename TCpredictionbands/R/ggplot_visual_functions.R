@@ -202,10 +202,9 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
 #' @return ggplot object of contours
 #' @export
 #' @examples 
-#' \donttest{
 #' # takes as while
 #' sample_sim_small <- list()
-#' for (i in 1:25){
+#' for (i in 1:10){
 #'   sample_sim_small[[i]] <- sample_sim[[i]]
 #'   }
 #' 
@@ -213,11 +212,11 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
 #'                             verbose = TRUE) 
 #' 
 #' # for now since delta_ball_wrapper seems to be wrong
-#' ggvis_delta_ball_contour(delta_PB$structure, color = "red", base_graph = ggplot())
+#' ggvis_delta_ball_contour(delta_PB$structure, color = "red", 
+#'                          base_graph = ggplot2::ggplot())
 #' 
 #' ggvis_delta_ball_contour(sample_sim_small, alpha = .05, 
-#'                          base_graph = ggplot(), color = "red")
-#' }
+#'                          base_graph = ggplot2::ggplot(), color = "red")
 ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
                                      color = "pink", ...){
   dots <- list(...)
@@ -284,10 +283,9 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
 #' @details Very similar function to \code{\link{ggvis_delta_ball_contour}}
 #' 
 #' @examples 
-#' \donttest{
 #' # takes as while
 #' sample_sim_small <- list()
-#' for (i in 1:25){
+#' for (i in 1:10){
 #'   sample_sim_small[[i]] <- sample_sim[[i]]
 #'   }
 #' 
@@ -300,7 +298,6 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
 #' ggvis_convex_hull(convex_PB, color = "blue")
 #' 
 #' ggvis_convex_hull(sample_sim_small, color = "purple", alpha = .05)
-#' }
 ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
                                      color = "pink", ...){
   
@@ -369,10 +366,9 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' @export
 #'
 #' @examples
-#' \donttest{
 #' # takes as while
 #' sample_sim_small <- list()
-#' for (i in 1:25){
+#' for (i in 1:10){
 #'   sample_sim_small[[i]] <- sample_sim[[i]]
 #'   }
 #' 
@@ -391,11 +387,11 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' bubble_plot_data <- spherical_PB$bubble_CI_object
 #' 
 #' # standard approach:
-#' ggvis_bubble_data(bubble_plot_data, color = "red", base_graph = ggplot())
+#' ggvis_bubble_data(bubble_plot_data, color = "red", 
+#'                   base_graph = ggplot2::ggplot())
 #' 
 #' ggvis_bubble_data(sample_sim_small, color = "purple", alpha_level = .05,
-#'                   base_graph = ggplot())
-#' }
+#'                   base_graph = ggplot2::ggplot())
 ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
                               centers = FALSE, connect = TRUE,
                               color = "pink", linewidth = 1, zoom = 4,
@@ -403,7 +399,7 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   
   dots <- list(...)
   
-  if (!all(c("positive", "negative", "center") %in% names(bubble_plot_data))) {
+  if (!all(c("positive", "negative", "centers", "radius") %in% names(bubble_plot_data))) {
     dflist_13pointsreduction <- thirteen_points_listable(bubble_plot_data, 
                                                          c_position = 1:2,
                                                          verbose = FALSE)

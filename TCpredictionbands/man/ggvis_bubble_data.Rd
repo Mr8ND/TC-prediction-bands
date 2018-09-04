@@ -41,10 +41,9 @@ only the required \code{alpha_level} parameter will be accepted for the
 goes back beyond the wrapper \code{\link{bubble_ci_from_tclist}}}
 }
 \examples{
-\donttest{
 # takes as while
 sample_sim_small <- list()
-for (i in 1:25){
+for (i in 1:10){
   sample_sim_small[[i]] <- sample_sim[[i]]
   }
 
@@ -62,9 +61,9 @@ spherical_PB <- bubble_ci_from_tclist(sample_sim_small,
 bubble_plot_data <- spherical_PB$bubble_CI_object
 
 # standard approach:
-ggvis_bubble_data(bubble_plot_data, color = "red", base_graph = ggplot())
+ggvis_bubble_data(bubble_plot_data, color = "red", 
+                  base_graph = ggplot2::ggplot())
 
 ggvis_bubble_data(sample_sim_small, color = "purple", alpha_level = .05,
-                  base_graph = ggplot())
-}
+                  base_graph = ggplot2::ggplot())
 }
