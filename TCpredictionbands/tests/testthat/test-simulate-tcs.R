@@ -181,7 +181,7 @@ test_names <- c("AL011951", "AL031951", "AL081951", "AL111951", "AL061952",
 
 # Read in data from HURDAT ----------------
 set.seed(87)
-tc_list <- TCcrediblebands::pull_data()
+tc_list <- TCpredictionbands::pull_data()
 
 # Get training and test TC data ----------------
 train <- tc_list[train_names]
@@ -263,7 +263,13 @@ for (auto_ind in tf) {
   }
 }
 
+# Obtaining the stored simulations
+internal_data <- TCpredictionbands:::internal_data
+stored_test_sims <- internal_data[["test_sims"]]
+
+
 # Test that new test_sims and stored_test_sims are the same
 test_that("Checking the simulated TC results have not changed", {
   expect_identical(test_sims, stored_test_sims)
 })
+

@@ -104,3 +104,16 @@
 #' 
 "sample_output_pipeline"
 
+#' Output of simulation process for TC "AL032009"
+#' 
+#' This object is the result of running the simulation curve for the TC
+#' "AL032009". We first train the model by pulling the data from HURDAT and
+#' we then simulate 2 curves per each combination of AR/nonAR model and Kernel/
+#' logistic regression modeled lysis.
+#' 
+#' @format list with 1 element, named "AL032009", which in turns
+#' has 4 elements, one for each combination of the of AR/nonAR model and 
+#' Kernel/ logistic regression modeled lysis, each one of length 2 (2 curve
+#' simulated).
+#' 
+"test_sims"

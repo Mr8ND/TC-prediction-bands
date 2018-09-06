@@ -10,14 +10,6 @@ true_curve_conversion_function <- function(df){
   return(output_df)
 }
 
-#internal_data <- list(sample_sim, sample_tc, sample_tc_name, sample_output_pipeline)
-#names(internal_data) <- c("sample_sim", "sample_tc", "sample_tc_name", "sample_output_pipeline")
-
-#load(system.file("data", "sample_sim.rda", package="TCpredictionbands"))
-#load(system.file("data", "sample_tc.rda", package="TCpredictionbands"))
-#load(system.file("data", "sample_tc_name.rda", package="TCpredictionbands"))
-#load(system.file("data", "sample_output_pipeline.rda", package="TCpredictionbands"))
-
 internal_data <- TCpredictionbands:::internal_data
 sample_sim <- internal_data[["sample_sim"]]
 sample_tc <- internal_data[["sample_tc"]]
