@@ -48,9 +48,6 @@ output_pipeline[[1]][["Auto_NoDeathRegs"]][["delta_ball"]][["area_ci"]] <- NULL
 output_pipeline[[1]][["Auto_NoDeathRegs"]][["convex_hull"]][["area"]] <- NULL
 output_pipeline[[1]][["Auto_NoDeathRegs"]][["time"]] <- NULL
 
-#sample_output_pipeline <- output_pipeline
-#devtools::use_data(sample_output_pipeline, overwrite=TRUE)
-
 
 test_that("Checking the pipeline results have not changed", {
   expect_identical(output_pipeline, sample_output_pipeline)
