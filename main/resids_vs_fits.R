@@ -1,7 +1,8 @@
 # This script plots residuals versus fitted values for the change in bearing
 # and change in speed regressions. 
 # Saves images of pooled (across blocks) residuals vs fits for bearing/AR, 
-# bearing/non-AR, speed/AR, speed/non-AR.
+# bearing/non-AR, speed/AR, speed/non-AR. 
+# Overlays resids vs fits for a randomly selected block.
 # Creates, but does not save, images of residuals vs fits for bearing/AR, 
 # bearing/non-AR, speed/AR, speed/non-AR on individual blocks.
 
@@ -50,12 +51,36 @@ bearing_fits_nonAR <- lapply(train_models$bearing_regs_nonauto,
                       FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
+# Pool all bearing AR/non-AR block names
+bearing_names_AR <- lapply(train_models$bearing_regs_auto, 
+                      FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+  unlist %>% names %>% substr(1, 7)
+
+bearing_names_nonAR <- lapply(train_models$bearing_regs_nonauto, 
+                        FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+  unlist %>% names %>% substr(1, 7)
+
+# Randomly select block for bearing AR/non-AR resids vs fits
+set.seed(27)
+bearing_AR_block <- sample(names(train_models$bearing_regs_auto), 1)
+bearing_nonAR_block <- sample(names(train_models$bearing_regs_nonauto), 1)
+
 # Data frames of bearing AR/non-AR residuals and fits
 bearing_AR_df <- data.frame(resids = bearing_resids_AR,
-                            fits = bearing_fits_AR)
+                            fits = bearing_fits_AR,
+                            blocks = bearing_names_AR) %>%
+  mutate(random_block = factor(blocks == bearing_AR_block, 
+                               levels = c(T, F))) %>%
+  mutate(random_block = fct_recode(random_block,
+                                   "Yes" = "TRUE", "No" = "FALSE"))
 
 bearing_nonAR_df <- data.frame(resids = bearing_resids_nonAR,
-                               fits = bearing_fits_nonAR)
+                               fits = bearing_fits_nonAR,
+                               blocks = bearing_names_nonAR) %>%
+  mutate(random_block = factor(blocks == bearing_nonAR_block, 
+                               levels = c(T, F)))  %>%
+  mutate(random_block = fct_recode(random_block,
+                                   "Yes" = "TRUE", "No" = "FALSE"))
 
 # Combine data frames of bearing AR/non-AR residuals and fits
 bearing_df <- rbind(bearing_AR_df, bearing_nonAR_df) %>%
@@ -64,16 +89,21 @@ bearing_df <- rbind(bearing_AR_df, bearing_nonAR_df) %>%
     rep("Non-Autoregressive Bearing Models", nrow(bearing_nonAR_df)))))
 
 # Plot of pooled bearing AR and non-AR residuals versus fits
-resids_fits_bear <- bearing_df %>% 
-  ggplot(aes(x = fits, y = resids)) +
-  geom_point(alpha = 0.1) +
+resids_fits_bear <- bearing_df %>%
+  ggplot(aes(x = fits, y = resids, color = random_block)) +
+  geom_point(data = bearing_df %>% filter(random_block == "No"),
+             aes(color = random_block), alpha = 0.05) +
+  geom_point(data = bearing_df %>% filter(random_block == "Yes"),
+             aes(color = random_block), alpha = 0.9, size = 0.5) +
   facet_wrap(~ model) +
+  scale_color_manual(values = c("black", "red"))+
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values of Change-in-Bearing Models") +
+       title = "Residuals Versus Fitted Values of Change in Bearing Models",
+       color = "Random Block") +
   tc_theme
 
 ggsave(resids_fits_bear, 
-       filename = paste0(image_path, "resids_fit_bear.png"),
+       filename = paste0(image_path, "resids_fits_bear.png"),
        width = 10, height = 4)
 
 # Resids vs fits, speed AR and non-AR ------------------
@@ -96,30 +126,59 @@ speed_fits_nonAR <- lapply(train_models$speed_regs_nonauto,
                       FUN = function(x) fitted(x, na.action = na.exclude)) %>%
                               unlist %>% unname
 
+# Pool all speed AR/non-AR block names
+speed_names_AR <- lapply(train_models$speed_regs_auto, 
+                         FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+  unlist %>% names %>% substr(1, 7)
+
+speed_names_nonAR <- lapply(train_models$speed_regs_nonauto, 
+                            FUN = function(x) fitted(x, na.action = na.exclude)) %>%
+  unlist %>% names %>% substr(1, 7)
+
+# Randomly select block for speed AR/non-AR resids vs fits
+set.seed(88)
+speed_AR_block <- sample(names(train_models$speed_regs_auto), 1)
+speed_nonAR_block <- sample(names(train_models$speed_regs_nonauto), 1)
+
 # Data frames of speed AR/non-AR residuals and fits
 speed_AR_df <- data.frame(resids = speed_resids_AR,
-                          fits = speed_fits_AR)
+                          fits = speed_fits_AR,
+                          blocks = speed_names_AR) %>%
+  mutate(random_block = factor(blocks == speed_AR_block, 
+                               levels = c(T, F))) %>%
+  mutate(random_block = fct_recode(random_block,
+                                   "Yes" = "TRUE", "No" = "FALSE"))
 
 speed_nonAR_df <- data.frame(resids = speed_resids_nonAR,
-                             fits = speed_fits_nonAR)
+                             fits = speed_fits_nonAR,
+                             blocks = speed_names_nonAR) %>%
+  mutate(random_block = factor(blocks == speed_nonAR_block, 
+                               levels = c(T, F)))  %>%
+  mutate(random_block = fct_recode(random_block,
+                                   "Yes" = "TRUE", "No" = "FALSE"))
 
-# Combine data frames of bearing AR/non-AR residuals and fits
+# Combine data frames of speed AR/non-AR residuals and fits
 speed_df <- rbind(speed_AR_df, speed_nonAR_df) %>%
   mutate(model = factor(c(
     rep("Autoregressive Speed Models", nrow(speed_AR_df)),
     rep("Non-Autoregressive Speed Models", nrow(speed_nonAR_df)))))
 
 # Plot of pooled speed AR and non-AR residuals versus fits
-resids_fit_speed <- speed_df %>% 
-  ggplot(aes(x = fits, y = resids)) +
-  geom_point(alpha = 0.1) +
+resids_fits_speed <- speed_df %>%
+  ggplot(aes(x = fits, y = resids, color = random_block)) +
+  geom_point(data = speed_df %>% filter(random_block == "No"),
+             aes(color = random_block), alpha = 0.05) +
+  geom_point(data = speed_df %>% filter(random_block == "Yes"),
+             aes(color = random_block), alpha = 0.9, size = 0.5) +
   facet_wrap(~ model) +
+  scale_color_manual(values = c("black", "red"))+
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values of Change-in-Speed Models") +
+       title = "Residuals Versus Fitted Values of Change in Speed Models",
+       color = "Random Block") +
   tc_theme
 
-ggsave(resids_fit_speed,
-       filename = paste0(image_path, "resids_fit_speed.png"),
+ggsave(resids_fits_speed,
+       filename = paste0(image_path, "resids_fits_speed.png"),
        width = 10, height = 4)
 
 # Resids versus fits on individual blocks ------------------
