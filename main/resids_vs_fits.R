@@ -8,6 +8,8 @@
 
 library(tidyverse)
 library(TCpredictionbands)
+library(grid)
+library(gridExtra)
 
 # Load Data ------------------
 data_loc <- "main/data/"
@@ -82,25 +84,43 @@ bearing_nonAR_df <- data.frame(resids = bearing_resids_nonAR,
   mutate(random_block = fct_recode(random_block,
                                    "Yes" = "TRUE", "No" = "FALSE"))
 
-# Combine data frames of bearing AR/non-AR residuals and fits
-bearing_df <- rbind(bearing_AR_df, bearing_nonAR_df) %>%
-  mutate(model = factor(c(
-    rep("Autoregressive Bearing Models", nrow(bearing_AR_df)),
-    rep("Non-Autoregressive Bearing Models", nrow(bearing_nonAR_df)))))
-
-# Plot of pooled bearing AR and non-AR residuals versus fits
-resids_fits_bear <- bearing_df %>%
+# Plots of pooled bearing AR and non-AR residuals versus fits
+resids_fits_bear_1 <- bearing_AR_df %>%
   ggplot(aes(x = fits, y = resids, color = random_block)) +
-  geom_point(data = bearing_df %>% filter(random_block == "No"),
+  geom_point(data = bearing_AR_df %>% filter(random_block == "No"),
              aes(color = random_block), alpha = 0.05) +
-  geom_point(data = bearing_df %>% filter(random_block == "Yes"),
+  geom_point(data = bearing_AR_df %>% filter(random_block == "Yes"),
              aes(color = random_block), alpha = 0.9, size = 0.5) +
-  facet_wrap(~ model) +
-  scale_color_manual(values = c("black", "red"))+
+  scale_color_manual(values = c("black", "red")) +
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values of Change in Bearing Models",
-       color = "Random Block") +
-  tc_theme
+       title = "Autoregressive Bearing Models",
+       caption = paste0("Random block: Heading east,\n",
+                        "-40\u00b0 \u2264 lon < -20\u00b0, lat \u2265 50\u00b0")) +
+  tc_theme +
+  theme(legend.position = "none")
+
+resids_fits_bear_2 <- bearing_nonAR_df %>%
+  ggplot(aes(x = fits, y = resids, color = random_block)) +
+  geom_point(data = bearing_nonAR_df %>% filter(random_block == "No"),
+             aes(color = random_block), alpha = 0.05) +
+  geom_point(data = bearing_nonAR_df %>% filter(random_block == "Yes"),
+             aes(color = random_block), alpha = 0.9, size = 0.5) +
+  scale_color_manual(values = c("black", "red")) +
+  labs(x = "Fitted Values", y = "Residuals", 
+       title = "Non-Autoregressive Bearing Models",
+       caption = paste0("Random block: Heading east,\n",
+                        "-70\u00b0 \u2264 lon < -60\u00b0, lat < 20\u00b0")) +
+  tc_theme +
+  theme(legend.position = "none")
+
+layout_matrix <- matrix(c(1, 2), ncol = 2, byrow = T)
+
+resids_fits_bear <- arrangeGrob(resids_fits_bear_1, 
+            resids_fits_bear_2,
+            layout_matrix = layout_matrix,
+            top = textGrob(paste("Residuals Versus Fitted Values", 
+                                 "of Change in Bearing Models"), 
+                           gp = gpar(fontsize = 18)))
 
 ggsave(resids_fits_bear, 
        filename = paste0(image_path, "resids_fits_bear.png"),
@@ -157,25 +177,43 @@ speed_nonAR_df <- data.frame(resids = speed_resids_nonAR,
   mutate(random_block = fct_recode(random_block,
                                    "Yes" = "TRUE", "No" = "FALSE"))
 
-# Combine data frames of speed AR/non-AR residuals and fits
-speed_df <- rbind(speed_AR_df, speed_nonAR_df) %>%
-  mutate(model = factor(c(
-    rep("Autoregressive Speed Models", nrow(speed_AR_df)),
-    rep("Non-Autoregressive Speed Models", nrow(speed_nonAR_df)))))
-
-# Plot of pooled speed AR and non-AR residuals versus fits
-resids_fits_speed <- speed_df %>%
+# Plots of pooled speed AR and non-AR residuals versus fits
+resids_fits_speed_1 <- speed_AR_df %>%
   ggplot(aes(x = fits, y = resids, color = random_block)) +
-  geom_point(data = speed_df %>% filter(random_block == "No"),
+  geom_point(data = speed_AR_df %>% filter(random_block == "No"),
              aes(color = random_block), alpha = 0.05) +
-  geom_point(data = speed_df %>% filter(random_block == "Yes"),
+  geom_point(data = speed_AR_df %>% filter(random_block == "Yes"),
              aes(color = random_block), alpha = 0.9, size = 0.5) +
-  facet_wrap(~ model) +
-  scale_color_manual(values = c("black", "red"))+
+  scale_color_manual(values = c("black", "red")) +
   labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals Versus Fitted Values of Change in Speed Models",
-       color = "Random Block") +
-  tc_theme
+       title = "Autoregressive Speed Models",
+       caption = paste0("Random block: Heading west,\n",
+          "-60\u00b0 \u2264 lon < -50\u00b0, 20\u00b0 \u2264 lat < 30\u00b0")) +
+  tc_theme +
+  theme(legend.position = "none")
+
+resids_fits_speed_2 <- speed_nonAR_df %>%
+  ggplot(aes(x = fits, y = resids, color = random_block)) +
+  geom_point(data = speed_nonAR_df %>% filter(random_block == "No"),
+             aes(color = random_block), alpha = 0.05) +
+  geom_point(data = speed_nonAR_df %>% filter(random_block == "Yes"),
+             aes(color = random_block), alpha = 0.9, size = 0.5) +
+  scale_color_manual(values = c("black", "red")) +
+  labs(x = "Fitted Values", y = "Residuals", 
+       title = "Non-Autoregressive Speed Models",
+       caption = paste0("Random block: Heading west,\n",
+                        "-80\u00b0 \u2264 lon < -70\u00b0, lat < 20\u00b0")) +
+  tc_theme +
+  theme(legend.position = "none")
+
+layout_matrix <- matrix(c(1, 2), ncol = 2, byrow = T)
+
+resids_fits_speed <- arrangeGrob(resids_fits_speed_1, 
+                                 resids_fits_speed_2,
+                                 layout_matrix = layout_matrix,
+                          top = textGrob(paste("Residuals Versus Fitted Values", 
+                                               "of Change in Speed Models"),
+                                         gp = gpar(fontsize = 18)))
 
 ggsave(resids_fits_speed,
        filename = paste0(image_path, "resids_fits_speed.png"),
