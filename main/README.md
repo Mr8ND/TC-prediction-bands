@@ -1,5 +1,14 @@
 How to run files (currently a dumping ground for thoughts).
 
+## File Ordering
+Files are indexed by the order that they should be run in. As noted in the parent directory, all these files should be run in the parent directory.
+
+Ordering: 
+- integers: main scripts
+- R[integers]: scripts to peform results analysis, and well as scripts to create results and discussion figures and tables
+- F[integers]: files to create figures that demonstrate PB approaches (example figures)
+- S0: script to create png files to aid in Author's diagonstics of the implimented framework
+
 ## Credible Interval Pipeline
 
 To run the `credible_interval_pipeline.R` we would do the following from the `Hurricanes_701` folder:
