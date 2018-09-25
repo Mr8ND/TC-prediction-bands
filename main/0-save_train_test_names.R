@@ -19,10 +19,6 @@ df <- data.frame(names(tc_list), substr(names(tc_list), 5, 8))
 colnames(df) <- c("name", "year")
 train_sel <- stratified(df, group = "year", size = train_prop)
 
-
-library(gridExtra)
-grid.arrange(a,b,nrow = 2)
-
 # Get training and test TC names
 train_names <- as.character(train_sel$name)
 test_names <- setdiff(df$name, train_sel$name)
