@@ -1,6 +1,6 @@
-# This script determines the percent decrease in BIC for block-specific 
+# This script determines the percent decrease in AIC for block-specific 
 # AR vs non-AR bearing and speed regressions.
-# It plots geographical maps with percent decrease in BIC.
+# It plots geographical maps with change (increase/decrease) in AIC.
 
 library(tidyverse)
 library(TCpredictionbands)
@@ -24,6 +24,11 @@ train <- lapply(train, FUN = TCpredictionbands::get_reg_df, auto = T)
 # Put training data in a single data frame
 train_unlist <- do.call("rbind", train) 
 
+# Remove obs w/o lag change in bearing (or speed). This gives the data frames
+# for AIC. To compare AIC with ANOVA, we need to use the same data frames for
+# AR and non-AR regressions, and fewer data points are eligible for AR regressions. 
+train_unlist <- train_unlist %>% filter(!is.na(bearing_change_lag1))
+
 # Get block-specific bearing/speed regressions, AR
 bearing_speed_regs_auto <- get_bearing_speed_regs(train_unlist, auto = T)
 bearing_regs_auto <- bearing_speed_regs_auto[[1]]
@@ -34,55 +39,63 @@ bearing_speed_regs_nonauto <- get_bearing_speed_regs(train_unlist, auto = F)
 bearing_regs_nonauto <- bearing_speed_regs_nonauto[[1]]
 speed_regs_nonauto <- bearing_speed_regs_nonauto[[2]]
 
-# BIC comparison on block-specific bearing regressions ------------------
+# AIC comparison on block-specific bearing regressions ------------------
 
-# Create empty list to store percent change in BIC from including lag term
-bic_chg_bearing <- vector("list", length(bearing_regs_nonauto))
-names(bic_chg_bearing) <- names(bearing_regs_nonauto)
+# Create empty list to store percent change in AIC from including lag term
+AIC_chg_bearing <- vector("list", length(bearing_regs_nonauto))
+names(AIC_chg_bearing) <- names(bearing_regs_nonauto)
 
-# Percent change in BIC from including lag term
-for(i in 1:length(bic_chg_bearing)){
+# Percent change in AIC from including lag term
+for(i in 1:length(AIC_chg_bearing)){
   
-  block_name <- names(bic_chg_bearing)[i]
+  block_name <- names(AIC_chg_bearing)[i]
   
-  bic_AR <- BIC(bearing_regs_auto[[block_name]])
-  bic_nonAR <- BIC(bearing_regs_nonauto[[block_name]])
+  # Make sure we are using same data (same number of obs) from AR and non-AR       
+  stopifnot(nobs(bearing_regs_nonauto[[block_name]]) ==
+              nobs(bearing_regs_auto[[block_name]]))
   
-  bic_chg_bearing[[block_name]] <- (bic_AR - bic_nonAR) / bic_nonAR
+  AIC_AR <- AIC(bearing_regs_auto[[block_name]])
+  AIC_nonAR <- AIC(bearing_regs_nonauto[[block_name]])
+  
+  AIC_chg_bearing[[block_name]] <- AIC_AR - AIC_nonAR
 }
 
 # Convert list to vector
-bic_chg_bearing <- unlist(bic_chg_bearing)
+AIC_chg_bearing <- unlist(AIC_chg_bearing)
 
-# BIC comparison on block-specific speed regressions ------------------
+# AIC comparison on block-specific speed regressions ------------------
 
-# Create empty list to store percent change in BIC from including lag term
-bic_chg_speed <- vector("list", length(speed_regs_nonauto))
-names(bic_chg_speed) <- names(speed_regs_nonauto)
+# Create empty list to store percent change in AIC from including lag term
+AIC_chg_speed <- vector("list", length(speed_regs_nonauto))
+names(AIC_chg_speed) <- names(speed_regs_nonauto)
 
-# Percent change in BIC from including lag term
-for(i in 1:length(bic_chg_speed)){
+# Percent change in AIC from including lag term
+for(i in 1:length(AIC_chg_speed)){
   
-  block_name <- names(bic_chg_speed)[i]
+  block_name <- names(AIC_chg_speed)[i]
   
-  bic_AR <- BIC(speed_regs_auto[[block_name]])
-  bic_nonAR <- BIC(speed_regs_nonauto[[block_name]])
+  # Make sure we are using same data (same number of obs) from AR and non-AR       
+  stopifnot(nobs(speed_regs_nonauto[[block_name]]) ==
+              nobs(speed_regs_auto[[block_name]]))
   
-  bic_chg_speed[[block_name]] <- (bic_AR - bic_nonAR) / bic_nonAR
+  AIC_AR <- AIC(speed_regs_auto[[block_name]])
+  AIC_nonAR <- AIC(speed_regs_nonauto[[block_name]])
+  
+  AIC_chg_speed[[block_name]] <- AIC_AR - AIC_nonAR
 }
 
 # Convert list to vector
-bic_chg_speed <- unlist(bic_chg_speed)
+AIC_chg_speed <- unlist(AIC_chg_speed)
 
 # Get world map data ------------------
 
 map_world <- maps::map(database = "world", plot = F, fill = T, 
-      col = "transparent", xlim = c(-140, 12), ylim = c(0, 60))
+                       col = "transparent", xlim = c(-140, 12), ylim = c(0, 60))
 
 IDs <- sapply(strsplit(map_world$names, ":"), function(x) x[1])
 
 map_world_sp <- maptools::map2SpatialPolygons(map_world, IDs = IDs,
- proj4string=CRS("+proj=longlat +datum=WGS84"))
+                                              proj4string=CRS("+proj=longlat +datum=WGS84"))
 
 # Data frame with blocks and block-specific p-vals ------------------
 
@@ -115,15 +128,15 @@ get.block <- Vectorize(TCpredictionbands::get_block)
 west_bounds <- west_bounds %>% mutate(
   xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
   block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "W"),
-  bic_chg_bearing = bic_chg_bearing[block],
-  bic_chg_speed = bic_chg_speed[block])
+  AIC_chg_bearing = AIC_chg_bearing[block],
+  AIC_chg_speed = AIC_chg_speed[block])
 
 # Determine bearing/speed p-values for each east-bound block
 east_bounds <- east_bounds %>% mutate(
   xmidpt = (xmin + xmax) / 2, ymidpt = (ymin + ymax) / 2,
   block = get.block(long = xmidpt, lat = ymidpt, east_west_prev = "E"),
-  bic_chg_bearing = bic_chg_bearing[block],
-  bic_chg_speed = bic_chg_speed[block])
+  AIC_chg_bearing = AIC_chg_bearing[block],
+  AIC_chg_speed = AIC_chg_speed[block])
 
 # Combine east and west bounds into one data frame
 all_bounds <- rbind(east_bounds, west_bounds) %>%
@@ -133,9 +146,9 @@ all_bounds <- rbind(east_bounds, west_bounds) %>%
          direction_speed = 
            c(rep("Speed Regressions for TCs Moving East", nrow(east_bounds)),
              rep("Speed Regressions for TCs Moving West", nrow(west_bounds))),
-         bic_dec_bearing = ifelse(bic_chg_bearing < 0, "Decrease", "Increase"),
-         bic_dec_speed = ifelse(bic_chg_speed < 0, "Decrease", "Increase"))
-         
+         AIC_dec_bearing = ifelse(AIC_chg_bearing < 0, "Decrease", "Increase"),
+         AIC_dec_speed = ifelse(AIC_chg_speed < 0, "Decrease", "Increase"))
+
 
 # Set TC ggplot2 theme ------------------
 tc_theme <- theme_minimal() + 
@@ -149,11 +162,11 @@ tc_theme <- theme_minimal() +
         legend.text = element_text(size = 12),
         plot.caption = element_text(size = 10))
 
-# Plot chg in BIC of block-specific bearing regressions on map -----------------
+# Plot chg in AIC of block-specific bearing regressions on map -----------------
 
 bearing_map <- ggplot(all_bounds) +
-  labs(x = "Longitude", y = "Latitude", fill = "Chg in BIC",
-       title = paste("Change in BIC from using Lag Term in Block-Specific", 
+  labs(x = "Longitude", y = "Latitude", fill = "Change in AIC",
+       title = paste("Change in AIC from using Lag Term in Block-Specific", 
                      "Bearing Models")) +
   coord_cartesian(xlim = c(-110, 2), ylim = c(9, 60)) +
   geom_polygon(data = map_world_sp, aes(long, lat, group = group),
@@ -168,21 +181,21 @@ bearing_map <- ggplot(all_bounds) +
         legend.title = element_text(hjust = 0.5)) +
   geom_rect(data = all_bounds, 
             aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, 
-                fill = bic_dec_bearing), 
+                fill = AIC_dec_bearing), 
             colour = "black", alpha = 0.8,
             size = 0.35, inherit.aes = T) +
   facet_grid(. ~ direction_bearing) +
   scale_fill_manual(values = c("pink", "white"))
 
 ggsave(bearing_map, 
-       filename = paste0(image_path, "bic_bearing.png"),
+       filename = paste0(image_path, "aic_bearing.png"),
        width = 10, height = 4)
 
-# Plot chg in BIC of block-specific speed regressions on map ------------------
+# Plot chg in AIC of block-specific speed regressions on map ------------------
 
 speed_map <- ggplot(all_bounds) +
-  labs(x = "Longitude", y = "Latitude", fill = "Chg in BIC",
-       title = paste("Change in BIC from using Lag Term in Block-Specific", 
+  labs(x = "Longitude", y = "Latitude", fill = "Change in AIC",
+       title = paste("Change in AIC from using Lag Term in Block-Specific", 
                      "Speed Models")) +
   coord_cartesian(xlim = c(-110, 2), ylim = c(9, 60)) +
   geom_polygon(data = map_world_sp, aes(long, lat, group = group),
@@ -197,12 +210,12 @@ speed_map <- ggplot(all_bounds) +
         legend.title = element_text(hjust = 0.5)) +
   geom_rect(data = all_bounds,
             aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax,
-                fill = bic_dec_speed),
+                fill = AIC_dec_speed),
             colour = "black", alpha = 0.8,
             size = 0.35, inherit.aes = T) +
   facet_grid(. ~ direction_speed) +
   scale_fill_manual(values = c("pink", "white"))
 
 ggsave(speed_map, 
-       filename = paste0(image_path, "bic_speed.png"),
+       filename = paste0(image_path, "aic_speed.png"),
        width = 10, height = 4)
