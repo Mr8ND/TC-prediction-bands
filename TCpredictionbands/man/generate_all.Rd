@@ -18,9 +18,8 @@ of the paper, the only TC of length 2 has been assigned to training.)}
 
 \item{number_paths}{Number of paths to simulate for each test TC start}
 
-\item{replicate}{Boolean for whether to replicate simulations of paper.
-This reads in the train/test data from raw_data.Rdata, sets 
-number_paths = 350, and sets a seed value.}
+\item{replicate}{Boolean for whether to replicate simulations of paper by
+setting the same seed value done to create.}
 
 \item{verbose}{Boolean for whether to output progress}
 }

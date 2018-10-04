@@ -31,7 +31,7 @@ To install the latest version please do
 
 ```r
 library(devtools)
-devtools::install_github(repo = 'Mr8ND/Hurricanes_701/TCpredictionbands')
+devtools::install_github(repo = 'Mr8ND/TC-prediction-bands/TCpredictionbands')
 library(TCpredictionbands)
 ```
 

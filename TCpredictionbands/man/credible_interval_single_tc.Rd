@@ -4,8 +4,8 @@
 \alias{credible_interval_single_tc}
 \title{Extract credible intervals of 4 methods from a single test TC}
 \usage{
-credible_interval_single_tc(dflist, test_true_path, alpha_level, long = 1,
-  lat = 2, verbose = FALSE, kde_grid_size = rep(1000, 2),
+credible_interval_single_tc(dflist, test_true_path, alpha_level,
+  long = 1, lat = 2, verbose = FALSE, kde_grid_size = rep(1000, 2),
   alpha_ci_level = 0.05, unit_measure = "nautical mile")
 }
 \arguments{

@@ -286,9 +286,8 @@ generate_curve <- function(path, train_models, death_regs_ind, auto_ind){
 #' AR models need >= 3 observations to start simulation. (In train/test split
 #' of the paper, the only TC of length 2 has been assigned to training.)
 #' @param number_paths Number of paths to simulate for each test TC start
-#' @param replicate Boolean for whether to replicate simulations of paper.
-#' This reads in the train/test data from raw_data.Rdata, sets 
-#' number_paths = 350, and sets a seed value.
+#' @param replicate Boolean for whether to replicate simulations of paper by
+#' setting the same seed value done to create.
 #' @param verbose Boolean for whether to output progress
 #'
 #' @return List of simulated TC paths. The list length equals the number of test
@@ -304,12 +303,8 @@ generate_all <- function(train = NA, test = NA, remove_length_2 = T,
   #Hack to set variables equal to NULL so that R CMD check does not flag them
   train_data <- test_data <- NULL
   
-  # Read in data and set parameters if replicating paper
+  # setting seed for replicating
   if (replicate) {
-    load("data/raw_data.Rdata")
-    train <- train_data
-    test <- test_data
-    number_paths <- 350
     set.seed(1)
   }
   

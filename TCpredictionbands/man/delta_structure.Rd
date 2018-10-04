@@ -4,9 +4,9 @@
 \alias{delta_structure}
 \title{Performs delta ball approach}
 \usage{
-delta_structure(data_list, alpha, dist_mat = NULL, data_deep_points = NULL,
-  c_position = 1:2, depth_vector = NULL, area_ci_n = 2000,
-  area_ci_alpha = 0.05, verbose = FALSE, ...)
+delta_structure(data_list, alpha, dist_mat = NULL,
+  data_deep_points = NULL, c_position = 1:2, depth_vector = NULL,
+  area_ci_n = 2000, area_ci_alpha = 0.05, verbose = FALSE, ...)
 }
 \arguments{
 \item{data_list}{list of hurricanes}

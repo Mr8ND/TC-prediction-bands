@@ -5,8 +5,9 @@
 \title{Creates clean visual of weighted curves using Spectral Clustering Analysis}
 \usage{
 ggvis_all_weighted(sca_output, test_list, c_position = 1:2, zoom = 4,
-  train_alpha = 0.3, test_color_power = 1/3, test_color_low = "white",
-  test_color_high = "red", color_n_breaks = 10, base_map_graph = NULL)
+  train_alpha = 0.3, test_color_power = 1/3,
+  test_color_low = "white", test_color_high = "red",
+  color_n_breaks = 10, base_map_graph = NULL)
 }
 \arguments{
 \item{sca_output}{a list of diffusion map associated information 
