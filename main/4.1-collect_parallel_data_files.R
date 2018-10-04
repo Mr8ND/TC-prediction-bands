@@ -1,6 +1,10 @@
+# Input Argument --------------
+# file pattern: file names that were produced by the pipeline that needs 
+#   to be merged
 # first string: files that have common string are mergered (put in grep)
 # variable name: what we will have the list for storage
-# second string: saved file is "first string" + "second_string" - don't include ".Rdata"
+# second string: saved file is "first string" + "second_string" 
+#   -> don't include ".Rdata"
 
 # example: 
 # Rscript main/collect_parallel_data_files.R output_pipeline_alphalevel0.1 output_pipeline _all
@@ -14,7 +18,7 @@ data_loc <- "main/data/"
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) > 0) {
-  file_pattern <- args[1]  #output_pipeline_alphalevel0.1
+  file_pattern <- args[1]  
   var_name <- args[2]
   end_string <- args[3]
 }

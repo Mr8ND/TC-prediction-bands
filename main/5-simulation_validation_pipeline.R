@@ -61,15 +61,15 @@ simulation_validation_pipeline <- list()
 
 for (name_tc in names(output_list_pipeline)) {
 	for (curve_type in desired_curves_types) {
-		simulation_validation_pipeline[[name_tc]][[curve_type]] <- calculate_invec_per_method(
-						hur_out_obj = output_list_pipeline[[name_tc]][[curve_type]],
-					  sim_hur_list = lapply(test_env[[name_tc]][[curve_type]], data.frame)
+		simulation_validation_pipeline[[name_tc]][[curve_type]] <- 
+		  calculate_invec_per_method(
+					hur_out_obj = output_list_pipeline[[name_tc]][[curve_type]],
+					sim_hur_list = lapply(test_env[[name_tc]][[curve_type]], data.frame)
 					    )
     }
   pb$tick()
 }
 
 out_filename <- paste0('main/data/',
-                       'sim_validation_results',amount,'_',
-                       Sys.Date(), '.Rdata')
+                       'sim_validation_results',amount, '.Rdata')
 save(simulation_validation_pipeline, file = out_filename)
