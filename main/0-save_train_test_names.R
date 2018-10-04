@@ -4,10 +4,10 @@
 library(TCpredictionbands)
 library(splitstackshape)
 
-# Make train and test names reproducible
+# Make train and test names reproducible 
 set.seed(10)
 
-# Pull data from HURDAT website
+# Pull data from HURDAT website ----------------
 tc_list <- pull_data()
 
 # Set training and test proportions
@@ -24,4 +24,12 @@ train_names <- as.character(train_sel$name)
 test_names <- setdiff(df$name, train_sel$name)
   
 # Save .Rdata file with train names and test names
-save(train_names, test_names, file = "data/train_test_names.Rdata")
+save(train_names, test_names, file = "main/data/train_test_names.Rdata")
+
+# Create training and test TC data lists
+train_data <- tc_list[train_names]
+test_data <- tc_list[test_names]
+new_data <- list()
+
+# Save .Rdata file with training data, test data, and empty new data
+save(train_data, test_data, new_data, file = "main/data/raw_data.Rdata")

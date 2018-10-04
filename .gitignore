@@ -1,5 +1,5 @@
 .DS_Store
-data/*
+main/data/*
 !data/README.md
 .Rhistory
 !spec/*.Rhistory
@@ -13,3 +13,4 @@ paper/*
 .Rproj.user
 TCpredictionbands.Rcheck/
 TCpredictionbands_0.1.tar.gz
+TC-prediction-bands.Rproj

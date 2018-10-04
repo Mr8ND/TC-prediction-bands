@@ -5,8 +5,8 @@
 \title{Get points for objects in projection space}
 \usage{
 data_projection(sca_output = list(test_projection = data.frame(),
-  train_projected = data.frame(), test_p_estimate = integer(0), test_weight =
-  integer(0)))
+  train_projected = data.frame(), test_p_estimate = integer(0), test_weight
+  = integer(0)))
 }
 \arguments{
 \item{sca_output}{spectral_cluster_process function output. Or at least the 

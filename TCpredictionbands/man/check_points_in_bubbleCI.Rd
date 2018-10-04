@@ -4,7 +4,8 @@
 \alias{check_points_in_bubbleCI}
 \title{Check if points are inside bubble CI}
 \usage{
-check_points_in_bubbleCI(df_points, center_df, radius_df, long = 1, lat = 2)
+check_points_in_bubbleCI(df_points, center_df, radius_df, long = 1,
+  lat = 2)
 }
 \arguments{
 \item{df_points}{Dataframe of points which inclusion needs to be calculated}

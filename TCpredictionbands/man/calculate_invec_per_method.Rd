@@ -4,8 +4,8 @@
 \alias{calculate_invec_per_method}
 \title{Credible Band Inclusion on Simulated TCs}
 \usage{
-calculate_invec_per_method(hur_out_obj, sim_hur_list, long = 1, lat = 2,
-  unit_measure = "nautical mile", verbose = FALSE)
+calculate_invec_per_method(hur_out_obj, sim_hur_list, long = 1,
+  lat = 2, unit_measure = "nautical mile", verbose = FALSE)
 }
 \arguments{
 \item{hur_out_obj}{Object with the credible bands for each of the method. Assumed to be 

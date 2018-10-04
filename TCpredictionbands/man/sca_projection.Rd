@@ -6,8 +6,9 @@
 associated probability values in the lower dimensional space}
 \usage{
 sca_projection(test_data_list, train_list_13_point, train_info,
-  c_position = 1:2, verbose = TRUE, curve_type_vec = c("Auto_DeathRegs",
-  "Auto_NoDeathRegs", "NoAuto_DeathRegs", "NoAuto_NoDeathRegs"))
+  c_position = 1:2, verbose = TRUE,
+  curve_type_vec = c("Auto_DeathRegs", "Auto_NoDeathRegs",
+  "NoAuto_DeathRegs", "NoAuto_NoDeathRegs"))
 }
 \arguments{
 \item{test_data_list}{a list of list of paths of test curves (simulated 
