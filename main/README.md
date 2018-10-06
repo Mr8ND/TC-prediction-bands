@@ -1,6 +1,6 @@
 How to run files (currently a dumping ground for thoughts).
 
-## File Ordering
+## File naming
 Files are indexed by the order that they should be run in. As noted in the parent directory, all these files should be run in the parent directory.
 
 Ordering: 
@@ -37,7 +37,16 @@ where
 
 
 # For running of files:
-The full analysis process takes a decent amount of time.
+To run the full analysis we provide a `makefile` containing recipes to preform
+all final analysis and reproduce tables and figures for the paper.
+
+**Note: would take multiple days to run if you do the full analysis without 
+"psuedo-parallelization".** 
+
++ `make all`:
++ `make 
+
+
 
 We ran this analysis on a department server (lerna) with the following specs:
 
