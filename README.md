@@ -13,16 +13,16 @@ http://www.aoml.noaa.gov/hrd/hurdat/Data_Storm.html).
 
 **Table of Contents:**
 
-1. [Replication of Results](#1replicationofresults)
+1. [Replication of Results](#1-replication-of-results)
 
-    1.1. [`makefile` usage](#11makefileusage)
-    - [Server Specs](#serverspecs)
+    1.1. [`makefile` usage](#11-makefile-usage)
+    - [Server Specs](#server-specs)
     
-    1.2. [Special Script Guidelines](#12specialscriptguidelines)
+    1.2. [Special Script Guidelines](#12-special-script-guidelines)
 
-2. [`TCpredictionbands` package](#2tcpredictionbandspackage)
-3. [Comments](#3comments)
-4. [Contributors](#4contributors)
+2. [`TCpredictionbands` package](#2-tcpredictionbands-package)
+3. [Comments](#3-comments)
+4. [Contributors](#4-contributors)
 
 ## 1 Replication of Results
 
@@ -31,7 +31,7 @@ in the `main/` folder store the necessary files to run our analysis. The viewer
 should note that the analysis pipeline takes a long while and should decide if 
 they would like the full results or just test out the analysis on a few samples. 
 Additionally, the R package `TCpredictionbands` (see 
-(associated section)[#tcpredictionbandspackage]), which is included in this
+(associated section)[#2-tcpredictionbands-package]), which is included in this
 repo, provides the user with the ability to analysis different generated
 curves with our credible band approaches and also TC paths that were not
 available when we developed with package.
@@ -53,7 +53,7 @@ where the `__` can be in the following forms:
 The above ordering (with integer ordering within each subsection) can be used
 to completely replicate our analysis. More specifically we provide a `makefile`
 to add in the replication of our work (see 
-(following subsection)[#makefileusage]).
+(following subsection)[#11-makefile-usage]).
 
 ### 1.1 `makefile` usage
 To run the full analysis we provide a `makefile` containing recipes to preform
@@ -68,7 +68,7 @@ all final analysis and reproduce tables and figures for the paper.
     analysis
 
     For this complete process (`make simulate_tcs`) it took around 43 hours to 
-    run on a server ([specs](#serverspecs)). It takes 29 hours to run the 
+    run on a server ([specs](#server-specs)). It takes 29 hours to run the 
     creation of 350 simulated paths for each TC (309) of all simulation types
     using the following line of code:
     ```{bash}
@@ -79,13 +79,13 @@ all final analysis and reproduce tables and figures for the paper.
     Within the creation of the pbs (completed in this `make` command) we break up the process into 
     blocks making PBs for 25 TCs in each block. A single block takes around __XX__.
     When we ran the code we broke up the analysis on multiple servers with multiple 
-    blocks running at the same time (with similar to those mentioned [here](#serverspecs)). One should expect around __XX2__ hours of 
+    blocks running at the same time (with similar to those mentioned [here](#server-specs)). One should expect around __XX2__ hours of 
     processing time for this step (excluding the recombining of all the PBs into 1 location with
     ```{bash}
     Rscript main/4.1-collect_parallel_data_files.R output_pipeline_alphalevel0.1 output_pipeline _all
     ```
     which is the final call in `make create_pbs`). See comments in 
-    (Special script guidelines)[#specialscriptguidelines] for running of either 
+    (Special script guidelines)[#12-special-script-guidelines] for running of either 
     file associated with this section (i.e. `4-prediction_band_pipeline.R` or 
     `4.1-collect_parallel_data_files.R`).
 
