@@ -31,7 +31,7 @@ in the `main/` folder store the necessary files to run our analysis. The viewer
 should note that the analysis pipeline takes a long while and should decide if 
 they would like the full results or just test out the analysis on a few samples. 
 Additionally, the R package `TCpredictionbands` (see 
-(associated section)[#2-tcpredictionbands-package]), which is included in this
+[associated section](#2-tcpredictionbands-package)), which is included in this
 repo, provides the user with the ability to analysis different generated
 curves with our credible band approaches and also TC paths that were not
 available when we developed with package.
@@ -98,7 +98,7 @@ all final analysis and reproduce tables and figures for the paper.
 We ran this analysis on a Statistics and Data Science department server 
 (`lerna`) with the following specs:
 
-...
+`Intel(R) Xeon(R) CPU X5680 @ 3.33GHz`
 
 ### 1.2 Special Script Guidelines
 Two of the files in the `main/` folder, `4-prediction_band_pipeline.R` and 

@@ -21,7 +21,7 @@ tc_theme <- theme_minimal() +
 # data generation -----------------
 
 set.seed(1991)
-data_moon <- shapes.worms(500)
+data_moon <- clusterSim::shapes.worms(500)
 data_raw <- data_moon[[1]][data_moon[[2]] == 2,] %>% data.frame
 
 data_scaled <- data_raw %>% scale()
