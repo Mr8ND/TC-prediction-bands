@@ -30,7 +30,8 @@ create_pbs:
 	Rscript main/4.1-collect_parallel_data_files.R output_pipeline_alphalevel0.1 output_pipeline _all
 
 validate_pbs:
-	Rscript main/5-simulation_validation_pipeline.R
+	Rscript main/5-simulation_validation_pipeline.R Test_Sims_100_addl.Rdata
+	Rscript main/5-simulation_validation_pipeline.R Test_Sims_75_addl.Rdata
 
 create_figs:
 	Rscript main/R0-aic_AR_nonAR.R

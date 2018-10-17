@@ -14,7 +14,7 @@ library(TCpredictionbands)
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) > 0) {
-  sim_file_name <- args[1] #  'Test_Sims_100_addl.rdata'
+  sim_file_name <- args[1] # 'Test_Sims_100_addl.rdata'
 }
 
 

@@ -77,9 +77,9 @@ all final analysis and reproduce tables and figures for the paper.
 + `make create_pbs`: analysis to create PBs
     
     Within the creation of the pbs (completed in this `make` command) we break up the process into 
-    blocks making PBs for 25 TCs in each block. A single block takes around __XX__.
+    blocks making PBs for 25 TCs in each block. A single block takes around 23 hours.
     When we ran the code we broke up the analysis on multiple servers with multiple 
-    blocks running at the same time (with similar to those mentioned [here](#server-specs)). One should expect around __XX2__ hours of 
+    blocks running at the same time (with similar to those mentioned [here](#server-specs)). One should expect around 276 hours of 
     processing time for this step (excluding the recombining of all the PBs into 1 location with
     ```{bash}
     Rscript main/4.1-collect_parallel_data_files.R output_pipeline_alphalevel0.1 output_pipeline _all
@@ -90,6 +90,7 @@ all final analysis and reproduce tables and figures for the paper.
     `4.1-collect_parallel_data_files.R`).
 
 + `make validate_pbs`: validation analysis for PBs
+    This call runs the validation script `5-simulation_validation_pipeline.R` twice for the sets of (100) and (75)     new simulated curves. See [special script guidelines](#12-special-script-guidelines) if you'd like to run the     analysis yourself.
 + `make create_figs`: create figures and tables for paper
 + `make create_diagrams`: create diagrams for the paper
 
@@ -147,6 +148,23 @@ where
 ```{bash}
 output_pipeline_alphalevel0.1_all.Rdata
 ```
+
+#### 1.2.3. `5-simulation_validation_pipeline.R`
+
+To run `5-simulation_validation_pipeline.R` we would run the following from the
+`TC-prediction-bands` folder:
+
+```{bash}
+Rscript 5-simulation_validation_pipeline.R a
+```
+
+where 
+
+  + `a` is the string for the file name in `main/data/` folder that contains an
+  environment that contains lists of simulated curves for the test curves.
+  
+Note that we save the output in a file called `sim_validation_resultsXX.Rdata`
+where `XX` is the number of simulated curves for each test curve.
 
 ### 2 `TCpredictionbands` package
 
