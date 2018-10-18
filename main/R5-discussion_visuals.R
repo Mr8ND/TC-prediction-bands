@@ -48,7 +48,7 @@ sim_type_graphic_levels <- c("Autoregression & Logistic-based Lysis"   = "Auto_D
 sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
 
-latest_full_output_pipeline <- 'output_pipeline_all.Rdata'
+latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all.Rdata'
 a <- load(paste0(data_loc, latest_full_output_pipeline))
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
@@ -72,7 +72,7 @@ if (is.null(names(output_list_pipeline))) {
 ###############################################
 
 # simulated curve, extreme turning: curvier true tc --------
-tc = "AL112004" # number 44
+tc <- "AL112004" # number 44
 true_tc <- test_data[[tc]]
 train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_paths_basic()
 
@@ -415,7 +415,7 @@ ggsave(plot = xx3,
 
 # spherical PBs, branching and curving: branching problem --------
 
-tc = "AL011965" # number 229
+tc <- "AL011965" # number 229
 true_tc <- test_data[[tc]]
 train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_paths_basic()
 
@@ -444,7 +444,7 @@ xx4_branching_curve <- xx4_branching_curve + tc_theme
 
 # spherical PBs, branching and curving: curving problem --------
 
-tc = "AL072010" # number 54
+tc <- "AL072010" # number 54
 true_tc <- test_data[[tc]]
 train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_paths_basic()
 
@@ -518,7 +518,7 @@ ggsave(plot = xx4,
 
 # KDE PBs, patchy and outliers: patchy -----------
 
-tc = "AL162005" # number 5
+tc <- "AL162005" # number 5
 true_tc <- test_data[[tc]]
 train_curves_auto_kernel <- test_env[[tc]][["Auto_NoDeathRegs"]] %>% data_plot_paths_basic()
 
@@ -559,7 +559,7 @@ xx5_patchy_curve <- xx5_patchy_curve  + tc_theme
 
 # KDE PBs, patchy and outliers: outlier -----------
 
-tc = "AL192012" # number 149
+tc <- "AL192012" # number 149
 true_tc <- test_data[[tc]]
 train_curves_nonauto_kernel <- test_env[[tc]][["NoAuto_NoDeathRegs"]] %>% data_plot_paths_basic()
 

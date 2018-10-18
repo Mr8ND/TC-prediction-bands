@@ -5,7 +5,7 @@ library(TCpredictionbands)
 library(splitstackshape)
 
 # Make train and test names reproducible 
-set.seed(10)
+set.seed(1)
 
 # Pull data from HURDAT website ----------------
 tc_list <- pull_data()

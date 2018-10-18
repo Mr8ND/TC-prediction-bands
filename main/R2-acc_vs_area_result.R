@@ -29,7 +29,7 @@ data_loc <- "main/data/"
 image_path <- "report/images/"
 table_path <- "report/tables/"
 
-latest_full_output_pipeline <- 'output_pipeline_all.Rdata'
+latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all.Rdata'
 a <- load(paste0(data_loc, latest_full_output_pipeline))
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
