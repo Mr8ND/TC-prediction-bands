@@ -12,7 +12,7 @@ data_loc <- "main/data/"
 image_path <- "report/images/"
 table_path <- "report/tables/"
 
-a <- load(paste0(data_loc,"sim_validation_results100_2018-07-12.Rdata"))
+a <- load(paste0(data_loc,"sim_validation_results100.Rdata"))
 simulation_validation_pipeline100 <- simulation_validation_pipeline
 
 # renaming vectors ------------------
@@ -295,7 +295,7 @@ grab_subset_time <- function(time_storage, lower, upper){
 
 # grabbing last bit of data ------------------
 
-b <- load(paste0(data_loc,"sim_validation_results75_2018-07-12.Rdata"))
+b <- load(paste0(data_loc,"sim_validation_results75.Rdata"))
 simulation_validation_pipeline50 <- grab_subset_sim(
                                       simulation_validation_pipeline, 1, 50)
 
