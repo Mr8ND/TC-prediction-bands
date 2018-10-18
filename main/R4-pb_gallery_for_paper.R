@@ -48,7 +48,7 @@ tc_theme <- theme_minimal() +
         plot.caption = element_text(size = 10))
 
 # KDE (non auto kernel) --------------------
-tc = "AL181984" # number 9
+tc <- "AL181984" # number 9
 kde_true_tc <- test_data[[tc]]
 kde_train_curves_nonauto_kernel <- test_env[[tc]][["NoAuto_NoDeathRegs"]] %>% 
   data_plot_paths_basic()
@@ -88,7 +88,7 @@ graphic_kde <- TCpredictionbands::ggvis_kde_contour(
 
 
 # Convex (auto logistic) --------------------
-tc = "AL071995" # number 29
+tc <- "AL071995" # number 29
 convex_true_tc <- test_data[[tc]]
 convex_train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% 
   data_plot_paths_basic()
@@ -130,7 +130,7 @@ graphic_convex  <- TCpredictionbands::ggvis_convex_hull(
   base_graph = graphic_convex)
 
 # Delta ball (auto kernel) -----------------
-tc = "AL032009" # number 45
+tc <- "AL032009" # number 45
 delta_true_tc <- test_data[[tc]]
 delta_train_curves_auto_logistic <- test_env[[tc]][["Auto_NoDeathRegs"]] %>% 
   data_plot_paths_basic()
@@ -166,7 +166,7 @@ graphic_delta <-  TCpredictionbands::ggvis_delta_ball_contour(
   base_graph = graphic_delta)
 
 # Spherical (non auto logistic) ------------
-tc = "AL032016" # number 272
+tc <- "AL032016" # number 272
 spherical_true_tc <- test_data[[tc]]
 spherical_train_curves_noauto_logistic <- test_env[[tc]][["NoAuto_DeathRegs"]] %>% 
   data_plot_paths_basic()
