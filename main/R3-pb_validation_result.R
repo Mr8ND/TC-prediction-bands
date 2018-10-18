@@ -49,7 +49,7 @@ sim_type_graphic_labels <- names(sim_type_graphic_levels)
 pb_color_vec_val_old <- c("#0300D8", "#BF0700", "#00E5E5", "#CB00C5")
 names(pb_color_vec_val_old) <- c("bubble_ci","kde", "convex_hull", "delta_ball")
 pb_color_vec_pb_pres_old <- c("#00E5E5","#CB00C5" ,"#0300D8", "#BF0700")
-names(pb_color_vec_pres_old) <- c("kde", "bubble_ci", "delta_ball", "convex_hull")
+names(pb_color_vec_pb_pres_old) <- c("kde", "bubble_ci", "delta_ball", "convex_hull")
 
 # current colors
 pb_color_vec <- c("#1b9e77","#d95f02","#7570b3", "#e7298a")
@@ -442,7 +442,9 @@ df_area <- data.frame(area = -99, tc = "ben", cb_type = "ben",
 
 for (tc in 1:length(output_list_pipeline)) {
   for (sim in names(output_list_pipeline[[tc]])) {
-    for (cb in names(output_list_pipeline[[tc]][[sim]])[-5]) {
+    for (cb in names(output_list_pipeline[[tc]][[sim]])[
+          !(names(output_list_pipeline[[tc]][[sim]]) %in% 
+                                          c("depth_vector","time"))]) {
       df_area <- rbind(df_area,
                        data.frame(
                         area = output_list_pipeline[[tc]][[sim]][[cb]]$area,
@@ -480,7 +482,7 @@ ggsave(paste0(image_path,"sim_area_density.png"), device = "png",
 # time processing visuals --------------
 
 
-latest_full_output_pipeline <- 'output_pipeline_all.Rdata'
+latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all.Rdata'
 
 data_loc <- "main/data/"
 a <- load(paste0(data_loc, latest_full_output_pipeline)) #output_list_pipeline
@@ -629,3 +631,4 @@ print(xtable_time_p,
       sanitize.text.function = bold_somerows, 
       #^for some reason we need this - even though not used
       file = paste0(table_path,"sim_time_prediction100.tex"))
+

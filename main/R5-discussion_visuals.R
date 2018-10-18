@@ -48,7 +48,7 @@ sim_type_graphic_levels <- c("Autoregression & Logistic-based Lysis"   = "Auto_D
 sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
 
-latest_full_output_pipeline <- 'output_pipeline_all.Rdata'
+latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all.Rdata'
 a <- load(paste0(data_loc, latest_full_output_pipeline))
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
 
