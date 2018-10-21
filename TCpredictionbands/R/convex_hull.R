@@ -1,7 +1,7 @@
 #' Get area of convex hull
 #'
 #' @param data points to find a convex hull over (assumed n x 2)
-#' @param c_position Position of the longitude/latitude pair
+#' @param position Position of the longitude/latitude pair
 #'
 #' @return 
 #' \item{polygon}{dataframe}
@@ -31,8 +31,8 @@
 #'   geom_path(data = c_points, 
 #'             aes(x = xx, y = yy), color = "red")
 #' }
-get_area_c <- function(data, c_position = 1:2){
-  data <- data[,c(c_position[2],c_position[1])]
+get_area_c <- function(data, position = 1:2){
+  data <- data[,c(position[2],position[1])]
   c_out <- grDevices::chull(data)
   c_points <- data[c_out,]
   
@@ -116,7 +116,7 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 #' @param alpha for credible band (related to depth)
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param depth_vector Depth vector values
-#' @param c_position Position of the longitude/latitude pair
+#' @param position Position of the longitude/latitude pair
 #' @param data_deep_points data deep points from depth function 
 #' (otherwise calculated)
 #' @param verbose if the distance matrix is verbose
@@ -133,7 +133,7 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, long = 1, lat = 2){
 convex_hull_structure <- function(data_list, alpha, dist_mat = NULL,
                                   data_deep_points = NULL, 
                                   depth_vector = NULL,
-                                  c_position = 1:2,
+                                  position = 1:2,
                                   verbose = FALSE, ...){
   if (is.null(data_deep_points)) {
     # depth approach ---------------
@@ -141,14 +141,14 @@ convex_hull_structure <- function(data_list, alpha, dist_mat = NULL,
                                                alpha, 
                                                dist_mat = dist_mat,
                                                verbose = verbose,
-                                               c_position = c_position,
+                                               position = position,
                                                depth_vector = depth_vector,
                                                ...)
     
   }
   # getting convex hull structure and area -----------------
   
-  chull_out <-  get_area_c(data_deep_points, c_position = 1:2)
+  chull_out <-  get_area_c(data_deep_points, position = 1:2)
 
   return(chull_out)
 }

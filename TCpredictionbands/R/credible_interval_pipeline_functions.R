@@ -52,7 +52,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     
     dist_start_time <- Sys.time()
     dflist_13pointsreduction <- thirteen_points_listable(dflist, 
-                                                    c_position = c(long,lat),
+                                                    position = c(long,lat),
                                                     verbose = verbose)
     dist_matrix_13pointsreduction <- distMatrixPath_innersq(
                                                 dflist_13pointsreduction,
@@ -95,7 +95,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     data_deep_points <- depth_curves_to_points(data_list = dflist,
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction, 
-                                    c_position = c(long, lat),
+                                    position = c(long, lat),
                                     depth_vector = depth_vector,
                                     verbose = verbose)
     data_deep_final_time <- Sys.time() - data_deep_start_time
@@ -107,7 +107,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    c_position = c(long, lat),
+                                    position = c(long, lat),
                                     area_ci_n = 2000, 
                                     area_ci_alpha = alpha_ci_level, 
                                     verbose = verbose)
@@ -134,7 +134,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    c_position = c(long, lat),
+                                    position = c(long, lat),
                                     verbose = verbose)
     convex_final_time <- Sys.time() - convex_start_time
 

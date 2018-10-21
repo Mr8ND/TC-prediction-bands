@@ -94,7 +94,7 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
 #'        for a 95\% PB, set alpha to .05.
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param verbose if the distance matrix is verbose
-#' @param c_position only needed if created 13 point reduction 
+#' @param position only needed if created 13 point reduction 
 #' @param ... other parameters in distance calculation through 
 #' \code{\link{distMatrixPath_innersq}}
 #' @param depth_vector vector of depth values (otherwise calculated)
@@ -102,7 +102,7 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
 #' @return data frame with points in desired curves
 #' @export
 depth_curves_to_points <- function(data_list, alpha, dist_mat = NULL, 
-                                   c_position = 1:2,
+                                   position = 1:2,
                                    depth_vector = NULL,
                                    verbose = FALSE, ...){
   if (is.null(depth_vector)) {
@@ -110,7 +110,7 @@ depth_curves_to_points <- function(data_list, alpha, dist_mat = NULL,
     if (is.null(dist_mat)) {
       # distance matrix ----------------
       dflist_13pointsreduction = thirteen_points_listable(data_list, 
-                                                        c_position = c_position,
+                                                        position = position,
                                                         verbose = verbose)
       
       dist_mat = distMatrixPath_innersq(dflist_13pointsreduction, 

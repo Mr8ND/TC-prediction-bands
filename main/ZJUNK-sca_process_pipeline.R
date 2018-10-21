@@ -54,7 +54,7 @@ test_data_list <- reduced_test_env
 projection_out <- sca_projection(test_data_list,
                                  train_list_13_point,
                                  train_info,
-                                 c_position = 1:2,
+                                 position = 1:2,
                                  verbose = TRUE)
 
 save(projection_out, file = paste0(data_loc, "sca_projection_info",

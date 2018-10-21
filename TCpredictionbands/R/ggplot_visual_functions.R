@@ -4,12 +4,12 @@
 #' Format curves from a list to a single data.frame
 #'
 #' @param test_list list of curves
-#' @param c_position position of lat and long columns in the test_list dataframes
+#' @param position position of lat and long columns in the test_list dataframes
 #'
 #' @return single data frame with all curves (curve column with idx of curve)
 #' @export
 #'
-data_plot_paths_basic <- function(test_list, c_position = 1:2) {
+data_plot_paths_basic <- function(test_list, position = 1:2) {
   
   data_out <- data.frame(lat = -360,
                          long = -360,
@@ -18,8 +18,8 @@ data_plot_paths_basic <- function(test_list, c_position = 1:2) {
   for (i in 1:length(test_list)) {
     data_out <- rbind(data_out,
                       data.frame(
-                        lat = test_list[[i]][, c_position[2]],
-                        long = test_list[[i]][, c_position[1]],
+                        lat = test_list[[i]][, position[2]],
+                        long = test_list[[i]][, position[1]],
                         curve = i
                       ))
   }
@@ -36,13 +36,13 @@ data_plot_paths_basic <- function(test_list, c_position = 1:2) {
 #'       list of data frames of paths of TCs (like inputted into 
 #'       \code{\link{data_plot_paths_basic}}), then the function will apply
 #'       \code{\link{data_plot_paths_basic}} first. \emph{Note: will assume
-#'       "\code{c_position = 1:2}" unless altered in \code{...}, see 
+#'       "\code{position = 1:2}" unless altered in \code{...}, see 
 #'       documentation for \code{\link{data_plot_paths_basic}} for details.}
 #' @param zoom map zoom for ggmap
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
 #' @param alpha opacity of curves 
-#' @param ... can pass \code{c_position} values if desirable
+#' @param ... can pass \code{position} values if desirable
 #'
 #' @return ggplot visualisation of the curve
 #' @export
@@ -373,7 +373,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #'   }
 #' 
 #' dflist_13pointsreduction <- thirteen_points_listable(sample_sim_small, 
-#'                                                     c_position = 1:2)
+#'                                                     position = 1:2)
 #' dist_matrix_13pointsreduction <- distMatrixPath_innersq(
 #'   dflist_13pointsreduction)
 
@@ -401,7 +401,7 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   
   if (!all(c("positive", "negative", "centers", "radius") %in% names(bubble_plot_data))) {
     dflist_13pointsreduction <- thirteen_points_listable(bubble_plot_data, 
-                                                         c_position = 1:2,
+                                                         position = 1:2,
                                                          verbose = FALSE)
     dist_matrix_13pointsreduction <- distMatrixPath_innersq(
                                                   dflist_13pointsreduction,

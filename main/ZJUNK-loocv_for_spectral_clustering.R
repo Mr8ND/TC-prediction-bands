@@ -35,7 +35,7 @@ load(paste0(data_loc,"raw_data.Rdata"))
 # Create 13 point compression -------------------------
 
 train_list_13_point <- thirteen_points_listable(train_data, 
-											   c_position = c(6,5),
+											   position = c(6,5),
 											   lonlat = TRUE, verbose = TRUE)
 
 # Create Distance Matrix -------------------------

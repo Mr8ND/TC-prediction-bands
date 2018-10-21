@@ -82,8 +82,8 @@ thirteen_points <- function(df2, longlat = TRUE,
 #' @description Creates list of 13 point long/lat expression of each path
 #'
 #' @param list_df list of dfs, where the longlat points are are in the 
-#' c_position columns 
-#' @param c_position the columns of the data frames that contain the desired 
+#' position columns 
+#' @param position the columns of the data frames that contain the desired 
 #' longlat coordinates 
 #' @param longlat boolean logical if columns are longlat 
 #' (false if they are latlon)
@@ -91,7 +91,7 @@ thirteen_points <- function(df2, longlat = TRUE,
 #'
 #' @return List of 13 point compression data frame for each path
 #' @export
-thirteen_points_listable <- function(list_df, c_position = 5:6, longlat = TRUE,
+thirteen_points_listable <- function(list_df, position = 5:6, longlat = TRUE,
                                      verbose = TRUE){
   out_list <- list()
   n_tc = length(list_df)
@@ -109,7 +109,7 @@ thirteen_points_listable <- function(list_df, c_position = 5:6, longlat = TRUE,
   }
 
   for (path_name in iterator_names) {
-    df_pulled_out <- list_df[[path_name]][,c_position]
+    df_pulled_out <- list_df[[path_name]][,position]
     out_list[[path_name]] <- thirteen_points(df_pulled_out, longlat)
     if (verbose) {
       pb$tick()

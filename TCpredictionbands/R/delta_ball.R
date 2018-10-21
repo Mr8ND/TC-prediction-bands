@@ -423,7 +423,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param data_deep_points data deep points from depth function 
 #'        (otherwise calculated)
-#' @param c_position Columns position of long/lat pair
+#' @param position Columns position of long/lat pair
 #' @param depth_vector Vector with depth values
 #' @param area_ci_n number of observations to estimate area of covering
 #' @param area_ci_alpha alpha level for confidence interval of area of covering
@@ -441,7 +441,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 #' @export
 delta_structure <- function(data_list, alpha, dist_mat = NULL, 
                             data_deep_points = NULL,
-                            c_position = 1:2,
+                            position = 1:2,
                             depth_vector = NULL,
                             area_ci_n = 2000, 
                             area_ci_alpha = .05, verbose = FALSE, ...){
@@ -451,7 +451,7 @@ delta_structure <- function(data_list, alpha, dist_mat = NULL,
                                                alpha, 
                                                dist_mat = dist_mat,
                                                verbose = verbose,
-                                               c_position = c_position,
+                                               position = position,
                                                depth_vector = depth_vector,
                                                ...)
   }
