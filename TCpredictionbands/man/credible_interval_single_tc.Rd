@@ -5,7 +5,7 @@
 \title{Extract credible intervals of 4 methods from a single test TC}
 \usage{
 credible_interval_single_tc(dflist, test_true_path, alpha_level,
-  long = 1, lat = 2, verbose = FALSE, kde_grid_size = rep(1000, 2),
+  position = 1:2, verbose = FALSE, kde_grid_size = rep(1000, 2),
   alpha_ci_level = 0.05, unit_measure = "nautical mile")
 }
 \arguments{
@@ -15,9 +15,7 @@ credible_interval_single_tc(dflist, test_true_path, alpha_level,
 
 \item{alpha_level}{Alpha level of all the CI}
 
-\item{long}{Column index of the longitude}
-
-\item{lat}{Column index of the latitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{verbose}{If TRUE update messages will be displayed}
 

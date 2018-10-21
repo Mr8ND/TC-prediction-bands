@@ -4,8 +4,8 @@
 \alias{calculate_invec_per_method}
 \title{Credible Band Inclusion on Simulated TCs}
 \usage{
-calculate_invec_per_method(hur_out_obj, sim_hur_list, long = 1,
-  lat = 2, unit_measure = "nautical mile", verbose = FALSE)
+calculate_invec_per_method(hur_out_obj, sim_hur_list, position = 1:2,
+  unit_measure = "nautical mile", verbose = FALSE)
 }
 \arguments{
 \item{hur_out_obj}{Object with the credible bands for each of the method. Assumed to be 
@@ -14,9 +14,7 @@ a list with at least the 4 names referring to the methods, i.e. 'kde', 'bubble_c
 
 \item{sim_hur_list}{List of simulated hurricanes. Each object is assumed to be a data.frame}
 
-\item{long}{Column index of the longitude}
-
-\item{lat}{Column index of the latitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{unit_measure}{Unit of measure used for distance}
 

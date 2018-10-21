@@ -4,12 +4,12 @@
 \alias{thirteen_points}
 \title{Thirteen point compression}
 \usage{
-thirteen_points(df2, lonlat = TRUE, output_length = "nautical mile")
+thirteen_points(df2, longlat = TRUE, output_length = "nautical mile")
 }
 \arguments{
-\item{df2}{2 column data frame with all points lat/lon}
+\item{df2}{2 column data frame with all points lat/long}
 
-\item{lonlat}{boolean if the order of the columns is latlon 
+\item{longlat}{boolean if the order of the columns is lat/long 
 (will be reverse them if FALSE)}
 
 \item{output_length}{string of distance between points 
@@ -44,7 +44,7 @@ newmap <- getMap(resolution = "low")
 plot(newmap, ylim = c(10, 47), xlim = c(-90, -10), asp = 1)
 
 lines(df2[,2], df2[,1], col = "red")
-news_df2 <- thirteen_points(df2, lonlat = F)
+news_df2 <- thirteen_points(df2, longlat = F)
 points(news_df2[,1], news_df2[,2], col = "red")
 }
 }

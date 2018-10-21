@@ -5,7 +5,7 @@
 \title{Estimating the CI around a given path and a given level with symmetrical 
 radius}
 \usage{
-bubbleCI(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
+bubbleCI(dflist, center_idx, alpha_level = 0.1, position = 1:2,
   output_length = "nautical mile")
 }
 \arguments{
@@ -15,9 +15,7 @@ bubbleCI(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
 
 \item{alpha_level}{Alpha level of the confidence interval}
 
-\item{long}{Column index of the longitude}
-
-\item{lat}{Column index of the latitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{output_length}{Unit of measure of the output}
 }

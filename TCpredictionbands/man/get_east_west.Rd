@@ -8,7 +8,8 @@ get_east_west(bearing)
 }
 \arguments{
 \item{bearing}{Vector of bearings, where \code{bearing_prev[i]} is the 
-bearing between (\code{lat[i], long[i]}) and (\code{lat[i+1], long[i+1]})}
+bearing between (\code{lat[i], long[i]}) and (\code{lat[i+1], long[i+1]}).
+It should be included between 0 and 360 degrees.}
 }
 \value{
 \code{eastwest[i]} stores "E" if \code{bearing[i]} indicates eastward

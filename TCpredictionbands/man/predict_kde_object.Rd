@@ -4,8 +4,7 @@
 \alias{predict_kde_object}
 \title{Evaluation of points with respect to KDE object}
 \usage{
-predict_kde_object(kde_obj, predict_mat, alpha_level = NULL, long = 1,
-  lat = 2)
+predict_kde_object(kde_obj, predict_mat, alpha_level = NULL, position = 1:2)
 }
 \arguments{
 \item{kde_obj}{kde object - in our case based on TC points 
@@ -18,9 +17,7 @@ NULL, then an extra column will be added, in which 1 means that the value is
 above the alpha_level contour - i.e. within that probability contour - 
 else 0 is returned.}
 
-\item{long}{index of the column referring to "longitude". Default is 1.}
-
-\item{lat}{index of the column referring to "latitude". Default is 2.}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 }
 \value{
 Matrix with prediction and, if alpha_level was not NULL, extra column

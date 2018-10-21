@@ -4,10 +4,9 @@
 \alias{ggvis_all_weighted}
 \title{Creates clean visual of weighted curves using Spectral Clustering Analysis}
 \usage{
-ggvis_all_weighted(sca_output, test_list, c_position = 1:2, zoom = 4,
-  train_alpha = 0.3, test_color_power = 1/3,
-  test_color_low = "white", test_color_high = "red",
-  color_n_breaks = 10, base_map_graph = NULL)
+ggvis_all_weighted(sca_output, test_list, position = 1:2, zoom = 4,
+  train_alpha = 0.3, test_color_power = 1/3, test_color_low = "white",
+  test_color_high = "red", color_n_breaks = 10, base_map_graph = NULL)
 }
 \arguments{
 \item{sca_output}{a list of diffusion map associated information 
@@ -23,7 +22,7 @@ assumed of the form of output provided by
 
 \item{test_list}{list of paths to analysis (each a df)}
 
-\item{c_position}{positions of lat and lon columns in test_list data frames}
+\item{position}{positions of lat and long columns in test_list data frames}
 
 \item{zoom}{map zoom for ggmap (plot 2: map)}
 

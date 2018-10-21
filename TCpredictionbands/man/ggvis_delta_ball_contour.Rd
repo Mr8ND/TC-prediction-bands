@@ -27,7 +27,7 @@ also to pass \emph{only} the \code{alpha} input for the
 ggplot object of contours
 }
 \description{
-\strong{This function needs to be corrected. Lat and Lon seem to be switched 
+\strong{This function needs to be corrected. Lat and Long seem to be switched 
 around. Goes all the way back to \code{delta_ball_wrapper}}
 }
 \examples{

@@ -5,11 +5,11 @@
 \title{Extract CI from the full list of simulated and true TCs}
 \usage{
 credible_interval_pipeline(tc_full_sim_list, tc_true_path_list,
-  alpha_level = 0.1, start_idx = NULL, end_idx = NULL, long = 1,
-  lat = 2, unit_measure = "nautical mile", verbose = TRUE,
+  alpha_level = 0.1, start_idx = NULL, end_idx = NULL, position = 1:2,
+  unit_measure = "nautical mile", verbose = TRUE,
   kde_grid_size = rep(1000, 2), alpha_ci_level = 0.05,
-  curve_type_vec = c("Auto_DeathRegs", "Auto_NoDeathRegs",
-  "NoAuto_DeathRegs", "NoAuto_NoDeathRegs"))
+  curve_type_vec = c("Auto_DeathRegs", "Auto_NoDeathRegs", "NoAuto_DeathRegs",
+  "NoAuto_NoDeathRegs"))
 }
 \arguments{
 \item{tc_full_sim_list}{List of simulated TCs}
@@ -24,9 +24,7 @@ to 1}
 \item{end_idx}{Ending index when selecting which TC to be simulated - if NULL, defaulted to
 the number of TCs available}
 
-\item{long}{Column index of the longitude}
-
-\item{lat}{Column index of the latitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{unit_measure}{Unit of measure used for distance}
 

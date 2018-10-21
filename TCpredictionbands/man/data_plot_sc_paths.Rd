@@ -6,7 +6,7 @@
 \usage{
 data_plot_sc_paths(test_list, sca_output = list(test_p_estimate = rep(1,
   length(test_list)), test_weight = rep(1/length(test_list),
-  length(test_list))), c_position = 1:2)
+  length(test_list))), position = 1:2)
 }
 \arguments{
 \item{test_list}{list of \eqn{s} paths to analysis (each a df)}
@@ -21,7 +21,7 @@ probabilities (\eqn{p_i})
 probabilities (\eqn{p_i/\max_k p_k})
 }}
 
-\item{c_position}{positions of lat and lon columns in test_list data frames}
+\item{position}{positions of lat and long columns in test_list data frames}
 }
 \value{
 data frame that can be used to visualize curves

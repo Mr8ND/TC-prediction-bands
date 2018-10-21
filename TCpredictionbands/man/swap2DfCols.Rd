@@ -10,8 +10,7 @@ swap2DfCols(data_df)
 \item{data_df}{data frame (assumed to have 2 columns)}
 }
 \value{
-data frame with columns reverse (actually just first 2 columns 
-included)
+First 2 columns of the data-frame, with their position reversed.
 }
 \description{
 Swap the 2 columns in a Data Frame

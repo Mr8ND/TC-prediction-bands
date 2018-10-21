@@ -4,8 +4,8 @@
 \alias{depth_curves_to_points}
 \title{Get deepest curves' points in a data frame}
 \usage{
-depth_curves_to_points(data_list, alpha, dist_mat = NULL,
-  c_position = 1:2, depth_vector = NULL, verbose = FALSE, ...)
+depth_curves_to_points(data_list, alpha, dist_mat = NULL, position = 1:2,
+  depth_vector = NULL, verbose = FALSE, ...)
 }
 \arguments{
 \item{data_list}{list of hurricanes}
@@ -15,7 +15,7 @@ for a 95\% PB, set alpha to .05.}
 
 \item{dist_mat}{distance matrix (otherwise is calculated)}
 
-\item{c_position}{only needed if created 13 point reduction}
+\item{position}{only needed if created 13 point reduction}
 
 \item{depth_vector}{vector of depth values (otherwise calculated)}
 

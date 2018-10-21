@@ -8,11 +8,11 @@ distBetweenP(data_df_p1, data_df_p2, output_length = "nautical mile",
   longlat = TRUE, verbose = FALSE)
 }
 \arguments{
-\item{data_df_p1}{(n x 2) data.frame, each row is a pair of values (lat, lon) 
+\item{data_df_p1}{(n x 2) data.frame, each row is a pair of values (lat, long) 
 unless specified the reverse with longlat boolean}
 
 \item{data_df_p2}{(n x 2) second data.frame to be compared, each row is a 
-pair of values (lat, lon) unless specified the reverse with longlat boolean}
+pair of values (lat, long) unless specified the reverse with longlat boolean}
 
 \item{output_length}{string of measurement unit of points, see options in
 datamart::uconv.}

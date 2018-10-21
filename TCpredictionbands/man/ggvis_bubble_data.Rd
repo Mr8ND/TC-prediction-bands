@@ -37,7 +37,7 @@ only the required \code{alpha_level} parameter will be accepted for the
 \code{ggplot} object with curves on it
 }
 \description{
-\strong{Warning: this function does lat and lon in reverse. This 
+\strong{Warning: this function does lat and long in reverse. This 
 goes back beyond the wrapper \code{\link{bubble_ci_from_tclist}}}
 }
 \examples{
@@ -48,7 +48,7 @@ for (i in 1:10){
   }
 
 dflist_13pointsreduction <- thirteen_points_listable(sample_sim_small, 
-                                                    c_position = 1:2)
+                                                    position = 1:2)
 dist_matrix_13pointsreduction <- distMatrixPath_innersq(
   dflist_13pointsreduction)
 depth_vector <- depth_function(dist_matrix_13pointsreduction)
