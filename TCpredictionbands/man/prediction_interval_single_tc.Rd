@@ -4,16 +4,16 @@
 \alias{prediction_interval_single_tc}
 \title{Extract prediction intervals of 4 methods from a single test TC}
 \usage{
-prediction_interval_single_tc(dflist, test_true_path, alpha_level,
-  position = 1:2, verbose = FALSE, kde_grid_size = rep(1000, 2),
-  alpha_ci_level = 0.05, unit_measure = "nautical mile")
+prediction_interval_single_tc(dflist, test_true_path, alpha, position = 1:2,
+  verbose = FALSE, kde_grid_size = rep(1000, 2), alpha_ci = 0.05,
+  unit_measure = "nautical mile")
 }
 \arguments{
 \item{dflist}{List of simulated TCs}
 
 \item{test_true_path}{Dataframe with the true TC path to be tested}
 
-\item{alpha_level}{Alpha level of all the CI}
+\item{alpha}{Alpha level of all the CI}
 
 \item{position}{Columns position of long/lat pair. Default is 1:2}
 
@@ -21,7 +21,7 @@ prediction_interval_single_tc(dflist, test_true_path, alpha_level,
 
 \item{kde_grid_size}{Two dimensional vector for the KDE grid size}
 
-\item{alpha_ci_level}{Fraction for confidence interval of area estimates based on uniform
+\item{alpha_ci}{Fraction for confidence interval of area estimates based on uniform
 sampling distribution.}
 
 \item{unit_measure}{Unit of measure used for distance}

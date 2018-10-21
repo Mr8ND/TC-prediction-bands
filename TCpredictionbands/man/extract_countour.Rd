@@ -4,12 +4,12 @@
 \alias{extract_countour}
 \title{Selection of specific countour level from KDE object}
 \usage{
-extract_countour(kde_obj, alpha_level)
+extract_countour(kde_obj, alpha)
 }
 \arguments{
 \item{kde_obj}{kde object}
 
-\item{alpha_level}{contour level which needs to be extracted. Integer from 1 
+\item{alpha}{contour level which needs to be extracted. Integer from 1 
 to 99.}
 }
 \value{

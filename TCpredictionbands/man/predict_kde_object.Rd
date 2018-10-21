@@ -4,7 +4,7 @@
 \alias{predict_kde_object}
 \title{Evaluation of points with respect to KDE object}
 \usage{
-predict_kde_object(kde_obj, predict_mat, alpha_level = NULL, position = 1:2)
+predict_kde_object(kde_obj, predict_mat, alpha = NULL, position = 1:2)
 }
 \arguments{
 \item{kde_obj}{kde object - in our case based on TC points 
@@ -12,16 +12,16 @@ predict_kde_object(kde_obj, predict_mat, alpha_level = NULL, position = 1:2)
 
 \item{predict_mat}{matrix with points to be predicted through KDE}
 
-\item{alpha_level}{alpha level of the contour plot. Default is NULL. If not 
+\item{alpha}{alpha level of the contour plot. Default is NULL. If not 
 NULL, then an extra column will be added, in which 1 means that the value is 
-above the alpha_level contour - i.e. within that probability contour - 
+above the alpha contour - i.e. within that probability contour - 
 else 0 is returned.}
 
 \item{position}{Columns position of long/lat pair. Default is 1:2}
 }
 \value{
-Matrix with prediction and, if alpha_level was not NULL, extra column
-on whether the point is within a specific 1-alpha_level countour.
+Matrix with prediction and, if alpha was not NULL, extra column
+on whether the point is within a specific 1-alpha countour.
 }
 \description{
 This function evaluates a matrix of geographical points with respect to a KDE

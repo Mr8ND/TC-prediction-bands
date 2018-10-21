@@ -120,7 +120,7 @@ contour_list_to_df <- function(contour_list){
 #'        \code{\link{kde_from_tclist}}), then the function will apply 
 #'        \code{\link{contour_list_to_df}} to the \code{contour} component. 
 #'        If you are making this function create the full KDE PB, please make
-#'        sure to pass a \code{alpha_level} in to make the object (see 
+#'        sure to pass a \code{alpha} in to make the object (see 
 #'        \code{\link{kde_from_tclist}} for details). }
 #'        
 #' @param base_graph ggplot object for base graph 
@@ -143,7 +143,7 @@ contour_list_to_df <- function(contour_list){
 #' ggvis_kde_contour(kde_list_object, color = "blue")
 #' 
 #' # using the simulated curves:
-#' ggvis_kde_contour(sample_sim, color = "purple", alpha_level = .05)
+#' ggvis_kde_contour(sample_sim, color = "purple", alpha = .05)
 ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
                               zoom = 4, color = "pink", ...){
   
@@ -350,7 +350,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #'        \code{\link{bubble_ci_from_tclist}}. One can also input a list of 
 #'        TCs and the function will create the needed structure using 
 #'        \code{\link{bubble_ci_from_tclist}}. \emph{If using a list of TCs, 
-#'        must include a \code{alpha_level} in \code{...} parameters.}
+#'        must include a \code{alpha} in \code{...} parameters.}
 #' @param base_graph plot to add to
 #' @param centers boolean to decide whether to also plot centers (as points)
 #' @param connect boolean to connect the left and right final tangential points
@@ -359,7 +359,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' @param zoom map zoom for \code{\link[ggmap]{ggmap}}
 #' @param ... Interior \code{\link[ggplot2]{geom_path}} or the 
 #'        \code{bubble_ci_from_tclist} parameters \emph{(Note: at this time,
-#'        only the required \code{alpha_level} parameter will be accepted for the
+#'        only the required \code{alpha} parameter will be accepted for the
 #'        \code{bubble_ci_from_tclist} function)}
 #'
 #' @return \code{ggplot} object with curves on it
@@ -382,7 +382,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' 
 #' spherical_PB <- bubble_ci_from_tclist(sample_sim_small, 
 #'                                           center_idx = depth_vector_idx,
-#'                                           alpha_level = .05)
+#'                                           alpha = .05)
 #' 
 #' bubble_plot_data <- spherical_PB$bubble_CI_object
 #' 
@@ -390,7 +390,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' ggvis_bubble_data(bubble_plot_data, color = "red", 
 #'                   base_graph = ggplot2::ggplot())
 #' 
-#' ggvis_bubble_data(sample_sim_small, color = "purple", alpha_level = .05,
+#' ggvis_bubble_data(sample_sim_small, color = "purple", alpha = .05,
 #'                   base_graph = ggplot2::ggplot())
 ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
                               centers = FALSE, connect = TRUE,
@@ -412,9 +412,9 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
     
     spherical_PB <- bubble_ci_from_tclist(bubble_plot_data, 
                                               center_idx = depth_vector_idx,
-                                              alpha_level = dots$alpha_level)
+                                              alpha = dots$alpha)
     bubble_plot_data <- spherical_PB$bubble_CI_object
-    dots$alpha_level <- NULL
+    dots$alpha <- NULL
   }
   
   ... <- unlist(dots)

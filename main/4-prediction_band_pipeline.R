@@ -21,8 +21,8 @@ true_curve_test <- lapply(test_data, true_curve_conversion_function)
 start_idx_passed <- 1
 end_idx_passed <- length(test_env)
 n_sim_curve_total <- 350
-alpha_level <- 0.1
-alpha_ci_level <- .05
+alpha <- 0.1
+alpha_ci <- .05
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) > 0) {
@@ -51,15 +51,15 @@ for (name_tc in names(test_env)) {
 output_pipeline <- prediction_interval_pipeline(
                                           tc_full_sim_list = tc_full_sim_list,
                                           tc_true_path_list = tc_true_path_list,
-                                          alpha_level = alpha_level,
-                                          alpha_ci_level = alpha_ci_level,
+                                          alpha = alpha,
+                                          alpha_ci = alpha_ci,
                                           start_idx = start_idx_passed,
                                           end_idx = end_idx_passed,
                                           curve_type_vec = desired_curves_types)
 
 out_filename <- paste0(data_loc,
                        'output_pipeline_alphalevel',
-                       as.character(alpha_level), '_',
+                       as.character(alpha), '_',
                        start_idx_passed, '_',
                        end_idx_passed, '.Rdata')
 save(output_pipeline, file = out_filename)

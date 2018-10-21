@@ -8,12 +8,12 @@
 #' 
 #' @param dflist List of simulated TCs
 #' @param test_true_path Dataframe with the true TC path to be tested
-#' @param alpha_level Alpha level of all the CI
+#' @param alpha Alpha level of all the CI
 #' @param position Columns position of long/lat pair. Default is 1:2
 #' @param kde_grid_size Two dimensional vector for the KDE grid size
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose If TRUE update messages will be displayed
-#' @param alpha_ci_level Fraction for confidence interval of area estimates based on uniform
+#' @param alpha_ci Fraction for confidence interval of area estimates based on uniform
 #' sampling distribution.
 #' 
 #' @return 1 list with 4 arguments, once for each of the 4 methods, which all 
@@ -21,10 +21,10 @@
 #' boolean vector which reported whether the point of the true TC was inside the
 #' TC or not.
 #' @export
-prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
+prediction_interval_single_tc <- function(dflist, test_true_path, alpha, 
                                         position = 1:2, verbose = FALSE,
                                         kde_grid_size = rep(1000,2),
-                                        alpha_ci_level = .05,
+                                        alpha_ci = .05,
                                         unit_measure = 'nautical mile'){
 
     # KDE CI
@@ -32,12 +32,12 @@ prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 
     kde_ci_list <- kde_from_tclist(dflist = dflist, 
     								grid_size = kde_grid_size,
-                                    alpha_level = alpha_level)
+                                    alpha = alpha)
     kde_full_time <- Sys.time() - kde_start_time 
 
     kde_predict_mat <- predict_kde_object(kde_obj = kde_ci_list$kde_object, 
                         predict_mat = test_true_path, 
-                        alpha_level = alpha_level, 
+                        alpha = alpha, 
                         position = position)
 
 
@@ -69,8 +69,8 @@ prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     bubble_start_time <- Sys.time()
     bubble_ci_list <- bubble_ci_from_tclist(dflist = dflist, 
                                       center_idx = depth_vector_idx, 
-                                      alpha_level = alpha_level,
-                                      alpha_ci_level = alpha_ci_level,
+                                      alpha = alpha,
+                                      alpha_ci = alpha_ci,
                                       position = position, 
                                       unit_measure = unit_measure)
     bubble_full_time <- Sys.time() - bubble_start_time
@@ -91,7 +91,7 @@ prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     # deep points calculation
     data_deep_start_time <- Sys.time()
     data_deep_points <- depth_curves_to_points(data_list = dflist,
-                                    alpha = alpha_level, 
+                                    alpha = alpha, 
                                     dist_mat = dist_matrix_13pointsreduction, 
                                     position = position,
                                     depth_vector = depth_vector,
@@ -101,13 +101,13 @@ prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     # Delta Ball CI
     delta_start_time <- Sys.time()
     delta_ball_structure <- delta_structure(data_list = dflist, 
-                                    alpha = alpha_level, 
+                                    alpha = alpha, 
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
                                     position = position,
                                     area_ci_n = 2000, 
-                                    area_ci_alpha = alpha_ci_level, 
+                                    area_ci_alpha = alpha_ci, 
                                     verbose = verbose)
     delta_final_time <- Sys.time() - delta_start_time 
 
@@ -128,7 +128,7 @@ prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     # Convex Hull CI
     convex_start_time <- Sys.time()
     convex_hull_structure <- convex_hull_structure(data_list = dflist, 
-                                    alpha = alpha_level, 
+                                    alpha = alpha, 
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
@@ -176,7 +176,7 @@ prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' 
 #' @param tc_full_sim_list List of simulated TCs
 #' @param tc_true_path_list Dataframe with the true TC path to be tested
-#' @param alpha_level Alpha level of all the CI
+#' @param alpha Alpha level of all the CI
 #' @param position Columns position of long/lat pair. Default is 1:2
 #' @param start_idx Starting index when selecting which TC to be simulated - if NULL, defaulted
 #' to 1
@@ -186,16 +186,16 @@ prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose if TRUE, an update on the process will be printed
 #' @param curve_type_vec vector with the strings referring to the different types of curves
-#' @param alpha_ci_level Fraction for confidence interval of area estimates based on uniform
+#' @param alpha_ci Fraction for confidence interval of area estimates based on uniform
 #' sampling distribution.
 #' 
 #' @return A list in which each sublist is a curve type and each sublist has for each element
 #' a TC with the 4 different calculated prediction intervals.
 #' @export
-prediction_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
+prediction_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha = 0.1,
                                         start_idx = NULL, end_idx = NULL, position = 1:2, 
                                         unit_measure = 'nautical mile', verbose = TRUE,
-                                        kde_grid_size = rep(1000,2), alpha_ci_level = .05,
+                                        kde_grid_size = rep(1000,2), alpha_ci = .05,
                                         curve_type_vec = c('Auto_DeathRegs', 'Auto_NoDeathRegs', 
                                                            'NoAuto_DeathRegs', 'NoAuto_NoDeathRegs')) {
     output = list()
@@ -225,12 +225,12 @@ prediction_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, al
       for (curve_type in curve_type_vec) {
         output_tc[[curve_type]] <- prediction_interval_single_tc(dflist = lapply(tc_sim_list_curve[[curve_type]], data.frame), 
                                                          test_true_path = data.frame(tc_true_path_curve),
-                                                         alpha_level = alpha_level,
+                                                         alpha = alpha,
                                                          position = position, 
                                                          unit_measure = unit_measure,
                                                          verbose = FALSE,
                                                          kde_grid_size = kde_grid_size,
-                                                         alpha_ci_level = alpha_ci_level)
+                                                         alpha_ci = alpha_ci)
         if (verbose) {
         pb$tick()
       	}

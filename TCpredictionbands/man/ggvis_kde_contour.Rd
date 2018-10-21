@@ -23,7 +23,7 @@ If one inserts a list with sub-elements named \code{contour},
 \code{\link{kde_from_tclist}}), then the function will apply 
 \code{\link{contour_list_to_df}} to the \code{contour} component. 
 If you are making this function create the full KDE PB, please make
-sure to pass a \code{alpha_level} in to make the object (see 
+sure to pass a \code{alpha} in to make the object (see 
 \code{\link{kde_from_tclist}} for details). }}
 
 \item{base_graph}{ggplot object for base graph 
@@ -53,5 +53,5 @@ ggvis_kde_contour(level_contour_list, color = "red")
 ggvis_kde_contour(kde_list_object, color = "blue")
 
 # using the simulated curves:
-ggvis_kde_contour(sample_sim, color = "purple", alpha_level = .05)
+ggvis_kde_contour(sample_sim, color = "purple", alpha = .05)
 }

@@ -50,16 +50,16 @@ rearrange_dflist_bubble <- function(dflist, center_idx, position = 1:2) {
 #' the points at a certain point of the TCs track. Dataframe should only contain
 #' latitude and longitude.
 #' @param center_idx Index of the point that needs to be considered as a center
-#' @param alpha_level Alpha level to which the bubble needs to be generated
+#' @param alpha Alpha level to which the bubble needs to be generated
 #' @param output_length Unit of measure of the output.
 #' 
 #' @return Dataframe with the points inside the 1-alpha level, with distance 
 #' attached to the original dataframe.
 #' 
 create_CI_bubble_step_track <- function(df_points_step_track, center_idx, 
-                                        alpha_level = .10, 
+                                        alpha = .10, 
                                         output_length = "nautical mile"){
-  level <- 1 - alpha_level
+  level <- 1 - alpha
   n_df <- dim(df_points_step_track)[1]
 
   # Calculating distance
@@ -77,7 +77,7 @@ create_CI_bubble_step_track <- function(df_points_step_track, center_idx,
   ordered_path_prob_df <- data.frame(cbind(df_points_step_track, distance_vec))
   ordered_path_prob_df <- ordered_path_prob_df[
                                         order(ordered_path_prob_df[, 3]), ]
-  ind_sel <- ceiling(n_df * (1 - alpha_level))
+  ind_sel <- ceiling(n_df * (1 - alpha))
   out_df <- ordered_path_prob_df[c(1:ind_sel), ]
   
   return(out_df)
@@ -95,15 +95,15 @@ create_CI_bubble_step_track <- function(df_points_step_track, center_idx,
 #'
 #' @param dflist List of simulated TCs
 #' @param center_idx Index of the path that needs to be considered as a center
-#' @param alpha_level Alpha level of the confidence interval
+#' @param alpha Alpha level of the confidence interval
 #' @param position Columns position of long/lat pair. Default is 1:2
 #' @param output_length Unit of measure of the output
 #
-#' @return A list of matrices, each with prediction and, if alpha_level was not 
-#' NULL, extra column on whether the point is within a specific 1-alpha_level 
+#' @return A list of matrices, each with prediction and, if alpha was not 
+#' NULL, extra column on whether the point is within a specific 1-alpha 
 #' countour.
 #'
-bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, position = 1:2, 
+bubbleCI <- function(dflist, center_idx, alpha = 0.1, position = 1:2, 
                      output_length = "nautical mile"){
   
   points_list <- rearrange_dflist_bubble(dflist = dflist, 
@@ -116,7 +116,7 @@ bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, position = 1:2,
     output_list[[j]] <- create_CI_bubble_step_track(
                               df_points_step_track = points_list[[j]], 
                               center_idx = center_idx, 
-                              alpha_level = alpha_level, 
+                              alpha = alpha, 
                               output_length = output_length)
   }
   return(output_list)
@@ -446,27 +446,27 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' 
 #' @param dflist List of simulated TCs
 #' @param center_idx Index of the path that needs to be considered as a center
-#' @param alpha_level Alpha level of the bubble CI
+#' @param alpha Alpha level of the bubble CI
 #' @param position Columns position of long/lat pair. Default is 1:2
 #' @param unit_measure Unit of measure used for distance
-#' @param alpha_ci_level Fraction for confidence interval of area estimates 
+#' @param alpha_ci Fraction for confidence interval of area estimates 
 #' based on uniform sampling distribution.
 #' 
 #' @return
 #' \item{bubble_CI_object}{A list of matrices, each with prediction and, 
-#' if alpha_level was not NULL, extra column on whether the point is within 
-#' a specific 1-alpha_level countour, see the \code{\link{bubbleCI}} }
+#' if alpha was not NULL, extra column on whether the point is within 
+#' a specific 1-alpha countour, see the \code{\link{bubbleCI}} }
 #' \item{area}{maximum area vector for the CB in question, see 
 #' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
 #' \item{area_vector}{cumulative area as one steps along the CB,
 #' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
 #' @export
-bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1, 
-                                 position = 1:2, alpha_ci_level = .05,
+bubble_ci_from_tclist <- function(dflist, center_idx, alpha = 0.1, 
+                                 position = 1:2, alpha_ci = .05,
                                  unit_measure = 'nautical mile') {
 
     bubble_steps_CI <- bubbleCI(dflist = dflist, center_idx = center_idx, 
-                                alpha_level = alpha_level, 
+                                alpha = alpha, 
                                 position = position, 
                                 output_length = unit_measure)
 
@@ -476,12 +476,10 @@ bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1,
                                   unit_measure = unit_measure)
 
     area_list <- get_area_diff_radius(bubble_ci_structure, 
-                                  alpha = alpha_ci_level,
+                                  alpha = alpha_ci,
                                   unit_measure = unit_measure,
                                   verbose = FALSE)
 
     return(list('bubble_CI_object' = bubble_ci_structure, 
                 'area' = area_list$area))
 } 
-
-
