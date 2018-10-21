@@ -127,9 +127,6 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
 
 #' Selection of specific countour level from KDE object
 #' 
-#' \strong{WARNING: I believe this should actually be a value between .01 to 
-#' .99. Please update \code{ggvis_kde_contour}'s examples if you change this.}
-#' 
 #' @description 
 #' This function extracts a specific level of contour from a kde object.
 #' 
@@ -153,7 +150,7 @@ predict_kde_object = function(kde_obj, predict_mat, alpha_level = NULL,
 #' dfmat <- cbind(x1,y1)
 #' kde_object <- ks::kde(dfmat)
 #' 
-#' cont <- extract_countour(kde_object, 5)
+#' cont <- extract_countour(kde_object, .05)
 #' }
 #' @export
 extract_countour <- function(kde_obj, alpha_level) {
