@@ -35,9 +35,9 @@ y1 <- rnorm(100)
 dfmat <- cbind(x1,y1)
 kde_object <- ks::kde(dfmat)
 
-cont_05 <- extract_countour(kde_object, .05)
-cont_1 <- extract_countour(kde_object, .1)
-cont_2 <- extract_countour(kde_object, .2)
+cont_05 <- TCpredictionbands::extract_countour(kde_object, .05)
+cont_1 <- TCpredictionbands::extract_countour(kde_object, .1)
+cont_2 <- TCpredictionbands::extract_countour(kde_object, .2)
 
 test_that("Level is selected correctly", {
   expect_equal(cont_05[[1]]$level, as.numeric(kde_object$cont["5%"]))
@@ -64,7 +64,8 @@ x1 <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
 y1 <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
 predict_mat <- cbind(x1,y1)
 
-position_wrt_contour <- points_in_contour(cont_temp, predict_mat)
+position_wrt_contour <- TCpredictionbands::points_in_contour(
+  cont_temp, predict_mat)
 
 test_that("Points that are in the contour are correctly identified as such", {
   expect_equal(position_wrt_contour, rep(1, length(y1)))

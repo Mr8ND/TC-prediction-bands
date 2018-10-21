@@ -10,7 +10,7 @@ test_list[[1]] <- cbind(rep(0, 10), rep(0, 10))
 test_list[[2]] <- cbind(rep(1, 10), rep(1, 10))
 test_list[[3]] <- cbind(rep(2, 10), rep(2, 10))
 
-df_plot <- data_plot_paths_basic(test_list = test_list)
+df_plot <- TCpredictionbands::data_plot_paths_basic(test_list = test_list)
 names_col <- c('lat', 'long', 'curve')
 
 test_that("Basic structure is correct", {
@@ -42,7 +42,7 @@ cont_temp[[2]]$x <- c(1, 2, 2, 1)
 cont_temp[[2]]$y <- c(1, 1, 2, 2)
 cont_temp[[2]]$level <- 2
 
-cont_list_to_df <- contour_list_to_df(cont_temp)
+cont_list_to_df <- TCpredictionbands::contour_list_to_df(cont_temp)
 
 test_that("Dimension is correct", {
   expect_equal(length(cont_list_to_df), 2)
