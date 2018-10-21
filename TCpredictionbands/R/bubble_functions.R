@@ -408,7 +408,7 @@ check_points_within_diff_radius <- function(tc_bubble_structure, df_points,
 #' 
 #' @param df_points Dataframe of points which inclusion needs to be calculated
 #' @param center_df Dataframe of central points of the CI bubble
-#' @param radius_df Dataframe of radius of the CI bubble (vector?)
+#' @param radius_df Vector of radius of the CI bubble - cast as dataframe
 #' @param long column index of the longitude in the central points
 #' @param lat column index of the latitude in the central points
 #' 
