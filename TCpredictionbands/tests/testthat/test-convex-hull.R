@@ -1,7 +1,7 @@
 context("Convex Hull - points in spatial polygon")
 
-library(sp)
-library(ks)
+suppressWarnings(library(sp))
+suppressWarnings(library(ks))
 
 set.seed(8192)
 
