@@ -1,4 +1,4 @@
-context("kde-functions")
+context("KDE functions")
 
 library(TCpredictionbands)
 suppressWarnings(library(ks))

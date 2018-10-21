@@ -1,4 +1,4 @@
-context("ggplot-visual-functions")
+context("ggplot Visual Functions")
 
 library(TCpredictionbands)
 
