@@ -112,7 +112,7 @@ points_in_spatial_polygon <- function(spPoly, predict_mat, position = 1:2){
 #' Convex Hull creation
 #'
 #' @param data_list list of hurricanes
-#' @param alpha for credible band (related to depth)
+#' @param alpha for prediction band (related to depth)
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param depth_vector Depth vector values
 #' @param position Position of the longitude/latitude pair

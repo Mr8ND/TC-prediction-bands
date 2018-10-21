@@ -9,14 +9,14 @@ Ordering:
 - F[integers]: files to create figures that demonstrate PB approaches (example figures)
 - S0: script to create png files to aid in Author's diagonstics of the implimented framework
 
-## Credible Interval Pipeline
+## Prediction Interval Pipeline
 
 To run the `prediction_band_pipeline.R` we would do the following from the `TC-prediction-bands` folder:
 
 ```{bash}
 Rscript main/prediction_band_pipeline.R a b
 ```
-where `a` and `b` are integer values (`a <= b`). This allows of the creation of the credible interval objects to be created in "parallel".
+where `a` and `b` are integer values (`a <= b`). This allows of the creation of the prediction interval objects to be created in "parallel".
 
 ##  Merging files
 

@@ -1,9 +1,9 @@
 # TC-prediction-bands
 
 This repository stores the documentation for new approaches to predicting 
-credible bands for full paths of tropical storms (TCs) using just a few initial 
+prediction bands for full paths of tropical storms (TCs) using just a few initial 
 points. We leveraging extensions on regression models to generate curves, 
-combined with multiple approaches to create credible bands for the full paths. 
+combined with multiple approaches to create prediction bands for the full paths. 
 These approaches utilizes, kernel density estimation, utilize depth-based 
 relationships between curves, and also leverage geometric properties of the 
 space. This project was specifically designed with the use of the 
@@ -33,7 +33,7 @@ they would like the full results or just test out the analysis on a few samples.
 Additionally, the R package `TCpredictionbands` (see 
 [associated section](#2-tcpredictionbands-package)), which is included in this
 repo, provides the user with the ability to analysis different generated
-curves with our credible band approaches and also TC paths that were not
+curves with our prediction band approaches and also TC paths that were not
 available when we developed with package.
 
 Files in `main/` are titled in the following format:

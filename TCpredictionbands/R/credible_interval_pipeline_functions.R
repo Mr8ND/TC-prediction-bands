@@ -1,8 +1,8 @@
-#' Extract credible intervals of 4 methods from a single test TC
+#' Extract prediction intervals of 4 methods from a single test TC
 #' 
 #' @description
 #' This function extracts the KDE, Bubble CI, delta-ball and convex hull 
-#' credible intervals from the simulations of a single TC. It then checks the 
+#' prediction intervals from the simulations of a single TC. It then checks the 
 #' coverage of such CI as number of points included in the CI for each of the 
 #' methods
 #' 
@@ -169,7 +169,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' 
 #' @description
 #' This function iterates through different type of curves and all the simulated curves
-#' in order to obtain the credible intervals from the 4 different methods
+#' in order to obtain the prediction intervals from the 4 different methods
 #' 
 #' @details
 #' This function is just an iterative wrapper around the function credible_interval_single_tc
@@ -190,7 +190,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' sampling distribution.
 #' 
 #' @return A list in which each sublist is a curve type and each sublist has for each element
-#' a TC with the 4 different calculated credible intervals.
+#' a TC with the 4 different calculated prediction intervals.
 #' @export
 credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
                                         start_idx = NULL, end_idx = NULL, position = 1:2, 
@@ -211,7 +211,7 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
 
   	if (verbose) {
 	    pb <- progress::progress_bar$new(
-	      format = "Credible Interval Pipeline [:bar] :percent eta: :eta",
+	      format = "Prediction Interval Pipeline [:bar] :percent eta: :eta",
 	      total = length(c(start_idx:end_idx))*4, clear = FALSE, width = 51)
   	}
 

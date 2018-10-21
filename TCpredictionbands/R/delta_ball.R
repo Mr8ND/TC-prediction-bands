@@ -418,7 +418,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 #' Performs delta ball approach
 #'
 #' @param data_list list of hurricanes
-#' @param alpha for credible band (related to depth). Takes value in (0, 1.0), 
+#' @param alpha for prediction band (related to depth). Takes value in (0, 1.0), 
 #'        for a 95\% PB, set alpha to .05.
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param data_deep_points data deep points from depth function 
