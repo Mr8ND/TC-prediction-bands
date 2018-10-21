@@ -10,8 +10,7 @@
 #' a list with at least the 4 names referring to the methods, i.e. 'kde', 'bubble_ci',
 #' 'delta_ball' and 'convex_hull'
 #' @param sim_hur_list List of simulated hurricanes. Each object is assumed to be a data.frame
-#' @param long Column index of the longitude
-#' @param lat Column index of the latitude
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose If TRUE update messages will be displayed
 #' 
@@ -19,7 +18,7 @@
 #' number of vectors as the simulated TCs. Each vector is a binary vector, in which 1 indicates
 #' that the point was included in the credible band and 0 if not.
 #' @export 
-calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, long = 1, lat = 2,
+calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, position = 1:2,
 									unit_measure = 'nautical mile', verbose = FALSE){
 	# KDE
 	kde_time_start <- Sys.time()
@@ -27,7 +26,7 @@ calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, long = 1, lat 
 	kde_invec_list <- lapply(X = sim_hur_list,
 							FUN = points_in_contour_list, 
 							cont_list = cont_list, 
-							long = long, lat = lat)
+							position = position)
 	kde_time_final <- Sys.time() - kde_time_start
 
 	# BUBBLE CI
@@ -36,7 +35,7 @@ calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, long = 1, lat 
 	bubble_invec_list <- lapply(X = sim_hur_list,
 							FUN = check_points_within_diff_radius,
                             tc_bubble_structure = tc_bubble_structure,
-                            long = long, lat = lat, 
+                            position = position, 
                             unit_measure = unit_measure,
                             verbose = verbose)
 	bubble_time_final <- Sys.time() - bubble_time_start
@@ -59,7 +58,7 @@ calculate_invec_per_method <- function(hur_out_obj, sim_hur_list, long = 1, lat 
 	ch_invec_list <- lapply(X = sim_hur_list_mat, 
 							FUN = points_in_spatial_polygon,
 							spPoly = ch_polygon,
-							long = long, lat = lat)
+							position = position)
 	convex_time_final <- Sys.time() - convex_time_start
 
 	return(list('kde' = kde_invec_list,

@@ -9,14 +9,13 @@
 #' 
 #' @param dflist List of simulated TCs
 #' @param center_idx Index of the path that needs to be considered as a center
-#' @param long Column index of the longitude
-#' @param lat Column index of the latitude
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' 
 #' @return List with same number of elements as the points in the track of the 
 #' "central" TC. Each element j in the list is a dataframe with the j-th points 
 #' of the simulated TCs.
 #' 
-rearrange_dflist_bubble <- function(dflist, center_idx, long = 1, lat = 2) {
+rearrange_dflist_bubble <- function(dflist, center_idx, position = 1:2) {
   
   n <- length(dflist)
   n_df <- dim(dflist[[center_idx]])[1]
@@ -27,9 +26,9 @@ rearrange_dflist_bubble <- function(dflist, center_idx, long = 1, lat = 2) {
 
     for (i in c(1:n)) {
       output_mat[j, (2*i - 1)] <- ifelse(dim(dflist[[i]])[1] >= j, 
-                                         dflist[[i]][j, long], NA)
+                                         dflist[[i]][j, c(position)[1]], NA)
       output_mat[j, (2*i)] <- ifelse(dim(dflist[[i]])[1] >= j, 
-                                     dflist[[i]][j, lat], NA)
+                                     dflist[[i]][j, c(position)[2]], NA)
     }
 
     output_list[[j]] <- data.frame(t(matrix(output_mat[j, ], ncol = n)))
@@ -97,20 +96,19 @@ create_CI_bubble_step_track <- function(df_points_step_track, center_idx,
 #' @param dflist List of simulated TCs
 #' @param center_idx Index of the path that needs to be considered as a center
 #' @param alpha_level Alpha level of the confidence interval
-#' @param long Column index of the longitude
-#' @param lat Column index of the latitude
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param output_length Unit of measure of the output
 #
 #' @return A list of matrices, each with prediction and, if alpha_level was not 
 #' NULL, extra column on whether the point is within a specific 1-alpha_level 
 #' countour.
 #'
-bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2, 
+bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, position = 1:2, 
                      output_length = "nautical mile"){
   
   points_list <- rearrange_dflist_bubble(dflist = dflist, 
                                          center_idx = center_idx,
-                                         long = long, lat = lat)
+                                         position = position)
   
   n <- length(points_list)
   output_list = list()
@@ -134,8 +132,7 @@ bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
 #' 
 #' @param bubble_steps_CI list of dataframes, with each dataframe representing 
 #' one step in the track of the most central TC
-#' @param long_col Column index of the longitude
-#' @param lat_col Column index of the latitude
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param unit_measure Unit measure of the distances 
 #' 
 #' @return
@@ -143,7 +140,7 @@ bubbleCI <- function(dflist, center_idx, alpha_level = 0.1, long = 1, lat = 2,
 #' \item{radius}{n length vector of radius around center path for each step}
 #' \item{positive, negative}{2 x n data frames holding points \eqn{r} distance
 #' away for the center point tangent to the path of the center path}
-error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2, 
+error_bands_bubbleCI <- function(bubble_steps_CI, position = 1:2, 
                                          unit_measure = "nautical mile") {
 
   #Hack to set variables equal to NULL so that R CMD check does not flag them
@@ -156,8 +153,8 @@ error_bands_bubbleCI <- function(bubble_steps_CI, long_col = 1, lat_col = 2,
                         dplyr::select(long,lat) %>%
                         sapply(function(x) matrix(x, ncol = 1))
 
-  centers <- data.frame(long = as.numeric(centers[, long_col]),
-                        lat = as.numeric(centers[, lat_col])) 
+  centers <- data.frame(long = as.numeric(centers[, c(position)[1]]),
+                        lat = as.numeric(centers[, c(position)[2]])) 
                         #^ dataframe in list column problem
   radius <- sapply(bubble_steps_CI, function(df) max(df$distance_vec))
   
@@ -251,8 +248,7 @@ max_cumulative_area <- function(tc_bubble_structure) {
 #' @param query points to check relative to the center points 
 #' @param size size of space where query points were drawn (note if size = 1, 
 #' then you are getting the proportion of points with the balls)
-#' @param long Column index of the longitude for query entry
-#' @param lat Column index of the latitude for query entry
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param alpha alpha level for 2 sided confidence interval estimate
 #' @param unit_measure string of measurement unit of points, see options in
 #' datamart::uconv.
@@ -266,7 +262,7 @@ max_cumulative_area <- function(tc_bubble_structure) {
 #' least one ball}
 #' @export
 get_area_diff_radius_inner <- function(tc_bubble_structure, query, size = 1,
-                                       long = 1, lat = 2, alpha = .05,
+                                       position = 1:2, alpha = .05,
                                        unit_measure = "nautical mile",
                                        verbose = TRUE){
   
@@ -287,7 +283,7 @@ get_area_diff_radius_inner <- function(tc_bubble_structure, query, size = 1,
   for (t_step in 1:n_centers) {
     dist_vec <- datamart::uconv(
       geosphere::distGeo(centers[t_step, 1:2],
-                         query[, c(long,lat)]),
+                         query[, position]),
       "m", unit_measure, "Length")
     contained_vec <- contained_vec + (dist_vec <= rad[t_step])
     
@@ -366,8 +362,7 @@ get_area_diff_radius <- function(tc_bubble_structure, n = 10000,
 #' @param tc_bubble_structure Bubble CI list with centers, radius, positive 
 #' and negative parts (at least a list of centers data frame and radius vector)
 #' @param df_points Dataframe of points which inclusion needs to be calculated
-#' @param long Column index of the longitude for \code{df_points} entry
-#' @param lat Column index of the latitude for \code{df_points} entry
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param unit_measure string of measurement unit of points, see options in
 #' datamart::uconv.
 #' @param verbose boolean logic if should have print outs (specifically that we
@@ -378,7 +373,7 @@ get_area_diff_radius <- function(tc_bubble_structure, n = 10000,
 #' @export
 #'
 check_points_within_diff_radius <- function(tc_bubble_structure, df_points,
-                                            long = 1, lat = 2, 
+                                            position = 1:2, 
                                             unit_measure = "nautical mile",
                                             verbose = TRUE){
   
@@ -387,7 +382,7 @@ check_points_within_diff_radius <- function(tc_bubble_structure, df_points,
   
   area_info <- get_area_diff_radius_inner(tc_bubble_structure, df_points, 
                                           size = 1,
-                                          long = long, lat = lat, alpha = 0,
+                                          position = position, alpha = 0,
                                           unit_measure = unit_measure,
                                           verbose = verbose)
   
@@ -409,17 +404,16 @@ check_points_within_diff_radius <- function(tc_bubble_structure, df_points,
 #' @param df_points Dataframe of points which inclusion needs to be calculated
 #' @param center_df Dataframe of central points of the CI bubble
 #' @param radius_df Vector of radius of the CI bubble - cast as dataframe
-#' @param long column index of the longitude in the central points
-#' @param lat column index of the latitude in the central points
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' 
 #' @return Boolean vectors on whether the points are in any of the bubble CIs 
 #' or not
 check_points_in_bubbleCI <- function(df_points, center_df, radius_df, 
-                                     long = 1, lat = 2){
+                                     position = 1:2){
 
   radius_df[is.na(radius_df)] <- 0
   center_df[is.na(center_df)] <- 0
-  center_radius_df <- cbind(center_df[, c(long,lat)], radius_df)
+  center_radius_df <- cbind(center_df[, position], radius_df)
   n_df <- dim(df_points)[1]
   in_vec <- numeric(n_df)
   
@@ -453,8 +447,7 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' @param dflist List of simulated TCs
 #' @param center_idx Index of the path that needs to be considered as a center
 #' @param alpha_level Alpha level of the bubble CI
-#' @param long Column index of the longitude
-#' @param lat Column index of the latitude
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param unit_measure Unit of measure used for distance
 #' @param alpha_ci_level Fraction for confidence interval of area estimates 
 #' based on uniform sampling distribution.
@@ -469,17 +462,17 @@ check_points_in_bubbleCI <- function(df_points, center_df, radius_df,
 #' \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
 #' @export
 bubble_ci_from_tclist <- function(dflist, center_idx, alpha_level = 0.1, 
-                                 long = 1, lat = 2, alpha_ci_level = .05,
+                                 position = 1:2, alpha_ci_level = .05,
                                  unit_measure = 'nautical mile') {
 
     bubble_steps_CI <- bubbleCI(dflist = dflist, center_idx = center_idx, 
                                 alpha_level = alpha_level, 
-                                long = long, lat = lat, 
+                                position = position, 
                                 output_length = unit_measure)
 
     bubble_ci_structure <- error_bands_bubbleCI(
                                   bubble_steps_CI = bubble_steps_CI, 
-                                  long_col = long, lat_col = lat, 
+                                  position = position, 
                                   unit_measure = unit_measure)
 
     area_list <- get_area_diff_radius(bubble_ci_structure, 

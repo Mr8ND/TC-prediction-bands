@@ -9,8 +9,7 @@
 #' @param dflist List of simulated TCs
 #' @param test_true_path Dataframe with the true TC path to be tested
 #' @param alpha_level Alpha level of all the CI
-#' @param long Column index of the longitude
-#' @param lat Column index of the latitude
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param kde_grid_size Two dimensional vector for the KDE grid size
 #' @param unit_measure Unit of measure used for distance
 #' @param verbose If TRUE update messages will be displayed
@@ -23,7 +22,7 @@
 #' TC or not.
 #' @export
 credible_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
-                                        long = 1, lat = 2, verbose = FALSE,
+                                        position = 1:2, verbose = FALSE,
                                         kde_grid_size = rep(1000,2),
                                         alpha_ci_level = .05,
                                         unit_measure = 'nautical mile'){
@@ -39,8 +38,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     kde_predict_mat <- predict_kde_object(kde_obj = kde_ci_list$kde_object, 
                         predict_mat = test_true_path, 
                         alpha_level = alpha_level, 
-                        long = long, lat = lat)
-
+                        position = position)
 
 
     out_kde_list <- list('contour' = kde_ci_list$contour, 
@@ -52,7 +50,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     
     dist_start_time <- Sys.time()
     dflist_13pointsreduction <- thirteen_points_listable(dflist, 
-                                                    position = c(long,lat),
+                                                    position = position,
                                                     verbose = verbose)
     dist_matrix_13pointsreduction <- distMatrixPath_innersq(
                                                 dflist_13pointsreduction,
@@ -73,14 +71,14 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                       center_idx = depth_vector_idx, 
                                       alpha_level = alpha_level,
                                       alpha_ci_level = alpha_ci_level,
-                                      long = long, lat = lat, 
+                                      position = position, 
                                       unit_measure = unit_measure)
     bubble_full_time <- Sys.time() - bubble_start_time
 
     bubble_ci_inclusion_vec <- check_points_within_diff_radius(
                                         tc_bubble_structure = bubble_ci_list$bubble_CI_object, 
                                         df_points = test_true_path,
-                                        long = long, lat = lat, 
+                                        position = position, 
                                         unit_measure = unit_measure,
                                         verbose = verbose)
 
@@ -95,7 +93,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
     data_deep_points <- depth_curves_to_points(data_list = dflist,
                                     alpha = alpha_level, 
                                     dist_mat = dist_matrix_13pointsreduction, 
-                                    position = c(long, lat),
+                                    position = position,
                                     depth_vector = depth_vector,
                                     verbose = verbose)
     data_deep_final_time <- Sys.time() - data_deep_start_time
@@ -107,7 +105,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    position = c(long, lat),
+                                    position = position,
                                     area_ci_n = 2000, 
                                     area_ci_alpha = alpha_ci_level, 
                                     verbose = verbose)
@@ -134,14 +132,14 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
                                     dist_mat = dist_matrix_13pointsreduction,
                                     data_deep_points = data_deep_points, 
                                     depth_vector = depth_vector,
-                                    position = c(long, lat),
+                                    position = position,
                                     verbose = verbose)
     convex_final_time <- Sys.time() - convex_start_time
 
     convex_hull_inclusion_vec <- points_in_spatial_polygon(
                             convex_hull_structure$spPoly, 
                             as.matrix(test_true_path), 
-                            long = long, lat = lat)
+                            position = position)
 
     out_convex_hull_list <- list(
         'structure' = convex_hull_structure$poly_df, 
@@ -179,8 +177,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' @param tc_full_sim_list List of simulated TCs
 #' @param tc_true_path_list Dataframe with the true TC path to be tested
 #' @param alpha_level Alpha level of all the CI
-#' @param long Column index of the longitude
-#' @param lat Column index of the latitude
+#' @param position Columns position of long/lat pair. Default is 1:2
 #' @param start_idx Starting index when selecting which TC to be simulated - if NULL, defaulted
 #' to 1
 #' @param end_idx Ending index when selecting which TC to be simulated - if NULL, defaulted to
@@ -196,7 +193,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' a TC with the 4 different calculated credible intervals.
 #' @export
 credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
-                                        start_idx = NULL, end_idx = NULL, long = 1, lat = 2, 
+                                        start_idx = NULL, end_idx = NULL, position = 1:2, 
                                         unit_measure = 'nautical mile', verbose = TRUE,
                                         kde_grid_size = rep(1000,2), alpha_ci_level = .05,
                                         curve_type_vec = c('Auto_DeathRegs', 'Auto_NoDeathRegs', 
@@ -229,7 +226,7 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
         output_tc[[curve_type]] <- credible_interval_single_tc(dflist = lapply(tc_sim_list_curve[[curve_type]], data.frame), 
                                                          test_true_path = data.frame(tc_true_path_curve),
                                                          alpha_level = alpha_level,
-                                                         long = long, lat = lat, 
+                                                         position = position, 
                                                          unit_measure = unit_measure,
                                                          verbose = FALSE,
                                                          kde_grid_size = kde_grid_size,
