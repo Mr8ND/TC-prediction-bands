@@ -1,6 +1,6 @@
 context("Regression Functions")
 
-library(TCpredictionbands)
+suppressWarnings(library(TCpredictionbands))
 
 #' shift function ---------------------------------------------------
 

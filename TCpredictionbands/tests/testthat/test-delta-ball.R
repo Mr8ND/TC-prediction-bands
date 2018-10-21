@@ -1,6 +1,6 @@
 context("Delta Ball Functions")
 
-library(TCpredictionbands)
+suppressWarnings(library(TCpredictionbands))
 
 
 #' get_delta function ------------------------------------------------

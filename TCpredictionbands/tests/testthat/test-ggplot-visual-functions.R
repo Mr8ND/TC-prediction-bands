@@ -1,6 +1,6 @@
 context("ggplot Visual Functions")
 
-library(TCpredictionbands)
+suppressWarnings(library(TCpredictionbands))
 
 
 #' data_plot_paths_basic function -----------------------------------------

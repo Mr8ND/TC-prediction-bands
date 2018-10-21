@@ -490,7 +490,7 @@ ggvis_bubble_data_centers_inner <- function(bubble_plot_data, base_graph = NULL,
     longrange <- range(center$long)
     
     ocean <- c(left = longrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)

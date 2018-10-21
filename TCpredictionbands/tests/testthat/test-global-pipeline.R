@@ -1,6 +1,6 @@
 context("Global PB test")
 
-library(TCpredictionbands)
+suppressWarnings(library(TCpredictionbands))
 
 #' Loading all the data --------------------------------------
 
