@@ -162,7 +162,7 @@ update_curve_inner <- function(path){
                                     d = path$speed[n_row]*6) # for 6 hours
   
   # Insert projected longitude/latitude as new point
-  path[n_row + 1, 'long'] <- new_point[1, 'lon']
+  path[n_row + 1, 'long'] <- new_point[1, 'lon'] #Leaving "lon" here
   path[n_row + 1, 'lat'] <- new_point[1, 'lat']
   
   # Append regression variables to new observation

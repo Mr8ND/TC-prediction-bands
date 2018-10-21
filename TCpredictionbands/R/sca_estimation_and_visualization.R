@@ -190,7 +190,7 @@ estimate_p_wrapper <- function(training_structure_estimating_p, D_test,
 #'
 #' @param test_data list of paths of test curves 
 #' @param train_list_13_point list of 13 point compression of the paths of 
-#' training curves, each in lonlat format for the first 2 columns
+#' training curves, each in longlat format for the first 2 columns
 #' @param train_info structure for SCA algorithm from training data outputted
 #' from \code{\link{training_structure_estimating_p}}.
 #' @param c_position position of test_data's longitude and latitude columns 
@@ -214,7 +214,7 @@ inner_sca_projection <- function(test_data,
   
   test_list_13_point <- thirteen_points_listable(test_data, 
                                                  c_position = c_position,
-                                                 lonlat = TRUE, 
+                                                 longlat = TRUE, 
                                                  verbose = verbose)
   # ^ from thirteen_point_compression.R
   
@@ -244,7 +244,7 @@ inner_sca_projection <- function(test_data,
 #' @param test_data_list a list of list of paths of test curves (simulated 
 #' curves)
 #' @param train_list_13_point list of 13 point compression of the paths of 
-#' training curves, each in lonlat format for the first 2 columns
+#' training curves, each in longlat format for the first 2 columns
 #' @param train_info structure for SCA algorithm from training data outputted
 #' from \code{\link{training_structure_estimating_p}}.
 #' @param c_position position of test_data's longitude and latitude columns 
@@ -343,7 +343,7 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
   
   compression_both <- thirteen_points_listable(list_df = test_list,
                                                c_position = c_position,
-                                               lonlat = TRUE)
+                                               longlat = TRUE)
   
   compression_pts <- lapply(compression_both, 
                             function(x){x$new_13compression})
@@ -399,7 +399,7 @@ spectral_cluster_process <- function(test_list, train_df, D_train,
 #' \item \code{test_weight}: a \eqn{s} length vector of standardized 
 #' probabilities (\eqn{p_i/\max_k p_k})
 #' }
-#' @param c_position positions of lat and lon columns in test_list data frames
+#' @param c_position positions of lat and long columns in test_list data frames
 #'
 #' @details 
 #' \code{sca_output} is expected to be a list with at least 2 components: 
@@ -473,10 +473,10 @@ ggvis_paths_sca_weight <- function(data_out, zoom = 4,
   
   if (is.null(base_graph)) {
     latrange <- range(data_out$lat)
-    lonrange <- range(data_out$long)
+    longrange <- range(data_out$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -660,7 +660,7 @@ ggvis_projection <- function(sca_output, train_alpha = .3,
 #'  test (\eqn{p_i/\max_k p_k})
 #' }
 #' @param test_list list of paths to analysis (each a df)
-#' @param c_position positions of lat and lon columns in test_list data frames
+#' @param c_position positions of lat and long columns in test_list data frames
 #' @param zoom map zoom for ggmap (plot 2: map)
 #' @param train_alpha opacity level for black training points (plot 1: scatter)
 #' @param test_color_power power transformation (x^ test_color_power) of 

@@ -4,7 +4,7 @@
 #' Format curves from a list to a single data.frame
 #'
 #' @param test_list list of curves
-#' @param c_position position of lat and lon columns in the test_list dataframes
+#' @param c_position position of lat and long columns in the test_list dataframes
 #'
 #' @return single data frame with all curves (curve column with idx of curve)
 #' @export
@@ -55,10 +55,10 @@ ggvis_paths <- function(data_out, zoom = 4,
 
   if (is.null(base_graph)) {
     latrange <- range(data_out$lat)
-    lonrange <- range(data_out$long)
+    longrange <- range(data_out$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -161,10 +161,10 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
   if (is.null(base_graph)) {
     latrange <- range(sapply(level_contour_list, function(df){
                               range(df$y)}))
-    lonrange <- range(sapply(level_contour_list, function(df){
+    longrange <- range(sapply(level_contour_list, function(df){
       range(df$x)}))
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -185,7 +185,7 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
 
 #' Visualize delta ball exterior centers (with ggplot)
 #'
-#' \strong{This function needs to be corrected. Lat and Lon seem to be switched 
+#' \strong{This function needs to be corrected. Lat and Long seem to be switched 
 #' around. Goes all the way back to \code{delta_ball_wrapper}}
 #'
 #' @param output_lines data frame of exterior lines (not ordered) of the form
@@ -234,10 +234,10 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
 
   if (is.null(base_graph)) {
     latrange <- range(output_lines$lat)
-    lonrange <- range(output_lines$lon)
+    longrange <- range(output_lines$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -245,7 +245,7 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ggout <- base_graph + 
     ggplot2::geom_line(data = output_lines, 
-                       ggplot2::aes_string(y = 'lon', x = 'lat', group = 'idx'),
+                       ggplot2::aes_string(y = 'long', x = 'lat', group = 'idx'),
                        color = color, ...)
   
   return(ggout)
@@ -314,14 +314,14 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ... <- unlist(dots)
   
-  names(output_lines)[names(output_lines) == "long"] <- "lon"
+  # names(output_lines)[names(output_lines) == "long"] <- "lon"
   
   if (is.null(base_graph)) {
     latrange <- range(output_lines$lat)
-    lonrange <- range(output_lines$lon)
+    longrange <- range(output_lines$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -329,7 +329,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ggout <- base_graph + 
     ggplot2::geom_path(data = output_lines, 
-                       ggplot2::aes_string(y = 'lat', x = 'lon'),
+                       ggplot2::aes_string(y = 'lat', x = 'long'),
                        color = color, ...)
   
   return(ggout)
@@ -341,7 +341,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 
 #' Plot lines for Spherical PB
 #' 
-#' \strong{Warning: this function does lat and lon in reverse. This 
+#' \strong{Warning: this function does lat and long in reverse. This 
 #' goes back beyond the wrapper \code{\link{bubble_ci_from_tclist}}}
 #'
 #' @param bubble_plot_data list of center points, positive and negative 
@@ -420,18 +420,18 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   ... <- unlist(dots)
   
   data_plot_lower <- data.frame(bubble_plot_data$positive)
-  names(data_plot_lower)[1:2] <- c("lat", "lon")
+  names(data_plot_lower)[1:2] <- c("lat", "long")
   data_plot_upper <- data.frame(bubble_plot_data$negative)
-  names(data_plot_upper)[1:2] <- c("lat", "lon")
+  names(data_plot_upper)[1:2] <- c("lat", "long")
   
   if (is.null(base_graph)) {
     
     data_all <- rbind(data_plot_lower, data_plot_upper)
     latrange <- range(data_all$lat)
-    lonrange <- range(data_all$lon)
+    longrange <- range(data_all$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -440,10 +440,10 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   
   ggout <- base_graph + 
     ggplot2::geom_path(data = data_plot_lower, 
-                       ggplot2::aes_string(x = 'lat', y = 'lon'), 
+                       ggplot2::aes_string(x = 'lat', y = 'long'), 
               color = color, size = linewidth, ...) +
     ggplot2::geom_path(data = data_plot_upper, 
-                       ggplot2::aes_string(x = 'lat', y = 'lon'), 
+                       ggplot2::aes_string(x = 'lat', y = 'long'), 
               color = color, size = linewidth, ...) 
   
   if (centers) {
@@ -455,9 +455,9 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
     n_final <- nrow(data_plot_lower)
     ggout <- ggout + ggplot2::geom_segment(data = 
                             data.frame(x = data_plot_lower[n_final,"lat"],
-                                       y = data_plot_lower[n_final,"lon"],
+                                       y = data_plot_lower[n_final,"long"],
                                        xend = data_plot_upper[n_final,"lat"],
-                                       yend = data_plot_upper[n_final,"lon"]),
+                                       yend = data_plot_upper[n_final,"long"]),
                             ggplot2::aes_string(x = "x",
                                                 y = "y",
                                                 xend = "xend",
@@ -483,13 +483,13 @@ ggvis_bubble_data_centers_inner <- function(bubble_plot_data, base_graph = NULL,
                                          color = "pink", zoom = 4, ...){
   
   center <- data.frame(bubble_plot_data$center)
-  names(center)[1:2] <- c("lat", "lon")
+  names(center)[1:2] <- c("lat", "long")
   
   if (is.null(base_graph)) {
     latrange <- range(center$lat)
-    lonrange <- range(center$long)
+    longrange <- range(center$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
+    ocean <- c(left = longrange[1], bottom = latrange[1],
                right = lonrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
@@ -497,7 +497,7 @@ ggvis_bubble_data_centers_inner <- function(bubble_plot_data, base_graph = NULL,
   } 
   
   ggout <- base_graph + 
-    ggplot2::geom_point(data = center, ggplot2::aes_string(x = 'lat', y = 'lon'),
+    ggplot2::geom_point(data = center, ggplot2::aes_string(x = 'lat', y = 'long'),
                color = color, ...)
   
   return(ggout)

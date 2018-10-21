@@ -2,8 +2,8 @@
 #'
 #' @description Coverts list of point locations to 13 equally spaced points
 #'
-#' @param df2 2 column data frame with all points lat/lon 
-#' @param lonlat boolean if the order of the columns is latlon 
+#' @param df2 2 column data frame with all points lat/long
+#' @param longlat boolean if the order of the columns is lat/long 
 #' (will be reverse them if FALSE)
 #' @param output_length string of distance between points 
 #' (set at "nautical mile" )
@@ -34,13 +34,13 @@
 #' plot(newmap, ylim = c(10, 47), xlim = c(-90, -10), asp = 1)
 #' 
 #' lines(df2[,2], df2[,1], col = "red")
-#' news_df2 <- thirteen_points(df2, lonlat = F)
+#' news_df2 <- thirteen_points(df2, longlat = F)
 #' points(news_df2[,1], news_df2[,2], col = "red")
 #' }
-thirteen_points <- function(df2, lonlat = TRUE,
+thirteen_points <- function(df2, longlat = TRUE,
                             output_length = "nautical mile"){
  
-  if (lonlat == FALSE) { # reversing for geosphere functions
+  if (longlat == FALSE) { # reversing for geosphere functions
     df2 <- df2[,c(2,1)]
   }
   
@@ -81,17 +81,17 @@ thirteen_points <- function(df2, lonlat = TRUE,
 #' 
 #' @description Creates list of 13 point long/lat expression of each path
 #'
-#' @param list_df list of dfs, where the lonlat points are are in the 
+#' @param list_df list of dfs, where the longlat points are are in the 
 #' c_position columns 
 #' @param c_position the columns of the data frames that contain the desired 
-#' lonlat coordinates 
-#' @param lonlat boolean logical if columns are lonlat 
+#' longlat coordinates 
+#' @param longlat boolean logical if columns are longlat 
 #' (false if they are latlon)
 #' @param verbose boolean for having a progress bar
 #'
 #' @return List of 13 point compression data frame for each path
 #' @export
-thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat = TRUE,
+thirteen_points_listable <- function(list_df, c_position = 5:6, longlat = TRUE,
                                      verbose = TRUE){
   out_list <- list()
   n_tc = length(list_df)
@@ -110,7 +110,7 @@ thirteen_points_listable <- function(list_df, c_position = 5:6, lonlat = TRUE,
 
   for (path_name in iterator_names) {
     df_pulled_out <- list_df[[path_name]][,c_position]
-    out_list[[path_name]] <- thirteen_points(df_pulled_out, lonlat)
+    out_list[[path_name]] <- thirteen_points(df_pulled_out, longlat)
     if (verbose) {
       pb$tick()
     }

@@ -411,7 +411,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
                      dplyr::left_join(index_mapping, by = c("id" = "nt")))$dl
   
   output_lines <- desired_lines %>% dplyr::filter(idx %in% select_lines)
-  names(output_lines)[1:2] = c("lon","lat") ## COME HERE: I THINK THIS IS WRONG...
+  names(output_lines)[1:2] = c("long","lat") ###
   return(output_lines)
 }
 
