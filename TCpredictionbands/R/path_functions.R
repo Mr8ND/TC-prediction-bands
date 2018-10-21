@@ -6,8 +6,7 @@
 #'
 #' @param data_df data frame (assumed to have 2 columns)
 #'
-#' @return data frame with columns reverse (actually just first 2 columns 
-#' included)
+#' @return First 2 columns of the data-frame, with their position reversed.
 #' @export
 swap2DfCols <- function(data_df){
 	return(data.frame(cbind(data_df[, 2], data_df[, 1])))
