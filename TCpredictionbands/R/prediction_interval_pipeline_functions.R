@@ -21,7 +21,7 @@
 #' boolean vector which reported whether the point of the true TC was inside the
 #' TC or not.
 #' @export
-credible_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
+prediction_interval_single_tc <- function(dflist, test_true_path, alpha_level, 
                                         position = 1:2, verbose = FALSE,
                                         kde_grid_size = rep(1000,2),
                                         alpha_ci_level = .05,
@@ -172,7 +172,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' in order to obtain the prediction intervals from the 4 different methods
 #' 
 #' @details
-#' This function is just an iterative wrapper around the function credible_interval_single_tc
+#' This function is just an iterative wrapper around the function prediction_interval_single_tc
 #' 
 #' @param tc_full_sim_list List of simulated TCs
 #' @param tc_true_path_list Dataframe with the true TC path to be tested
@@ -192,7 +192,7 @@ credible_interval_single_tc <- function(dflist, test_true_path, alpha_level,
 #' @return A list in which each sublist is a curve type and each sublist has for each element
 #' a TC with the 4 different calculated prediction intervals.
 #' @export
-credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
+prediction_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alpha_level = 0.1,
                                         start_idx = NULL, end_idx = NULL, position = 1:2, 
                                         unit_measure = 'nautical mile', verbose = TRUE,
                                         kde_grid_size = rep(1000,2), alpha_ci_level = .05,
@@ -223,7 +223,7 @@ credible_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, alph
       tc_true_path_curve <- tc_true_path_list[[list_tc_names[j]]]
       
       for (curve_type in curve_type_vec) {
-        output_tc[[curve_type]] <- credible_interval_single_tc(dflist = lapply(tc_sim_list_curve[[curve_type]], data.frame), 
+        output_tc[[curve_type]] <- prediction_interval_single_tc(dflist = lapply(tc_sim_list_curve[[curve_type]], data.frame), 
                                                          test_true_path = data.frame(tc_true_path_curve),
                                                          alpha_level = alpha_level,
                                                          position = position, 

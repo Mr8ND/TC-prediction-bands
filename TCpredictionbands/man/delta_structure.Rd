@@ -11,7 +11,7 @@ delta_structure(data_list, alpha, dist_mat = NULL, data_deep_points = NULL,
 \arguments{
 \item{data_list}{list of hurricanes}
 
-\item{alpha}{for credible band (related to depth). Takes value in (0, 1.0), 
+\item{alpha}{for prediction band (related to depth). Takes value in (0, 1.0), 
 for a 95\% PB, set alpha to .05.}
 
 \item{dist_mat}{distance matrix (otherwise is calculated)}

@@ -11,7 +11,7 @@ convex_hull_structure(data_list, alpha, dist_mat = NULL,
 \arguments{
 \item{data_list}{list of hurricanes}
 
-\item{alpha}{for credible band (related to depth)}
+\item{alpha}{for prediction band (related to depth)}
 
 \item{dist_mat}{distance matrix (otherwise is calculated)}
 

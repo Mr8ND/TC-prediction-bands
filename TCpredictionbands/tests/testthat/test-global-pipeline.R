@@ -32,7 +32,7 @@ for (i in c(1:n_sim_curve_total)) {
 tc_true_path_list <- list()
 tc_true_path_list[[sample_tc_name]] <- sample_tc[, c(6,5)]
 
-output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
+output_pipeline <- prediction_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
                                               tc_true_path_list = tc_true_path_list,
                                               alpha_level = alpha_level,
                                               alpha_ci_level = alpha_ci_level,

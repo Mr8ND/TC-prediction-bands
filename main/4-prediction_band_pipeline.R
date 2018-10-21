@@ -48,7 +48,7 @@ for (name_tc in names(test_env)) {
 }
 
 
-output_pipeline <- credible_interval_pipeline(
+output_pipeline <- prediction_interval_pipeline(
                                           tc_full_sim_list = tc_full_sim_list,
                                           tc_true_path_list = tc_true_path_list,
                                           alpha_level = alpha_level,
