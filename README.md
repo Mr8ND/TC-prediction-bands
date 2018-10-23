@@ -4,7 +4,7 @@ This repository stores the documentation for new approaches to predicting
 prediction bands for full paths of tropical cyclones (TCs) using just a few initial 
 points. We leverage extensions on regression models to generate curves, 
 combined with multiple approaches to create prediction bands for the full paths. 
-These approaches utilizes kernel density estimation, utilize depth-based 
+These approaches utilize kernel density estimation, utilize depth-based 
 relationships between curves, and also leverage geometric properties of the 
 space. This project was specifically designed with the use of the 
 [*HURDAT 2*](http://www.aoml.noaa.gov/hrd/hurdat/hurdat2-1851-2015-070616.txt) 
