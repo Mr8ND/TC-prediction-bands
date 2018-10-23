@@ -6,21 +6,20 @@
 associated probability values in the lower dimensional space}
 \usage{
 sca_projection(test_data_list, train_list_13_point, train_info,
-  c_position = 1:2, verbose = TRUE,
-  curve_type_vec = c("Auto_DeathRegs", "Auto_NoDeathRegs",
-  "NoAuto_DeathRegs", "NoAuto_NoDeathRegs"))
+  position = 1:2, verbose = TRUE, curve_type_vec = c("Auto_DeathRegs",
+  "Auto_NoDeathRegs", "NoAuto_DeathRegs", "NoAuto_NoDeathRegs"))
 }
 \arguments{
 \item{test_data_list}{a list of list of paths of test curves (simulated 
 curves)}
 
 \item{train_list_13_point}{list of 13 point compression of the paths of 
-training curves, each in lonlat format for the first 2 columns}
+training curves, each in longlat format for the first 2 columns}
 
 \item{train_info}{structure for SCA algorithm from training data outputted
 from \code{\link{training_structure_estimating_p}}.}
 
-\item{c_position}{position of test_data's longitude and latitude columns 
+\item{position}{position of test_data's longitude and latitude columns 
 respectively}
 
 \item{verbose}{if TRUE, progress of processing of the each set of test curves

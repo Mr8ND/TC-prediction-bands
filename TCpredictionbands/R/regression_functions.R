@@ -109,7 +109,8 @@ get_bearing <- function(lat, long){
 #' If 180 <= bearing < 360, then bearing indicates westward travel.
 #'
 #' @param bearing Vector of bearings, where \code{bearing_prev[i]} is the 
-#' bearing between (\code{lat[i], long[i]}) and (\code{lat[i+1], long[i+1]})
+#' bearing between (\code{lat[i], long[i]}) and (\code{lat[i+1], long[i+1]}).
+#' It should be included between 0 and 360 degrees.
 #' 
 #' @return \code{eastwest[i]} stores "E" if \code{bearing[i]} indicates eastward
 #' travel and "W" if \code{bearing[i]} indicates westward travel

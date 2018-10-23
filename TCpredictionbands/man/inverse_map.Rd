@@ -4,8 +4,7 @@
 \alias{inverse_map}
 \title{Predict hurricane path from projections}
 \usage{
-inverse_map(distance_projection, projection_locs, old_locs, new_p_loc,
-  K = 7)
+inverse_map(distance_projection, projection_locs, old_locs, new_p_loc, K = 7)
 }
 \arguments{
 \item{distance_projection}{distances between observations in projection space 

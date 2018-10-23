@@ -33,6 +33,9 @@ data_loc <- "main/data/"
 image_path <- "report/images/"
 table_path <- "report/tables/"
 
+# Changes for the "lon" to "long" have been tested on
+# 'output_pipeline_alphalevel0.1_complete_2018-03-20.Rdata' by ND
+
 latest_full_output_pipeline <- 'output_pipeline_alphalevel0.1_all.Rdata'
 a <- load(paste0(data_loc, latest_full_output_pipeline))
 eval(parse(text = paste0("output_list_pipeline <- ",a)))
@@ -74,15 +77,14 @@ radius = (spherical_ball[["centers"]][-1,] - spherical_ball[["positive"]])^2 %>%
   apply(1, function(x) sqrt(sum(x)))
 
 circle_df <- data.frame(spherical_ball[["centers"]],
-                        radius = c(0,radius)) %>%
-  rename(lon = long)
+                        radius = c(0,radius))
 
 vis_spheres <- ggplot() + geom_circle(data = circle_df,
-                       aes(y0 = lat, x0 = lon,
+                       aes(y0 = lat, x0 = long,
                            r = radius),
                        color = "red") +
   geom_point(data = circle_df,
-             aes(x = lon, y = lat), color = selected_color) + 
+             aes(x = long, y = lat), color = selected_color) + 
   labs(x = "Latitude",
        y = "Longitude",
        title = "Union of Spheres") 
@@ -100,7 +102,7 @@ vis_contour <- TCpredictionbands::ggvis_bubble_data(
        y = "Longitude",
        title = "Contour Visualization") +
   geom_point(data = circle_df[-nrow(circle_df),],
-             aes(x = lon, y = lat), color = selected_color) 
+             aes(x = long, y = lat), color = selected_color) 
 
 # full arrangment of graphics ---------------
 

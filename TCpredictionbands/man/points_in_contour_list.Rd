@@ -4,7 +4,7 @@
 \alias{points_in_contour_list}
 \title{Identification of points inside a contour list}
 \usage{
-points_in_contour_list(cont_list, predict_mat, long = 1, lat = 2)
+points_in_contour_list(cont_list, predict_mat, position = 1:2)
 }
 \arguments{
 \item{cont_list}{list of KDE contour objects}
@@ -12,9 +12,7 @@ points_in_contour_list(cont_list, predict_mat, long = 1, lat = 2)
 \item{predict_mat}{matrix with the points to be determined in terms of
 position with respect to the contour.}
 
-\item{long}{index of the column referring to "longitude". Default is 1.}
-
-\item{lat}{index of the column referring to "latitude". Default is 2.}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 }
 \value{
 Vector of binary values, 1 if the point is inside the contour, 

@@ -6,7 +6,7 @@
 pointwise bubble CB}
 \usage{
 get_area_diff_radius_inner(tc_bubble_structure, query, size = 1,
-  long = 1, lat = 2, alpha = 0.05, unit_measure = "nautical mile",
+  position = 1:2, alpha = 0.05, unit_measure = "nautical mile",
   verbose = TRUE)
 }
 \arguments{
@@ -18,9 +18,7 @@ and negative parts (at least a list of centers data frame and radius vector)}
 \item{size}{size of space where query points were drawn (note if size = 1, 
 then you are getting the proportion of points with the balls)}
 
-\item{long}{Column index of the longitude for query entry}
-
-\item{lat}{Column index of the latitude for query entry}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{alpha}{alpha level for 2 sided confidence interval estimate}
 

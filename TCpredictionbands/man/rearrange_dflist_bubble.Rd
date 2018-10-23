@@ -4,16 +4,14 @@
 \alias{rearrange_dflist_bubble}
 \title{Rearranging list of simulated TCs}
 \usage{
-rearrange_dflist_bubble(dflist, center_idx, long = 1, lat = 2)
+rearrange_dflist_bubble(dflist, center_idx, position = 1:2)
 }
 \arguments{
 \item{dflist}{List of simulated TCs}
 
 \item{center_idx}{Index of the path that needs to be considered as a center}
 
-\item{long}{Column index of the longitude}
-
-\item{lat}{Column index of the latitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 }
 \value{
 List with same number of elements as the points in the track of the 

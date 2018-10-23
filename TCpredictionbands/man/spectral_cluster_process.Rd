@@ -5,7 +5,7 @@
 \title{Spectral Clustering Process}
 \usage{
 spectral_cluster_process(test_list, train_df, D_train, K = 4, t = 1,
-  dim = 5, kdensity = 10, c_position = 1:2)
+  dim = 5, kdensity = 10, position = 1:2)
 }
 \arguments{
 \item{test_list}{list of paths to analysis (each a df)}
@@ -22,7 +22,7 @@ spectral_cluster_process(test_list, train_df, D_train, K = 4, t = 1,
 
 \item{kdensity}{nearest neighbors for density estimate in lower dim space}
 
-\item{c_position}{nearest neighbors for density estimate in lower dim space}
+\item{position}{nearest neighbors for density estimate in lower dim space}
 }
 \value{
 \item{test_p_estimate}{probability estimates for test data}

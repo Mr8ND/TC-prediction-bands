@@ -12,7 +12,7 @@ from \code{\link{data_plot_paths_basic}} functions. If supplied with a
 list of data frames of paths of TCs (like inputted into 
 \code{\link{data_plot_paths_basic}}), then the function will apply
 \code{\link{data_plot_paths_basic}} first. \emph{Note: will assume
-"\code{c_position = 1:2}" unless altered in \code{...}, see 
+"\code{position = 1:2}" unless altered in \code{...}, see 
 documentation for \code{\link{data_plot_paths_basic}} for details.}}
 
 \item{zoom}{map zoom for ggmap}
@@ -22,7 +22,7 @@ documentation for \code{\link{data_plot_paths_basic}} for details.}}
 
 \item{alpha}{opacity of curves}
 
-\item{...}{can pass \code{c_position} values if desirable}
+\item{...}{can pass \code{position} values if desirable}
 }
 \value{
 ggplot visualisation of the curve

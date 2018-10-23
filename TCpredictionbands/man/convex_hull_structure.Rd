@@ -5,13 +5,13 @@
 \title{Convex Hull creation}
 \usage{
 convex_hull_structure(data_list, alpha, dist_mat = NULL,
-  data_deep_points = NULL, depth_vector = NULL, c_position = 1:2,
+  data_deep_points = NULL, depth_vector = NULL, position = 1:2,
   verbose = FALSE, ...)
 }
 \arguments{
 \item{data_list}{list of hurricanes}
 
-\item{alpha}{for credible band (related to depth)}
+\item{alpha}{for prediction band (related to depth)}
 
 \item{dist_mat}{distance matrix (otherwise is calculated)}
 
@@ -20,7 +20,7 @@ convex_hull_structure(data_list, alpha, dist_mat = NULL,
 
 \item{depth_vector}{Depth vector values}
 
-\item{c_position}{Position of the longitude/latitude pair}
+\item{position}{Position of the longitude/latitude pair}
 
 \item{verbose}{if the distance matrix is verbose}
 

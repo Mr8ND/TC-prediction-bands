@@ -4,8 +4,7 @@
 \alias{estimate_p_wrapper}
 \title{Wrapper for getting structure of SCA lower dimensional projection}
 \usage{
-estimate_p_wrapper(training_structure_estimating_p, D_test,
-  kdensity = 10)
+estimate_p_wrapper(training_structure_estimating_p, D_test, kdensity = 10)
 }
 \arguments{
 \item{training_structure_estimating_p}{list from 

@@ -6,18 +6,18 @@
 captures the associated probability values in the lower dimensional space}
 \usage{
 inner_sca_projection(test_data, train_list_13_point, train_info,
-  c_position = 1:2, verbose = TRUE)
+  position = 1:2, verbose = TRUE)
 }
 \arguments{
 \item{test_data}{list of paths of test curves}
 
 \item{train_list_13_point}{list of 13 point compression of the paths of 
-training curves, each in lonlat format for the first 2 columns}
+training curves, each in longlat format for the first 2 columns}
 
 \item{train_info}{structure for SCA algorithm from training data outputted
 from \code{\link{training_structure_estimating_p}}.}
 
-\item{c_position}{position of test_data's longitude and latitude columns 
+\item{position}{position of test_data's longitude and latitude columns 
 respectively}
 
 \item{verbose}{if TRUE each step of the process is expressed (1) 13 point 

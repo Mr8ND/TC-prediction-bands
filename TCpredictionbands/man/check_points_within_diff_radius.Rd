@@ -5,8 +5,8 @@
 \title{Checks if points are within at least 1 ball from the bubble CI (different 
 radii)}
 \usage{
-check_points_within_diff_radius(tc_bubble_structure, df_points, long = 1,
-  lat = 2, unit_measure = "nautical mile", verbose = TRUE)
+check_points_within_diff_radius(tc_bubble_structure, df_points,
+  position = 1:2, unit_measure = "nautical mile", verbose = TRUE)
 }
 \arguments{
 \item{tc_bubble_structure}{Bubble CI list with centers, radius, positive 
@@ -14,9 +14,7 @@ and negative parts (at least a list of centers data frame and radius vector)}
 
 \item{df_points}{Dataframe of points which inclusion needs to be calculated}
 
-\item{long}{Column index of the longitude for \code{df_points} entry}
-
-\item{lat}{Column index of the latitude for \code{df_points} entry}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{unit_measure}{string of measurement unit of points, see options in
 datamart::uconv.}

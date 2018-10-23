@@ -4,12 +4,12 @@
 #' Format curves from a list to a single data.frame
 #'
 #' @param test_list list of curves
-#' @param c_position position of lat and lon columns in the test_list dataframes
+#' @param position position of lat and long columns in the test_list dataframes
 #'
 #' @return single data frame with all curves (curve column with idx of curve)
 #' @export
 #'
-data_plot_paths_basic <- function(test_list, c_position = 1:2) {
+data_plot_paths_basic <- function(test_list, position = 1:2) {
   
   data_out <- data.frame(lat = -360,
                          long = -360,
@@ -18,8 +18,8 @@ data_plot_paths_basic <- function(test_list, c_position = 1:2) {
   for (i in 1:length(test_list)) {
     data_out <- rbind(data_out,
                       data.frame(
-                        lat = test_list[[i]][, c_position[2]],
-                        long = test_list[[i]][, c_position[1]],
+                        lat = test_list[[i]][, position[2]],
+                        long = test_list[[i]][, position[1]],
                         curve = i
                       ))
   }
@@ -36,13 +36,13 @@ data_plot_paths_basic <- function(test_list, c_position = 1:2) {
 #'       list of data frames of paths of TCs (like inputted into 
 #'       \code{\link{data_plot_paths_basic}}), then the function will apply
 #'       \code{\link{data_plot_paths_basic}} first. \emph{Note: will assume
-#'       "\code{c_position = 1:2}" unless altered in \code{...}, see 
+#'       "\code{position = 1:2}" unless altered in \code{...}, see 
 #'       documentation for \code{\link{data_plot_paths_basic}} for details.}
 #' @param zoom map zoom for ggmap
 #' @param base_graph ggplot object for base graph 
 #'       (created from data_out otherwise)
 #' @param alpha opacity of curves 
-#' @param ... can pass \code{c_position} values if desirable
+#' @param ... can pass \code{position} values if desirable
 #'
 #' @return ggplot visualisation of the curve
 #' @export
@@ -55,10 +55,10 @@ ggvis_paths <- function(data_out, zoom = 4,
 
   if (is.null(base_graph)) {
     latrange <- range(data_out$lat)
-    lonrange <- range(data_out$long)
+    longrange <- range(data_out$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -120,7 +120,7 @@ contour_list_to_df <- function(contour_list){
 #'        \code{\link{kde_from_tclist}}), then the function will apply 
 #'        \code{\link{contour_list_to_df}} to the \code{contour} component. 
 #'        If you are making this function create the full KDE PB, please make
-#'        sure to pass a \code{alpha_level} in to make the object (see 
+#'        sure to pass a \code{alpha} in to make the object (see 
 #'        \code{\link{kde_from_tclist}} for details). }
 #'        
 #' @param base_graph ggplot object for base graph 
@@ -143,7 +143,7 @@ contour_list_to_df <- function(contour_list){
 #' ggvis_kde_contour(kde_list_object, color = "blue")
 #' 
 #' # using the simulated curves:
-#' ggvis_kde_contour(sample_sim, color = "purple", alpha_level = .05)
+#' ggvis_kde_contour(sample_sim, color = "purple", alpha = .05)
 ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
                               zoom = 4, color = "pink", ...){
   
@@ -161,10 +161,10 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
   if (is.null(base_graph)) {
     latrange <- range(sapply(level_contour_list, function(df){
                               range(df$y)}))
-    lonrange <- range(sapply(level_contour_list, function(df){
+    longrange <- range(sapply(level_contour_list, function(df){
       range(df$x)}))
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -185,7 +185,7 @@ ggvis_kde_contour <- function(level_contour_list, base_graph = NULL,
 
 #' Visualize delta ball exterior centers (with ggplot)
 #'
-#' \strong{This function needs to be corrected. Lat and Lon seem to be switched 
+#' \strong{This function needs to be corrected. Lat and Long seem to be switched 
 #' around. Goes all the way back to \code{delta_ball_wrapper}}
 #'
 #' @param output_lines data frame of exterior lines (not ordered) of the form
@@ -234,10 +234,10 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
 
   if (is.null(base_graph)) {
     latrange <- range(output_lines$lat)
-    lonrange <- range(output_lines$lon)
+    longrange <- range(output_lines$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -245,7 +245,7 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ggout <- base_graph + 
     ggplot2::geom_line(data = output_lines, 
-                       ggplot2::aes_string(y = 'lon', x = 'lat', group = 'idx'),
+                       ggplot2::aes_string(y = 'long', x = 'lat', group = 'idx'),
                        color = color, ...)
   
   return(ggout)
@@ -314,14 +314,14 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ... <- unlist(dots)
   
-  names(output_lines)[names(output_lines) == "long"] <- "lon"
+  # names(output_lines)[names(output_lines) == "long"] <- "lon"
   
   if (is.null(base_graph)) {
     latrange <- range(output_lines$lat)
-    lonrange <- range(output_lines$lon)
+    longrange <- range(output_lines$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -329,7 +329,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
   
   ggout <- base_graph + 
     ggplot2::geom_path(data = output_lines, 
-                       ggplot2::aes_string(y = 'lat', x = 'lon'),
+                       ggplot2::aes_string(y = 'lat', x = 'long'),
                        color = color, ...)
   
   return(ggout)
@@ -341,7 +341,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 
 #' Plot lines for Spherical PB
 #' 
-#' \strong{Warning: this function does lat and lon in reverse. This 
+#' \strong{Warning: this function does lat and long in reverse. This 
 #' goes back beyond the wrapper \code{\link{bubble_ci_from_tclist}}}
 #'
 #' @param bubble_plot_data list of center points, positive and negative 
@@ -350,7 +350,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #'        \code{\link{bubble_ci_from_tclist}}. One can also input a list of 
 #'        TCs and the function will create the needed structure using 
 #'        \code{\link{bubble_ci_from_tclist}}. \emph{If using a list of TCs, 
-#'        must include a \code{alpha_level} in \code{...} parameters.}
+#'        must include a \code{alpha} in \code{...} parameters.}
 #' @param base_graph plot to add to
 #' @param centers boolean to decide whether to also plot centers (as points)
 #' @param connect boolean to connect the left and right final tangential points
@@ -359,7 +359,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' @param zoom map zoom for \code{\link[ggmap]{ggmap}}
 #' @param ... Interior \code{\link[ggplot2]{geom_path}} or the 
 #'        \code{bubble_ci_from_tclist} parameters \emph{(Note: at this time,
-#'        only the required \code{alpha_level} parameter will be accepted for the
+#'        only the required \code{alpha} parameter will be accepted for the
 #'        \code{bubble_ci_from_tclist} function)}
 #'
 #' @return \code{ggplot} object with curves on it
@@ -373,7 +373,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #'   }
 #' 
 #' dflist_13pointsreduction <- thirteen_points_listable(sample_sim_small, 
-#'                                                     c_position = 1:2)
+#'                                                     position = 1:2)
 #' dist_matrix_13pointsreduction <- distMatrixPath_innersq(
 #'   dflist_13pointsreduction)
 
@@ -382,7 +382,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' 
 #' spherical_PB <- bubble_ci_from_tclist(sample_sim_small, 
 #'                                           center_idx = depth_vector_idx,
-#'                                           alpha_level = .05)
+#'                                           alpha = .05)
 #' 
 #' bubble_plot_data <- spherical_PB$bubble_CI_object
 #' 
@@ -390,7 +390,7 @@ ggvis_convex_hull <- function(output_lines, base_graph = NULL, zoom = 4,
 #' ggvis_bubble_data(bubble_plot_data, color = "red", 
 #'                   base_graph = ggplot2::ggplot())
 #' 
-#' ggvis_bubble_data(sample_sim_small, color = "purple", alpha_level = .05,
+#' ggvis_bubble_data(sample_sim_small, color = "purple", alpha = .05,
 #'                   base_graph = ggplot2::ggplot())
 ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
                               centers = FALSE, connect = TRUE,
@@ -401,7 +401,7 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   
   if (!all(c("positive", "negative", "centers", "radius") %in% names(bubble_plot_data))) {
     dflist_13pointsreduction <- thirteen_points_listable(bubble_plot_data, 
-                                                         c_position = 1:2,
+                                                         position = 1:2,
                                                          verbose = FALSE)
     dist_matrix_13pointsreduction <- distMatrixPath_innersq(
                                                   dflist_13pointsreduction,
@@ -412,26 +412,26 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
     
     spherical_PB <- bubble_ci_from_tclist(bubble_plot_data, 
                                               center_idx = depth_vector_idx,
-                                              alpha_level = dots$alpha_level)
+                                              alpha = dots$alpha)
     bubble_plot_data <- spherical_PB$bubble_CI_object
-    dots$alpha_level <- NULL
+    dots$alpha <- NULL
   }
   
   ... <- unlist(dots)
   
   data_plot_lower <- data.frame(bubble_plot_data$positive)
-  names(data_plot_lower)[1:2] <- c("lat", "lon")
+  names(data_plot_lower)[1:2] <- c("lat", "long")
   data_plot_upper <- data.frame(bubble_plot_data$negative)
-  names(data_plot_upper)[1:2] <- c("lat", "lon")
+  names(data_plot_upper)[1:2] <- c("lat", "long")
   
   if (is.null(base_graph)) {
     
     data_all <- rbind(data_plot_lower, data_plot_upper)
     latrange <- range(data_all$lat)
-    lonrange <- range(data_all$lon)
+    longrange <- range(data_all$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
@@ -440,10 +440,10 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
   
   ggout <- base_graph + 
     ggplot2::geom_path(data = data_plot_lower, 
-                       ggplot2::aes_string(x = 'lat', y = 'lon'), 
+                       ggplot2::aes_string(x = 'lat', y = 'long'), 
               color = color, size = linewidth, ...) +
     ggplot2::geom_path(data = data_plot_upper, 
-                       ggplot2::aes_string(x = 'lat', y = 'lon'), 
+                       ggplot2::aes_string(x = 'lat', y = 'long'), 
               color = color, size = linewidth, ...) 
   
   if (centers) {
@@ -455,9 +455,9 @@ ggvis_bubble_data <- function(bubble_plot_data, base_graph = NULL,
     n_final <- nrow(data_plot_lower)
     ggout <- ggout + ggplot2::geom_segment(data = 
                             data.frame(x = data_plot_lower[n_final,"lat"],
-                                       y = data_plot_lower[n_final,"lon"],
+                                       y = data_plot_lower[n_final,"long"],
                                        xend = data_plot_upper[n_final,"lat"],
-                                       yend = data_plot_upper[n_final,"lon"]),
+                                       yend = data_plot_upper[n_final,"long"]),
                             ggplot2::aes_string(x = "x",
                                                 y = "y",
                                                 xend = "xend",
@@ -483,21 +483,21 @@ ggvis_bubble_data_centers_inner <- function(bubble_plot_data, base_graph = NULL,
                                          color = "pink", zoom = 4, ...){
   
   center <- data.frame(bubble_plot_data$center)
-  names(center)[1:2] <- c("lat", "lon")
+  names(center)[1:2] <- c("lat", "long")
   
   if (is.null(base_graph)) {
     latrange <- range(center$lat)
-    lonrange <- range(center$long)
+    longrange <- range(center$long)
     
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     
     base_graph <- ggmap::ggmap(map)
   } 
   
   ggout <- base_graph + 
-    ggplot2::geom_point(data = center, ggplot2::aes_string(x = 'lat', y = 'lon'),
+    ggplot2::geom_point(data = center, ggplot2::aes_string(x = 'lat', y = 'long'),
                color = color, ...)
   
   return(ggout)

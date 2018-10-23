@@ -4,19 +4,16 @@
 \alias{check_points_in_bubbleCI}
 \title{Check if points are inside bubble CI}
 \usage{
-check_points_in_bubbleCI(df_points, center_df, radius_df, long = 1,
-  lat = 2)
+check_points_in_bubbleCI(df_points, center_df, radius_df, position = 1:2)
 }
 \arguments{
 \item{df_points}{Dataframe of points which inclusion needs to be calculated}
 
 \item{center_df}{Dataframe of central points of the CI bubble}
 
-\item{radius_df}{Dataframe of radius of the CI bubble (vector?)}
+\item{radius_df}{Vector of radius of the CI bubble - cast as dataframe}
 
-\item{long}{column index of the longitude in the central points}
-
-\item{lat}{column index of the latitude in the central points}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 }
 \value{
 Boolean vectors on whether the points are in any of the bubble CIs 

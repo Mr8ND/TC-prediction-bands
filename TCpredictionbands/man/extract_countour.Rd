@@ -4,12 +4,12 @@
 \alias{extract_countour}
 \title{Selection of specific countour level from KDE object}
 \usage{
-extract_countour(kde_obj, alpha_level)
+extract_countour(kde_obj, alpha)
 }
 \arguments{
 \item{kde_obj}{kde object}
 
-\item{alpha_level}{contour level which needs to be extracted. Integer from 1 
+\item{alpha}{contour level which needs to be extracted. Integer from 1 
 to 99.}
 }
 \value{
@@ -21,10 +21,6 @@ level.
 This function extracts a specific level of contour from a kde object.
 }
 \details{
-\strong{WARNING: I believe this should actually be a value between .01 to 
-.99. Please update \code{ggvis_kde_contour}'s examples if you change this.}
-
-
 Only works for some levels that the kde object calculated originally.
 }
 \examples{
@@ -36,6 +32,6 @@ y1 <- rnorm(100)
 dfmat <- cbind(x1,y1)
 kde_object <- ks::kde(dfmat)
 
-cont <- extract_countour(kde_object, 5)
+cont <- extract_countour(kde_object, .05)
 }
 }

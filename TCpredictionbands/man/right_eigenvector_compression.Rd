@@ -4,8 +4,7 @@
 \alias{right_eigenvector_compression}
 \title{Right Eigenvector Compression}
 \usage{
-right_eigenvector_compression(P, nu = 100, nv = 100, plot_n = 0,
-  t = 5)
+right_eigenvector_compression(P, nu = 100, nv = 100, plot_n = 0, t = 5)
 }
 \arguments{
 \item{P}{transitional matrix}

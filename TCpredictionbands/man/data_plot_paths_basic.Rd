@@ -4,12 +4,12 @@
 \alias{data_plot_paths_basic}
 \title{Format curves from a list to a single data.frame}
 \usage{
-data_plot_paths_basic(test_list, c_position = 1:2)
+data_plot_paths_basic(test_list, position = 1:2)
 }
 \arguments{
 \item{test_list}{list of curves}
 
-\item{c_position}{position of lat and lon columns in the test_list dataframes}
+\item{position}{position of lat and long columns in the test_list dataframes}
 }
 \value{
 single data frame with all curves (curve column with idx of curve)

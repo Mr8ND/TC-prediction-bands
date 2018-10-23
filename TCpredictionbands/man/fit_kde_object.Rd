@@ -4,8 +4,8 @@
 \alias{fit_kde_object}
 \title{Fit kernel density estimator object}
 \usage{
-fit_kde_object(dfmat, h_band = NULL, long = 1, lat = 2,
-  grid_size = rep(1000, 2))
+fit_kde_object(dfmat, h_band = NULL, position = 1:2, grid_size = rep(1000,
+  2))
 }
 \arguments{
 \item{dfmat}{TC dataframe}
@@ -14,9 +14,7 @@ fit_kde_object(dfmat, h_band = NULL, long = 1, lat = 2,
 the optimal band would be selected through the \code{\link[ks]{kde}} 
 function. Default is NULL.}
 
-\item{long}{index of the column referring to "longitude". Default is 1.}
-
-\item{lat}{index of the column referring to "latitude". Default is 2.}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{grid_size}{size of the grid which is going to be used for the 
 evaluation of kde object. Can be reduced to speed-up computation.}

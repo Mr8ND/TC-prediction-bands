@@ -411,19 +411,19 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
                      dplyr::left_join(index_mapping, by = c("id" = "nt")))$dl
   
   output_lines <- desired_lines %>% dplyr::filter(idx %in% select_lines)
-  names(output_lines)[1:2] = c("lon","lat") ## COME HERE: I THINK THIS IS WRONG...
+  names(output_lines)[1:2] = c("long","lat") ###
   return(output_lines)
 }
 
 #' Performs delta ball approach
 #'
 #' @param data_list list of hurricanes
-#' @param alpha for credible band (related to depth). Takes value in (0, 1.0), 
+#' @param alpha for prediction band (related to depth). Takes value in (0, 1.0), 
 #'        for a 95\% PB, set alpha to .05.
 #' @param dist_mat distance matrix (otherwise is calculated)
 #' @param data_deep_points data deep points from depth function 
 #'        (otherwise calculated)
-#' @param c_position Columns position of long/lat pair
+#' @param position Columns position of long/lat pair
 #' @param depth_vector Vector with depth values
 #' @param area_ci_n number of observations to estimate area of covering
 #' @param area_ci_alpha alpha level for confidence interval of area of covering
@@ -441,7 +441,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
 #' @export
 delta_structure <- function(data_list, alpha, dist_mat = NULL, 
                             data_deep_points = NULL,
-                            c_position = 1:2,
+                            position = 1:2,
                             depth_vector = NULL,
                             area_ci_n = 2000, 
                             area_ci_alpha = .05, verbose = FALSE, ...){
@@ -451,7 +451,7 @@ delta_structure <- function(data_list, alpha, dist_mat = NULL,
                                                alpha, 
                                                dist_mat = dist_mat,
                                                verbose = verbose,
-                                               c_position = c_position,
+                                               position = position,
                                                depth_vector = depth_vector,
                                                ...)
   }

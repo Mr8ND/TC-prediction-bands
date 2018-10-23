@@ -4,17 +4,17 @@
 \alias{thirteen_points_listable}
 \title{List of 13 point compressions}
 \usage{
-thirteen_points_listable(list_df, c_position = 5:6, lonlat = TRUE,
+thirteen_points_listable(list_df, position = 5:6, longlat = TRUE,
   verbose = TRUE)
 }
 \arguments{
-\item{list_df}{list of dfs, where the lonlat points are are in the 
-c_position columns}
+\item{list_df}{list of dfs, where the longlat points are are in the 
+position columns}
 
-\item{c_position}{the columns of the data frames that contain the desired 
-lonlat coordinates}
+\item{position}{the columns of the data frames that contain the desired 
+longlat coordinates}
 
-\item{lonlat}{boolean logical if columns are lonlat 
+\item{longlat}{boolean logical if columns are longlat 
 (false if they are latlon)}
 
 \item{verbose}{boolean for having a progress bar}

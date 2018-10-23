@@ -5,8 +5,7 @@
 \title{Creates ggplot of projections}
 \usage{
 ggvis_projection(sca_output, train_alpha = 0.3, test_color_power = 1/3,
-  test_color_low = "white", test_color_high = "red",
-  color_n_breaks = 10)
+  test_color_low = "white", test_color_high = "red", color_n_breaks = 10)
 }
 \arguments{
 \item{sca_output}{spectral_cluster_process function output (see details)}

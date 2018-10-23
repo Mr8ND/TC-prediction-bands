@@ -4,22 +4,20 @@
 \alias{kde_from_tclist}
 \title{Contour and area from TC list}
 \usage{
-kde_from_tclist(dflist, alpha_level, h_band = NULL, long = 1,
-  lat = 2, grid_size = rep(1000, 2))
+kde_from_tclist(dflist, alpha, h_band = NULL, position = 1:2,
+  grid_size = rep(1000, 2))
 }
 \arguments{
 \item{dflist}{list of TC dataframes}
 
-\item{alpha_level}{contour level, an integer from 1 to 99. For example, a
+\item{alpha}{contour level, an integer from 1 to 99. For example, a
 level 5\% gives back 95\% contour}
 
 \item{h_band}{optional argument for the bandwidth of the kde object. If NULL, 
 the optimal band would be selected through the \code{\link[ks]{kde}} 
 function. Default is NULL.}
 
-\item{long}{index of the column referring to "longitude". Default is 1.}
-
-\item{lat}{index of the column referring to "latitude". Default is 2.}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{grid_size}{size of the grid which is going to be used for the 
 evaluation of kde object. Can be reduced to speed-up computation.}

@@ -4,14 +4,14 @@
 \alias{delta_structure}
 \title{Performs delta ball approach}
 \usage{
-delta_structure(data_list, alpha, dist_mat = NULL,
-  data_deep_points = NULL, c_position = 1:2, depth_vector = NULL,
-  area_ci_n = 2000, area_ci_alpha = 0.05, verbose = FALSE, ...)
+delta_structure(data_list, alpha, dist_mat = NULL, data_deep_points = NULL,
+  position = 1:2, depth_vector = NULL, area_ci_n = 2000,
+  area_ci_alpha = 0.05, verbose = FALSE, ...)
 }
 \arguments{
 \item{data_list}{list of hurricanes}
 
-\item{alpha}{for credible band (related to depth). Takes value in (0, 1.0), 
+\item{alpha}{for prediction band (related to depth). Takes value in (0, 1.0), 
 for a 95\% PB, set alpha to .05.}
 
 \item{dist_mat}{distance matrix (otherwise is calculated)}
@@ -19,7 +19,7 @@ for a 95\% PB, set alpha to .05.}
 \item{data_deep_points}{data deep points from depth function 
 (otherwise calculated)}
 
-\item{c_position}{Columns position of long/lat pair}
+\item{position}{Columns position of long/lat pair}
 
 \item{depth_vector}{Vector with depth values}
 

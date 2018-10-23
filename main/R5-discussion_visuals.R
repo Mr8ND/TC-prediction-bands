@@ -452,11 +452,11 @@ train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_p
 # base map <<<<<<<
 latrange <- range(c(true_tc$lat, 
                       train_curves_auto_logistic$lat))
-lonrange <- range(c(true_tc$long, 
+longrange <- range(c(true_tc$long, 
                     train_curves_auto_logistic$long))
 
-ocean <- c(left = lonrange[1], bottom = latrange[1],
-           right = lonrange[2], top = latrange[2])
+ocean <- c(left = longrange[1], bottom = latrange[1],
+           right = longrange[2], top = latrange[2])
 map   <- suppressWarnings(
   ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 )
@@ -526,11 +526,11 @@ train_curves_auto_kernel <- test_env[[tc]][["Auto_NoDeathRegs"]] %>% data_plot_p
 # base map <<<<<<<
 latrange <- range(c(true_tc$lat, 
                     train_curves_auto_kernel$lat))
-lonrange <- range(c(true_tc$long, 
+longrange <- range(c(true_tc$long, 
                     train_curves_auto_kernel$long))
 
-ocean <- c(left = lonrange[1], bottom = latrange[1],
-           right = lonrange[2], top = latrange[2])
+ocean <- c(left = longrange[1], bottom = latrange[1],
+           right = longrange[2], top = latrange[2])
 map   <- suppressWarnings(
   ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 )
@@ -567,11 +567,11 @@ train_curves_nonauto_kernel <- test_env[[tc]][["NoAuto_NoDeathRegs"]] %>% data_p
 # base map <<<<<<<
 latrange <- range(c(true_tc$lat, 
                     train_curves_nonauto_kernel$lat))
-lonrange <- range(c(true_tc$long, 
+longrange <- range(c(true_tc$long, 
                     train_curves_nonauto_kernel$long))
 
-ocean <- c(left = lonrange[1], bottom = latrange[1],
-           right = lonrange[2], top = latrange[2])
+ocean <- c(left = longrange[1], bottom = latrange[1],
+           right = longrange[2], top = latrange[2])
 map   <- suppressWarnings(
   ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 )

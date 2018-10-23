@@ -14,7 +14,7 @@ tangential points (each a n x 2 data frame), similar to the
 \code{\link{bubble_ci_from_tclist}}. One can also input a list of 
 TCs and the function will create the needed structure using 
 \code{\link{bubble_ci_from_tclist}}. \emph{If using a list of TCs, 
-must include a \code{alpha_level} in \code{...} parameters.}}
+must include a \code{alpha} in \code{...} parameters.}}
 
 \item{base_graph}{plot to add to}
 
@@ -30,14 +30,14 @@ must include a \code{alpha_level} in \code{...} parameters.}}
 
 \item{...}{Interior \code{\link[ggplot2]{geom_path}} or the 
 \code{bubble_ci_from_tclist} parameters \emph{(Note: at this time,
-only the required \code{alpha_level} parameter will be accepted for the
+only the required \code{alpha} parameter will be accepted for the
 \code{bubble_ci_from_tclist} function)}}
 }
 \value{
 \code{ggplot} object with curves on it
 }
 \description{
-\strong{Warning: this function does lat and lon in reverse. This 
+\strong{Warning: this function does lat and long in reverse. This 
 goes back beyond the wrapper \code{\link{bubble_ci_from_tclist}}}
 }
 \examples{
@@ -48,7 +48,7 @@ for (i in 1:10){
   }
 
 dflist_13pointsreduction <- thirteen_points_listable(sample_sim_small, 
-                                                    c_position = 1:2)
+                                                    position = 1:2)
 dist_matrix_13pointsreduction <- distMatrixPath_innersq(
   dflist_13pointsreduction)
 depth_vector <- depth_function(dist_matrix_13pointsreduction)
@@ -56,7 +56,7 @@ depth_vector_idx <- which(depth_vector == max(depth_vector))[1]
 
 spherical_PB <- bubble_ci_from_tclist(sample_sim_small, 
                                           center_idx = depth_vector_idx,
-                                          alpha_level = .05)
+                                          alpha = .05)
 
 bubble_plot_data <- spherical_PB$bubble_CI_object
 
@@ -64,6 +64,6 @@ bubble_plot_data <- spherical_PB$bubble_CI_object
 ggvis_bubble_data(bubble_plot_data, color = "red", 
                   base_graph = ggplot2::ggplot())
 
-ggvis_bubble_data(sample_sim_small, color = "purple", alpha_level = .05,
+ggvis_bubble_data(sample_sim_small, color = "purple", alpha = .05,
                   base_graph = ggplot2::ggplot())
 }

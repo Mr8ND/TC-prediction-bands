@@ -4,16 +4,14 @@
 \alias{error_bands_bubbleCI}
 \title{Estimating uncertainty of bubble CI}
 \usage{
-error_bands_bubbleCI(bubble_steps_CI, long_col = 1, lat_col = 2,
+error_bands_bubbleCI(bubble_steps_CI, position = 1:2,
   unit_measure = "nautical mile")
 }
 \arguments{
 \item{bubble_steps_CI}{list of dataframes, with each dataframe representing 
 one step in the track of the most central TC}
 
-\item{long_col}{Column index of the longitude}
-
-\item{lat_col}{Column index of the latitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{unit_measure}{Unit measure of the distances}
 }

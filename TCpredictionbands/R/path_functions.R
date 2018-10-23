@@ -6,8 +6,7 @@
 #'
 #' @param data_df data frame (assumed to have 2 columns)
 #'
-#' @return data frame with columns reverse (actually just first 2 columns 
-#' included)
+#' @return First 2 columns of the data-frame, with their position reversed.
 #' @export
 swap2DfCols <- function(data_df){
 	return(data.frame(cbind(data_df[, 2], data_df[, 1])))
@@ -58,10 +57,10 @@ distAlongP <- function(data_df, output_length = "nautical mile",
 #' 
 #' @description Calculates the distance between each point of every path.
 #'
-#' @param data_df_p1 (n x 2) data.frame, each row is a pair of values (lat, lon) 
+#' @param data_df_p1 (n x 2) data.frame, each row is a pair of values (lat, long) 
 #' unless specified the reverse with longlat boolean
 #' @param data_df_p2 (n x 2) second data.frame to be compared, each row is a 
-#' pair of values (lat, lon) unless specified the reverse with longlat boolean
+#' pair of values (lat, long) unless specified the reverse with longlat boolean
 #' @param output_length string of measurement unit of points, see options in
 #' datamart::uconv.
 #' @param longlat boolean if the order of the columns is longitude then latitude

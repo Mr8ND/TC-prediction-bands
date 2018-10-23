@@ -4,29 +4,27 @@
 \alias{bubble_ci_from_tclist}
 \title{Creating bubble CI out of TC simulated lists}
 \usage{
-bubble_ci_from_tclist(dflist, center_idx, alpha_level = 0.1, long = 1,
-  lat = 2, alpha_ci_level = 0.05, unit_measure = "nautical mile")
+bubble_ci_from_tclist(dflist, center_idx, alpha = 0.1, position = 1:2,
+  alpha_ci = 0.05, unit_measure = "nautical mile")
 }
 \arguments{
 \item{dflist}{List of simulated TCs}
 
 \item{center_idx}{Index of the path that needs to be considered as a center}
 
-\item{alpha_level}{Alpha level of the bubble CI}
+\item{alpha}{Alpha level of the bubble CI}
 
-\item{long}{Column index of the longitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
-\item{lat}{Column index of the latitude}
-
-\item{alpha_ci_level}{Fraction for confidence interval of area estimates 
+\item{alpha_ci}{Fraction for confidence interval of area estimates 
 based on uniform sampling distribution.}
 
 \item{unit_measure}{Unit of measure used for distance}
 }
 \value{
 \item{bubble_CI_object}{A list of matrices, each with prediction and, 
-if alpha_level was not NULL, extra column on whether the point is within 
-a specific 1-alpha_level countour, see the \code{\link{bubbleCI}} }
+if alpha was not NULL, extra column on whether the point is within 
+a specific 1-alpha countour, see the \code{\link{bubbleCI}} }
 \item{area}{maximum area vector for the CB in question, see 
 \code{\link{error_bands_bubbleCI}} and \code{\link{max_cumulative_area}}}
 \item{area_vector}{cumulative area as one steps along the CB,

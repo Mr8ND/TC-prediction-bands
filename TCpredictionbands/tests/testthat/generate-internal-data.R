@@ -15,4 +15,3 @@ names(internal_data) <- c("sample_sim", "sample_tc", "sample_tc_name",
                           "sample_output_pipeline", "test_sims")
 
 devtools::use_data(internal_data, internal = TRUE, overwrite = TRUE)
-

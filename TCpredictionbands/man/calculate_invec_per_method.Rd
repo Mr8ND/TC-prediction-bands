@@ -2,21 +2,19 @@
 % Please edit documentation in R/simulation_validation_functions.R
 \name{calculate_invec_per_method}
 \alias{calculate_invec_per_method}
-\title{Credible Band Inclusion on Simulated TCs}
+\title{Prediction Band Inclusion on Simulated TCs}
 \usage{
-calculate_invec_per_method(hur_out_obj, sim_hur_list, long = 1,
-  lat = 2, unit_measure = "nautical mile", verbose = FALSE)
+calculate_invec_per_method(hur_out_obj, sim_hur_list, position = 1:2,
+  unit_measure = "nautical mile", verbose = FALSE)
 }
 \arguments{
-\item{hur_out_obj}{Object with the credible bands for each of the method. Assumed to be 
+\item{hur_out_obj}{Object with the prediction bands for each of the method. Assumed to be 
 a list with at least the 4 names referring to the methods, i.e. 'kde', 'bubble_ci',
 'delta_ball' and 'convex_hull'}
 
 \item{sim_hur_list}{List of simulated hurricanes. Each object is assumed to be a data.frame}
 
-\item{long}{Column index of the longitude}
-
-\item{lat}{Column index of the latitude}
+\item{position}{Columns position of long/lat pair. Default is 1:2}
 
 \item{unit_measure}{Unit of measure used for distance}
 
@@ -25,11 +23,11 @@ a list with at least the 4 names referring to the methods, i.e. 'kde', 'bubble_c
 \value{
 One list with 4 arguments, one for each of the 4 methods, in which there is the same
 number of vectors as the simulated TCs. Each vector is a binary vector, in which 1 indicates
-that the point was included in the credible band and 0 if not.
+that the point was included in the prediction band and 0 if not.
 }
 \description{
-This function takes a list of calculated credible bands and a series of simulated TCs
+This function takes a list of calculated prediction bands and a series of simulated TCs
 and calculates how many points of each of the simulated TCs are included in each of the
-method's credible bands. The inclusion is done by returning 1 if a point is inside a
-credible band and 0 if not.
+method's prediction bands. The inclusion is done by returning 1 if a point is inside a
+Prediction band and 0 if not.
 }

@@ -56,11 +56,11 @@ kde_train_curves_nonauto_kernel <- test_env[[tc]][["NoAuto_NoDeathRegs"]] %>%
 # base map <<<<<<<
 latrange <- range(c(kde_true_tc$lat, 
                     kde_train_curves_nonauto_kernel$lat))
-lonrange <- range(c(kde_true_tc$long, 
+longrange <- range(c(kde_true_tc$long, 
                     kde_train_curves_nonauto_kernel$long))
 
-ocean <- c(left = lonrange[1], bottom = latrange[1],
-           right = lonrange[2], top = latrange[2])
+ocean <- c(left = longrange[1], bottom = latrange[1],
+           right = longrange[2], top = latrange[2])
 map   <- suppressWarnings(
   ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 )
@@ -99,14 +99,14 @@ latrange <- range(c(convex_true_tc$lat,
                     output_list_pipeline %>% .[[tc]] %>% 
                       .[["Auto_DeathRegs"]] %>% .[["convex_hull"]] %>% 
                       .[["structure"]] %>% .[,"lat"]))
-lonrange <- range(c(convex_true_tc$long, 
+longrange <- range(c(convex_true_tc$long, 
                     convex_train_curves_auto_logistic$long,
                     output_list_pipeline %>% .[[tc]] %>% 
                       .[["Auto_DeathRegs"]] %>% .[["convex_hull"]] %>% 
                       .[["structure"]] %>% .[,"long"]))
 
-ocean <- c(left = lonrange[1], bottom = latrange[1],
-           right = lonrange[2], top = latrange[2])
+ocean <- c(left = longrange[1], bottom = latrange[1],
+           right = longrange[2], top = latrange[2])
 map   <- suppressWarnings(
   ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 )
@@ -138,11 +138,11 @@ delta_train_curves_auto_logistic <- test_env[[tc]][["Auto_NoDeathRegs"]] %>%
 # base map <<<<<<<
 latrange <- range(c(delta_true_tc$lat, 
                     delta_train_curves_auto_logistic$lat))
-lonrange <- range(c(delta_true_tc$long, 
+longrange <- range(c(delta_true_tc$long, 
                     delta_train_curves_auto_logistic$long))
 
-ocean <- c(left = lonrange[1], bottom = latrange[1],
-           right = lonrange[2], top = latrange[2])
+ocean <- c(left = longrange[1], bottom = latrange[1],
+           right = longrange[2], top = latrange[2])
 map   <- suppressWarnings(
   ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 )
@@ -174,11 +174,11 @@ spherical_train_curves_noauto_logistic <- test_env[[tc]][["NoAuto_DeathRegs"]] %
 # base map <<<<<<<
 latrange <- range(c(spherical_true_tc$lat, 
                     spherical_train_curves_noauto_logistic$lat))
-lonrange <- range(c(spherical_true_tc$long, 
+longrange <- range(c(spherical_true_tc$long, 
                     spherical_train_curves_noauto_logistic$long))
 
-ocean <- c(left = lonrange[1], bottom = latrange[1],
-           right = lonrange[2], top = latrange[2])
+ocean <- c(left = longrange[1], bottom = latrange[1],
+           right = longrange[2], top = latrange[2])
 map   <- suppressWarnings(
   ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
 )

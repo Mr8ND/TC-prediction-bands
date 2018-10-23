@@ -1,6 +1,6 @@
 context("Global PB test")
 
-library(TCpredictionbands)
+suppressWarnings(library(TCpredictionbands))
 
 #' Loading all the data --------------------------------------
 
@@ -18,8 +18,8 @@ sample_output_pipeline <- internal_data[["sample_output_pipeline"]]
 
 
 n_sim_curve_total <- length(sample_sim)
-alpha_level <- 0.1
-alpha_ci_level <- .05
+alpha <- 0.1
+alpha_ci <- .05
 desired_curves_types <- c("Auto_NoDeathRegs")
 
 
@@ -32,10 +32,10 @@ for (i in c(1:n_sim_curve_total)) {
 tc_true_path_list <- list()
 tc_true_path_list[[sample_tc_name]] <- sample_tc[, c(6,5)]
 
-output_pipeline <- credible_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
+output_pipeline <- prediction_interval_pipeline(tc_full_sim_list = tc_full_sim_list,
                                               tc_true_path_list = tc_true_path_list,
-                                              alpha_level = alpha_level,
-                                              alpha_ci_level = alpha_ci_level,
+                                              alpha = alpha,
+                                              alpha_ci = alpha_ci,
                                               start_idx = 1,
                                               end_idx = 1,
                                               curve_type_vec = desired_curves_types)

@@ -62,14 +62,14 @@ for (tc in names(test_env)[start_idx:end_idx]) {
 					    train_curves_auto_bin$lat,
 					    train_curves_nonauto_ker$lat,
 					    train_curves_nonauto_bin$lat))
-	lonrange <- range(c(true_tc$long, 
+	longrange <- range(c(true_tc$long, 
 					    train_curves_auto_ker$long,
 					    train_curves_auto_bin$long,
 					    train_curves_nonauto_ker$long,
 					    train_curves_nonauto_bin$long))
 
-    ocean <- c(left = lonrange[1], bottom = latrange[1],
-               right = lonrange[2], top = latrange[2])
+    ocean <- c(left = longrange[1], bottom = latrange[1],
+               right = longrange[2], top = latrange[2])
     map   <- suppressWarnings(
     			ggmap::get_stamenmap(ocean, zoom = zoom, maptype = "toner-lite")
     			)
