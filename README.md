@@ -1,10 +1,10 @@
 # TC-prediction-bands
 
 This repository stores the documentation for new approaches to predicting 
-prediction bands for full paths of tropical storms (TCs) using just a few initial 
-points. We leveraging extensions on regression models to generate curves, 
+prediction bands for full paths of tropical cyclones (TCs) using just a few initial 
+points. We leverage extensions on regression models to generate curves, 
 combined with multiple approaches to create prediction bands for the full paths. 
-These approaches utilizes, kernel density estimation, utilize depth-based 
+These approaches utilizes kernel density estimation, utilize depth-based 
 relationships between curves, and also leverage geometric properties of the 
 space. This project was specifically designed with the use of the 
 [*HURDAT 2*](http://www.aoml.noaa.gov/hrd/hurdat/hurdat2-1851-2015-070616.txt) 
@@ -29,12 +29,12 @@ http://www.aoml.noaa.gov/hrd/hurdat/Data_Storm.html).
 As is generally the case in papers today, our analysis is replicable. The files
 in the `main/` folder store the necessary files to run our analysis. The viewer 
 should note that the analysis pipeline takes a long while and should decide if 
-they would like the full results or just test out the analysis on a few samples. 
+they would like to replicate the full results or just to test out the analysis on a few samples. 
 Additionally, the R package `TCpredictionbands` (see 
 [associated section](#2-tcpredictionbands-package)), which is included in this
-repo, provides the user with the ability to analysis different generated
+repo, provides the user with the ability to analyze different generated
 curves with our prediction band approaches and also TC paths that were not
-available when we developed with package.
+available when we developed the package.
 
 Files in `main/` are titled in the following format:
 ```{r}
