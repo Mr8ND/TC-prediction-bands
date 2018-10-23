@@ -13,6 +13,7 @@ library(latex2exp)
 library(gridExtra)
 library(TCpredictionbands)
 library(GGally)
+library(grid)
 
 # Theme -----------------
 tc_theme <- theme_minimal() + 
