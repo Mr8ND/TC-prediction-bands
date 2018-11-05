@@ -1,15 +1,25 @@
 # Explore the densities of simulated TC survival times 
 library(tidyverse)
+library(TCpredictionbands)
 
 # data processing of survival times
 
 data_loc <- "main/data/"
 image_loc <- "report/images/"
 
+# Load raw data
+load(paste0(data_loc, "raw_data.Rdata"))
+
+# Remove non-6-hour observations from test TCs
+test_data <- lapply(test_data, data_sanitize)
+
+# Get lengths of true test TCs
+true_test_lengths <- sapply(test_data, nrow)
+
 # Read in simulated curves
 a <- load(paste0(data_loc, "Test_Sims_350.Rdata"))
 
-# Store lengths of simulated TCs of each type
+# Store lists of simulated TCs of each type
 all_sims <- as.list.environment(test_env)
 
 auto_logreg_all <- lapply(all_sims, FUN = function(tc) tc$Auto_DeathRegs)
@@ -45,31 +55,34 @@ tc_theme <- theme_minimal() +
         plot.caption = element_text(size = 10))
 
 # compile data frames ------------
-four_hist_data <- data.frame(
-  Times = c(auto_logreg_lengths, auto_kde_lengths, 
-            nonauto_logreg_lengths, nonauto_kde_lengths),
+length_data <- data.frame(
+  Times = c(auto_logreg_lengths, auto_kde_lengths, true_test_lengths, 
+            nonauto_logreg_lengths, nonauto_kde_lengths, true_test_lengths),
   Auto = c(rep("Autoregressive", 
-               length(auto_logreg_lengths) + length(auto_kde_lengths)),
+               length(auto_logreg_lengths) + length(auto_kde_lengths) +
+                 length(true_test_lengths)),
            rep("Non-Autoregressive",
-               length(nonauto_logreg_lengths) + length(nonauto_kde_lengths))),
+               length(nonauto_logreg_lengths) + length(nonauto_kde_lengths) +
+                 length(true_test_lengths))),
   DeathReg = c(rep("Logistic", length(auto_logreg_lengths)), 
-               rep("Kernel",length(auto_kde_lengths)),
+               rep("Kernel", length(auto_kde_lengths)),
+               rep("True", length(true_test_lengths)),
                rep("Logistic", length(nonauto_logreg_lengths)), 
-               rep("Kernel", length(nonauto_kde_lengths))))
+               rep("Kernel", length(nonauto_kde_lengths)),
+               rep("True", length(true_test_lengths))))
 
 
 # graphic ---------------
 
-survival_times_dens <- ggplot(four_hist_data) + 
-  geom_density(aes(color = DeathReg, 
-                   x = Times),
-                 alpha = .5, position = "identity") + 
+survival_times_dens <- ggplot(length_data) + 
+  geom_density(aes(linetype = DeathReg,
+                   x = Times)) + 
   facet_grid(Auto~.)  + tc_theme +
   labs(x = "Survival Time of TC (6-hour intervals)",
        y = "Density", 
-       color = "Lysis Model",
-       title = "Distribution of TC Survival Times") +
-  scale_color_manual(values = c("red","blue")) 
+       linetype = "Lysis", 
+       title = "Distribution of Test TC Survival Times") +
+  scale_linetype_manual(values = c("dashed", "dotted", "solid"))
 
 
 ggsave(plot = survival_times_dens,
