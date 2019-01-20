@@ -309,23 +309,23 @@ table <- data_run %>%
   dcast(sim_type_full_table ~ cb_type_full_table) %>%
   rename("Simulation Curve Type" = "sim_type_full_table")
 
-xtable1 <- table %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.75in}|"),
+addtorow <- list()
+addtorow$pos <- list(0)
+addtorow$command <- c("\\hline \\hline \\\\\n")
+
+xtable1 <- table %>% xtable(align = c("rR{1.5in}L{1.1in}L{.95in}L{.95in}L{.95in}"),
                  digits = 2,
-                 caption = paste("Mean and median proportion",
-                                 "of points of a true TC captured by the PB.",
-                                 "PBs based on 350 simulated curves; created",
-                                 "with either Autoregressive (AR) or",
-                                 "Non-Autoregressive (AR) models for changes",
-                                 "in bearing and speed and with either a",
-                                 "Kernel-based lysis model (Kernel) or",
-                                 "Logistic-based lysis models (Logistic)."),
-                 label = "tab:average_captured")
+                 caption = paste("Mean / median proportion of true test TC", 
+                                 "points captured by their PBs."),
+                 label = "tab:average_captured",
+                 add.to.row = addtorow)
 
 print(xtable1, 
       table.placement = "ht!",
       include.rownames = FALSE,
-      sanitize.text.function = bold_somerows, 
-      #^for some reason we need this - even though not used
+      sanitize.text.function = identity, 
+      caption.placement = "top",
+      hline.after = c(-1, -1, 0, 4),
       file = paste0(table_path,"tc_average_proportion_update.tex"))
 
 # proportion with capture above .3, .9, =1
@@ -346,22 +346,19 @@ table2 <- data_run %>%
   rename("Simulation Curve Type" = "sim_type_full_table")
 
 
-xtable2 <- xtable(table2, align = c("r|R{1.2in}||L{.95in}L{.95in}|L{.95in}L{.95in}|"),
-                 caption = paste("Proportion of points of TCs with proportion",
-                                  "of point captured  \\((\\geq .3) /",
-                                  "(\\geq .9)\\) \\(\\textbf{(= 1)}\\).",
-                                 "PBs based on 350 simulated curves; created",
-                                 "with either Autoregressive (AR) or",
-                                 "Non-Autoregressive (AR) models for changes",
-                                 "in bearing and speed and with either a",
-                                 "Kernel-based lysis model (Kernel) or",
-                                 "Logistic-based lysis models (Logistic)."),
+xtable2 <- xtable(table2, align = c("rR{1.4in}L{1.1in}L{.95in}L{.95in}L{.95in}"),
+                 caption = paste("Proportion of test TCs with", 
+                                 "($\\geq 30\\%$) / ($\\geq 90\\%$)", 
+                                 "\\textbf{(= 100\\%)} of", 
+                                 "points captured."),
                  label = "tab:prop_captured")
 
 print(xtable2, 
       table.placement = "ht!",
       include.rownames = FALSE,
       sanitize.text.function = bold_somerows,
+      caption.placement = "top",
+      hline.after = c(-1, -1, 0, 4),
       file = paste0(table_path,"tc_prop_above_p3p9p10.tex"))
 
 
