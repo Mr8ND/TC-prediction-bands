@@ -541,24 +541,35 @@ bold_somerows <-
         # function used in print statement below - not really used
 
 xtable_time <- df_time4 %>% xtable(
-                align = c("rR{1.4in}L{1.1in}L{.95in}L{1in}L{.9in}"),
-                 caption = paste("Average time (in seconds) it takes to",
+                align = c("rR{1.4in}L{1.1in}L{.95in}L{1in}L{.95in}"),
+                 caption = paste("Average time (in seconds) to",
                                  "fit one Prediction Band with 350",
-                                 "simulated curves, \\(\\pm\\) 1 standard",
+                                 "simulated curves, \\\\ \\(\\pm\\) 1 standard",
                                  "deviation."),
                  label = "tab:time_fitting")
+
+addtorow <- list()
+addtorow$pos <- list(4)
+addtorow$command <- paste("\\hline \\multicolumn{5}{L{6in}}{\\footnotesize", 
+                          "NOTE: Based on simulated curves created with", 
+                          "either autoregressive (AR) or non-autoregressive", 
+                          "(Non-AR) models for changes in bearing and", 
+                          "speed and with either a kernel-based lysis", 
+                          "model (Kernel) or a logistic-based lysis",
+                          "model (Logistic).} \\\\")
 
 print(xtable_time, 
       table.placement = "ht!",
       include.rownames = FALSE,
-      sanitize.text.function = bold_somerows, 
+      sanitize.text.function = identity, 
       caption.placement = "top",
-      hline.after = c(-1, -1, 0, 4),
+      hline.after = c(-1, -1, 0),
+      add.to.row = addtorow,
       file = paste0(table_path,"sim_time_fitting.tex"))
 
 # time for prediction -------------
 
-# note these times are associtated with 100 fits
+# note these times are associated with 100 fits
 
 df_time_p <- data.frame(kde = -1,
                         bubble_ci = -1,
