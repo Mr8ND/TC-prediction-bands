@@ -366,4 +366,49 @@ print(xtable2,
 
 
 
+
+#####################
+# Compressed Tables #
+#####################
+
+# summary table for accuracy and precision
+
+table3 <- data_run %>% 
+  group_by(cb_type_full_table) %>%
+  dplyr::summarize(
+    pointwise_median = round(median(prop_acc),2),
+    uniform_mean = round(mean(prop_acc >= 1), 2),
+    size_median = round(median(area),4)) %>% t 
+
+table3_colnames <- table3[1,]
+table3_rownames <- rownames(table3)
+
+table3 <- table3[-1,]
+colnames(table3) <- table3_colnames
+table3 <- cbind(table3_rownames[-1], table3)
+colnames(table3)[1] <- table3_rownames[1]
+rownames(table3) = NULL
+table3[,1] <- c("Median Average Pointwise Accuracy",
+                "Average Uniform Accuracy",
+                "Average Area")
+table3 <- table3 %>% data.frame() %>% rename(" " = "cb_type_full_table",
+                          "Kernel Density Estimate"= "Kernel.Density.Estimate",
+                          "Delta Ball" = "Delta.Ball",
+                          "Convex Hull" = "Convex.Hull")
+
+
+
+xtable3 <- table3 %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.75in}|"),
+                            digits = 2,
+                            caption = paste("..."),
+                            label = "tab:median_prop_captured_and_size_summary")
+
+print(xtable3, 
+      table.placement = "ht!",
+      include.rownames = FALSE,
+      sanitize.text.function = bold_somerows, 
+      #^for some reason we need this - even though not used
+      file = paste0(table_path,"sim_accuracy_compressed.tex"))
+
+
  
