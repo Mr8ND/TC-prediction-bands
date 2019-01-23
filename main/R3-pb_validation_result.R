@@ -541,24 +541,19 @@ bold_somerows <-
         # function used in print statement below - not really used
 
 xtable_time <- df_time4 %>% xtable(
-                align = c("r|R{1.2in}||L{.95in}L{.95in}|L{.9in}L{.9in}|"),
-                 caption = paste0("Average time (in seconds) it takes to",
-                                  " fit one Prediction Band with 350",
-                                  " simulated curves, \\(\\pm\\) 1 standard",
-                                  " deviation. Based on simulated curves",
-                                  " created with either Autoregressive (AR)",
-                                  " or Non-Autoregressive (AR) models for",
-                                  " changes in bearing and speed and with",
-                                  " either a Kernel-based lysis model (Kernel)",
-                                  " or Logistic-based lysis models (Logistic)."
-                                  ),
+                align = c("rR{1.4in}L{1.1in}L{.95in}L{1in}L{.9in}"),
+                 caption = paste("Average time (in seconds) it takes to",
+                                 "fit one Prediction Band with 350",
+                                 "simulated curves, \\(\\pm\\) 1 standard",
+                                 "deviation."),
                  label = "tab:time_fitting")
 
 print(xtable_time, 
       table.placement = "ht!",
       include.rownames = FALSE,
       sanitize.text.function = bold_somerows, 
-      #^for some reason we need this - even though not used
+      caption.placement = "top",
+      hline.after = c(-1, -1, 0, 4),
       file = paste0(table_path,"sim_time_fitting.tex"))
 
 # time for prediction -------------
@@ -610,25 +605,18 @@ df_time_p4 <- df_time_p3 %>% group_by(sim_type_table, cb_type_table) %>%
 ### xtable -----------------
 
 xtable_time_p <- df_time_p4 %>% xtable(
-                 align = c("r|R{1.2in}||L{.95in}L{.9in}|L{.8in}L{.8in}|"),
-                 caption = paste0("Average time (in seconds) it takes to ", 
-                                  " assess the containment of a 100 curves",
-                                  " inside a PB, \\(\\pm\\) 1 standard",
-                                  " deviation. PBs based on 350 simulated",
-                                  " curves; created with either",
-                                  " Autoregressive (AR)",
-                                  " or Non-Autoregressive (AR) models for",
-                                  " changes in bearing and speed and with",
-                                  " either a Kernel-based lysis model (Kernel)",
-                                  " or Logistic-based lysis models (Logistic)."
-                                  ),
+                 align = c("rR{1.4in}L{1.1in}L{.95in}L{.95in}L{.95in}"),
+                 caption = paste("Average time (in seconds) to assess the",
+                                 "containment of 100 curves inside a PB,",
+                                 "\\\\ \\(\\pm\\) 1 standard deviation."),
                  label = "tab:time_prediction100")
 
 
 print(xtable_time_p, 
       table.placement = "ht!",
       include.rownames = FALSE,
-      sanitize.text.function = bold_somerows, 
-      #^for some reason we need this - even though not used
+      sanitize.text.function = identity, 
+      caption.placement = "top",
+      hline.after = c(-1, -1, 0, 4),
       file = paste0(table_path,"sim_time_prediction100.tex"))
 
