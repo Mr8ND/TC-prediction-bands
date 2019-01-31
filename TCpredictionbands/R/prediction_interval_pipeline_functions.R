@@ -235,7 +235,7 @@ prediction_interval_pipeline <- function(tc_full_sim_list, tc_true_path_list, al
         pb$tick()
       	}
       }
-      output[[j]] <- output_tc
+      output[[list_tc_names[j]]] <- output_tc
     }
     
     return(output)

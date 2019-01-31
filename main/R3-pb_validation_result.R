@@ -631,3 +631,41 @@ print(xtable_time_p,
       hline.after = c(-1, -1, 0, 4),
       file = paste0(table_path,"sim_time_prediction100.tex"))
 
+
+#####################
+# Compressed Tables #
+#####################
+
+# summary table for time
+
+create_pb <- df_time3 %>% group_by(cb_type_table) %>%
+  summarize(create_pb_mean = round(mean(value),2)) %>% 
+  data.frame %>% t
+
+evaluate_coverage <- df_time_p3 %>% group_by(cb_type_table) %>%
+  summarize(evaluate_coverage = round(mean(value),2)) %>% 
+  data.frame %>% t
+
+
+
+df_table_compressed <- rbind(create_pb[2,],
+                             evaluate_coverage[2,]) %>%
+  data.frame %>% mutate(` ` = c("Create PB", "Evaluate Coverage")) %>%
+  select(` `, X1, X2, X3, X4)
+
+names(df_table_compressed)[-1] <- create_pb[1,]
+
+
+
+xtable_compress <- df_table_compressed %>% xtable(
+  align = c("r|R{1.2in}||L{.95in}L{.9in}|L{.8in}L{.8in}|"),
+  caption = paste0(""),
+  label = "tab:comp_time_summary")
+
+
+print(xtable_compress, 
+      table.placement = "ht!",
+      include.rownames = FALSE,
+      sanitize.text.function = bold_somerows, 
+      #^for some reason we need this - even though not used
+      file = paste0(table_path,"sim_time_compressed.tex"))

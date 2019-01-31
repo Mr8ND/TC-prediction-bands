@@ -4,8 +4,8 @@
 \alias{fit_kde_object}
 \title{Fit kernel density estimator object}
 \usage{
-fit_kde_object(dfmat, h_band = NULL, position = 1:2, grid_size = rep(1000,
-  2))
+fit_kde_object(dfmat, h_band = NULL, position = 1:2,
+  grid_size = rep(1000, 2))
 }
 \arguments{
 \item{dfmat}{TC dataframe}

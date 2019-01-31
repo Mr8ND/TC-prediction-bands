@@ -15,7 +15,8 @@ sample_sim <- internal_data[["sample_sim"]]
 sample_tc <- internal_data[["sample_tc"]]
 sample_tc_name <- internal_data[["sample_tc_name"]]
 sample_output_pipeline <- internal_data[["sample_output_pipeline"]]
-
+# for now:
+names(sample_output_pipeline) <- "AL032009"
 
 n_sim_curve_total <- length(sample_sim)
 alpha <- 0.1
