@@ -375,7 +375,7 @@ table3 <- data_run %>%
   dplyr::summarize(
     pointwise_median = round(median(prop_acc),2),
     uniform_mean = round(mean(prop_acc >= 1), 2),
-    size_median = round(median(area),4)) %>% t 
+    size_median = round(median(area),2)) %>% t 
 
 table3_colnames <- table3[1,]
 table3_rownames <- rownames(table3)
@@ -385,9 +385,9 @@ colnames(table3) <- table3_colnames
 table3 <- cbind(table3_rownames[-1], table3)
 colnames(table3)[1] <- table3_rownames[1]
 rownames(table3) = NULL
-table3[,1] <- c("Median Average Pointwise Accuracy",
-                "Average Uniform Accuracy",
-                "Average Area")
+table3[,1] <- c("Median Avg PW Acc.",
+                "Avg Uniform Acc.",
+                "Avg Area")
 table3 <- table3 %>% data.frame() %>% rename(" " = "cb_type_full_table",
                           "Kernel Density Estimate"= "Kernel.Density.Estimate",
                           "Delta Ball" = "Delta.Ball",
@@ -395,7 +395,7 @@ table3 <- table3 %>% data.frame() %>% rename(" " = "cb_type_full_table",
 
 
 
-xtable3 <- table3 %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.75in}|"),
+xtable3 <- table3 %>% xtable(align = c("rR{1.6in}L{1.1in}L{.95in}L{.95in}L{.95in}"),
                             digits = 2,
                             caption = paste("..."),
                             label = "tab:median_prop_captured_and_size_summary")
@@ -403,6 +403,8 @@ xtable3 <- table3 %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.7
 print(xtable3, 
       table.placement = "ht!",
       include.rownames = FALSE,
+      caption.placement = "top",
+      hline.after = c(-1, -1, 0, 3),
       sanitize.text.function = bold_somerows, 
       #^for some reason we need this - even though not used
       file = paste0(table_path,"sim_accuracy_compressed.tex"))

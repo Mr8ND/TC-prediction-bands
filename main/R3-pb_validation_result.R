@@ -658,14 +658,16 @@ names(df_table_compressed)[-1] <- create_pb[1,]
 
 
 xtable_compress <- df_table_compressed %>% xtable(
-  align = c("r|R{1.2in}||L{.95in}L{.9in}|L{.8in}L{.8in}|"),
-  caption = paste0(""),
+  align = c("rR{1.5in}L{1.1in}L{.95in}L{.95in}L{.95in}"),
+  caption = paste0("..."),
   label = "tab:comp_time_summary")
 
 
 print(xtable_compress, 
       table.placement = "ht!",
       include.rownames = FALSE,
+      caption.placement = "top",
+      hline.after = c(-1, -1, 0, 2),
       sanitize.text.function = bold_somerows, 
       #^for some reason we need this - even though not used
       file = paste0(table_path,"sim_time_compressed.tex"))
