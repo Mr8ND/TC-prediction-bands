@@ -786,6 +786,7 @@ print(xtable_ap,
       table.placement = "h!",
       include.rownames = FALSE,
       hline.after = c(-1, -1, 0, 3),
+      caption.placement = "top",
       sanitize.text.function = bold_somerows, 
       #^for some reason we need this - even though not used
       file = paste0(table_path,"sim_accuracy_compressed.tex"))
