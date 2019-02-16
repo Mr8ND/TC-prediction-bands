@@ -360,6 +360,3 @@ print(xtable2,
       caption.placement = "top",
       hline.after = c(-1, -1, 0, 4),
       file = paste0(table_path,"tc_prop_above_p3p9p10.tex"))
-
-
- 

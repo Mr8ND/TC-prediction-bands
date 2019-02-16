@@ -670,7 +670,7 @@ print(xtable_compress,
       include.rownames = FALSE,
       hline.after = c(-1, -1, 0, 2),
       sanitize.text.function = identity, 
-      #^for some reason we need this - even though not used
+      caption.placement = "top",
       file = paste0(table_path,"sim_time_compressed.tex"))
 
 
