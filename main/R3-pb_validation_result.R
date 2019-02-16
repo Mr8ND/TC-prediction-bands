@@ -652,8 +652,8 @@ evaluate_coverage <- df_time_p3 %>% group_by(cb_type_table) %>%
 
 df_table_compressed <- rbind(create_pb[2,],
                              evaluate_coverage[2,]) %>%
-  data.frame %>% mutate(`Time to ...` = c("Create PB (sec)", "Evaluate Coverage (sec)")) %>%
-  dplyr::select(`Time to ...`, X1, X2, X3, X4)
+  data.frame %>% mutate(`Average Time to ...` = c("Create PB (sec)", "Evaluate Coverage (sec)")) %>%
+  dplyr::select(`Average Time to ...`, X1, X2, X3, X4)
 
 names(df_table_compressed)[-1] <- create_pb[1,]
 
@@ -661,7 +661,9 @@ df_table_compressed <- df_table_compressed[,c(1,3,2,5,4)]
 
 xtable_compress <- df_table_compressed %>% xtable(
   align = c("rR{2in}L{.75in}L{1.1in}L{.9in}L{.75in}"),
-  caption = paste0(""),
+  caption = paste("Average time (in seconds) to create a PB out of 350",
+                  "simulated curves or evaluate the coverage of",
+                  "100 simulated curves."),
   label = "tab:comp_time_summary")
 
 
