@@ -321,7 +321,7 @@ xtable1 <- table %>% xtable(align = c("rR{1.5in}L{1.1in}L{.95in}L{.95in}L{.95in}
                  add.to.row = addtorow)
 
 print(xtable1, 
-      table.placement = "ht!",
+      table.placement = "h!",
       include.rownames = FALSE,
       sanitize.text.function = identity, 
       caption.placement = "top",
@@ -354,58 +354,12 @@ xtable2 <- xtable(table2, align = c("rR{1.4in}L{1.1in}L{.95in}L{.95in}L{.95in}")
                  label = "tab:prop_captured")
 
 print(xtable2, 
-      table.placement = "ht!",
+      table.placement = "h!",
       include.rownames = FALSE,
       sanitize.text.function = bold_somerows,
       caption.placement = "top",
       hline.after = c(-1, -1, 0, 4),
       file = paste0(table_path,"tc_prop_above_p3p9p10.tex"))
-
-
-
-
-#####################
-# Compressed Tables #
-#####################
-
-# summary table for accuracy and precision
-
-table3 <- data_run %>% 
-  group_by(cb_type_full_table) %>%
-  dplyr::summarize(
-    pointwise_median = round(median(prop_acc),2),
-    uniform_mean = round(mean(prop_acc >= 1), 2),
-    size_median = round(median(area),4)) %>% t 
-
-table3_colnames <- table3[1,]
-table3_rownames <- rownames(table3)
-
-table3 <- table3[-1,]
-colnames(table3) <- table3_colnames
-table3 <- cbind(table3_rownames[-1], table3)
-colnames(table3)[1] <- table3_rownames[1]
-rownames(table3) = NULL
-table3[,1] <- c("Median Average Pointwise Accuracy",
-                "Average Uniform Accuracy",
-                "Average Area")
-table3 <- table3 %>% data.frame() %>% rename(" " = "cb_type_full_table",
-                          "Kernel Density Estimate"= "Kernel.Density.Estimate",
-                          "Delta Ball" = "Delta.Ball",
-                          "Convex Hull" = "Convex.Hull")
-
-
-
-xtable3 <- table3 %>% xtable(align = c("r|R{1.2in}||L{.95in}L{.8in}|L{.75in}L{.75in}|"),
-                            digits = 2,
-                            caption = paste("..."),
-                            label = "tab:median_prop_captured_and_size_summary")
-
-print(xtable3, 
-      table.placement = "ht!",
-      include.rownames = FALSE,
-      sanitize.text.function = bold_somerows, 
-      #^for some reason we need this - even though not used
-      file = paste0(table_path,"sim_accuracy_compressed.tex"))
 
 
  

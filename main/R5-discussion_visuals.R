@@ -75,7 +75,8 @@ if (is.null(names(output_list_pipeline))) {
 # simulated curve, extreme turning: curvier true tc --------
 tc <- "AL112004" # number 44
 true_tc <- test_data[[tc]]
-train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% data_plot_paths_basic()
+train_curves_auto_logistic <- test_env[[tc]][["Auto_DeathRegs"]] %>% 
+  data_plot_paths_basic()
 
 xx1_crazy_curve <- ggvis_paths(data_out = train_curves_auto_logistic,
             alpha = .1)  + 
@@ -84,8 +85,9 @@ xx1_crazy_curve <- ggvis_paths(data_out = train_curves_auto_logistic,
                      ggplot2::aes_string(
                        x = 'long', y = 'lat'), color = true_curve_color,
                      size = 1) +
-  labs(caption = "TC #AL112004: Autoregressive Curves\n with Logistic-Based Lysis",
-       title = "Example of a \"Wiggly\" TC") + tc_theme
+  labs(
+    caption = "TC #AL112004: Autoregressive Curves\n with Logistic-Based Lysis",
+    title = "Example of a \"Wiggly\" TC") + tc_theme
 
 
 # simulated curve, extreme turning: qqplot, change in bearing --------
@@ -293,8 +295,15 @@ for (tc in names(output_list_pipeline)) {
   specific_tc_info <- output_list_pipeline[[tc]]
   for (type in names(specific_tc_info)) {
     
-    sim_tc_length <- test_env[[tc]][[type]] %>% sapply(function(x) dim(x)[1]) %>%
-      quantile(p = 0:5/5)
+    sim_tc_length_each <- test_env[[tc]][[type]] %>% 
+      sapply(function(x) dim(x)[1]) 
+    
+    sim_tc_length <- sim_tc_length_each %>%
+      quantile(p = c(.05,1:4/5, .95))
+    
+    max_depth_length <- sim_tc_length_each[
+                    which.max(output_list_pipeline %>% .[[tc]] %>%
+                                .[[type]] %>% .[["depth_vector"]])]
     
     true_length <- test_data[[tc]] %>% nrow()
     
@@ -302,8 +311,11 @@ for (tc in names(output_list_pipeline)) {
                                      data.frame(tc = tc,
                                                 type = type,
                                                 true_length = true_length,
-                                                sim_length = sim_tc_length,
-                                                quantile = names(sim_tc_length)))
+                                                sim_length = c(sim_tc_length,
+                                                               max_depth_length),
+                                                
+                                                quantile = c(names(sim_tc_length),
+                                                             "most deep")))
     
     
   }
@@ -315,36 +327,41 @@ sim_length_vs_length_df <- sim_length_vs_length_df %>%
   mutate(type = factor(type, levels  = sim_type_graphic_levels,
                                           labels = sim_type_graphic_labels),
          quantile = fct_relevel(factor(quantile),
-                                "100%","80%", "60%",
-                                "40%", "20%", "0%"))
+                                "95%","80%", "60%",
+                                "40%", "20%", "5%","most deep"))
 
 # <<<<<<<<<<< end of data creation 
 
 xx2 <- sim_length_vs_length_df %>% ggplot() +
-  geom_point(aes(x = true_length, y = sim_length,
-                 color = factor(quantile)),
-             alpha = .3) +
+  # geom_point(aes(x = true_length, y = sim_length,
+  #                color = factor(quantile)),
+  #            alpha = .3) +
   facet_wrap(~factor(type)) +
   geom_smooth(aes(x = true_length, y = sim_length,
-                  color = factor(quantile)),
+                  color = factor(quantile),
+                  linetype = factor(quantile)),
               se = F) +
-  scale_color_manual(values = quantile5_colors) +
-  tc_theme +
+  scale_color_manual(values = c(quantile5_colors, "black")) +
+  scale_linetype_manual(values = c(rep(1,6),6)) +
+  tc_theme + 
   theme(legend.position = "bottom") +
-  guides(color = guide_legend(nrow = 1)) +
+  guides(color = guide_legend(nrow = 1, byrow = TRUE,
+         title.position = "top", title.hjust = .5)) +
   labs(x = "Survival Time of True Curve",
        y = "Survival Time of Simulated Curves",
-       title = "Comparing Survival Times between True and Simulated Curves",
-       color = "Smoothing of Quantiles of Simulated Curves") 
+       title = paste("Comparing Quantiles of Survival Times between",
+                     "True and Simulated Curves"),
+       color = "Smoothing of Quantiles of Simulated Curves",
+       linetype = "Smoothing of Quantiles of Simulated Curves") 
 
 
 ggsave(plot = xx2,
        filename = paste0(image_path,"simulation_length_discussion_graphic.png"),
-       device = "png", width = 10, height = 6, units = "in")
+       device = "png", width = 10, height = 5.5, units = "in")
 
 
 
-#################################
+ #################################
 # spherical PBs, depth (plot 3) #
 #################################
 
