@@ -47,9 +47,11 @@ sim_type_graphic_labels <- names(sim_type_graphic_levels)
 
 # old colors (prettier)
 pb_color_vec_val_old <- c("#0300D8", "#BF0700", "#00E5E5", "#CB00C5")
-names(pb_color_vec_val_old) <- c("bubble_ci","kde", "convex_hull", "delta_ball")
+names(pb_color_vec_val_old) <- c("bubble_ci","kde", 
+                                 "convex_hull", "delta_ball")
 pb_color_vec_pb_pres_old <- c("#00E5E5","#CB00C5" ,"#0300D8", "#BF0700")
-names(pb_color_vec_pb_pres_old) <- c("kde", "bubble_ci", "delta_ball", "convex_hull")
+names(pb_color_vec_pb_pres_old) <- c("kde", "bubble_ci", 
+                                     "delta_ball", "convex_hull")
 
 # current colors
 pb_color_vec <- c("#1b9e77","#d95f02","#7570b3", "#e7298a")
@@ -559,7 +561,7 @@ addtorow$command <- paste("\\hline \\multicolumn{5}{L{6in}}{\\footnotesize",
                           "model (Logistic).} \\\\")
 
 print(xtable_time, 
-      table.placement = "ht!",
+      table.placement = "h!",
       include.rownames = FALSE,
       sanitize.text.function = identity, 
       caption.placement = "top",
@@ -624,7 +626,7 @@ xtable_time_p <- df_time_p4 %>% xtable(
 
 
 print(xtable_time_p, 
-      table.placement = "ht!",
+      table.placement = "h!",
       include.rownames = FALSE,
       sanitize.text.function = identity, 
       caption.placement = "top",
@@ -650,24 +652,146 @@ evaluate_coverage <- df_time_p3 %>% group_by(cb_type_table) %>%
 
 df_table_compressed <- rbind(create_pb[2,],
                              evaluate_coverage[2,]) %>%
-  data.frame %>% mutate(` ` = c("Create PB", "Evaluate Coverage")) %>%
-  select(` `, X1, X2, X3, X4)
+  data.frame %>% mutate(`Average Time to ...` = c("Create PB (sec)", "Evaluate Coverage (sec)")) %>%
+  dplyr::select(`Average Time to ...`, X1, X2, X3, X4)
 
 names(df_table_compressed)[-1] <- create_pb[1,]
 
-
+df_table_compressed <- df_table_compressed[,c(1,3,2,5,4)]
 
 xtable_compress <- df_table_compressed %>% xtable(
-  align = c("rR{1.5in}L{1.1in}L{.95in}L{.95in}L{.95in}"),
-  caption = paste0("..."),
+  align = c("rR{2in}L{.75in}L{1.1in}L{.9in}L{.75in}"),
+  caption = paste("Average time (in seconds) to create a PB out of 350",
+                  "simulated curves or evaluate the coverage of",
+                  "100 simulated curves."),
   label = "tab:comp_time_summary")
 
 
 print(xtable_compress, 
-      table.placement = "ht!",
+      table.placement = "h!",
       include.rownames = FALSE,
-      caption.placement = "top",
       hline.after = c(-1, -1, 0, 2),
+      sanitize.text.function = identity, 
+      caption.placement = "top",
+      file = paste0(table_path,"sim_time_compressed.tex"))
+
+
+
+# summary table for accuracy and precision
+
+all_data_pointwise_table <- all_data_three %>%
+  group_by(tc_name, sim_type_table, cb_type_table, num_curves) %>%
+  summarize(num_captured_points = sum(round(length*prop)),
+            total_num_points = sum(length)) %>%
+  mutate(prop_captured = num_captured_points/total_num_points)
+
+all_data_uniform_table <- all_data_three %>%
+  group_by(tc_name, sim_type_table, cb_type_table, num_curves) %>%
+  summarize(num_captured_curves = sum(prop == 1)) %>%
+  mutate(prop_captured_curves = num_captured_curves/num_curves)
+
+table_acc_perc_pw <- all_data_pointwise_table %>% 
+  filter(num_curves == 100) %>% # just the set of 100 averaged
+  group_by(cb_type_table) %>%
+  dplyr::summarize(
+    pointwise_median = round(median(prop_captured),2))
+
+table_acc_perc_un <- all_data_uniform_table %>% 
+  filter(num_curves == 100) %>% # just the set of 100 averaged
+  group_by(cb_type_table) %>%
+  dplyr::summarize(
+    uniform_median = round(median(prop_captured_curves),2))
+
+area_mat <- data.frame(tc_name = "ben", 
+                       sim_type = "ben",
+                       cb_type = "ben",
+                       area = -1) %>%
+  mutate(tc_name = as.character(tc_name),
+         sim_type = as.character(sim_type),
+         cb_type = as.character(cb_type))
+
+for (tc in names(output_list_pipeline)) {
+  specific_tc_info <- output_list_pipeline[[tc]]
+  
+  for (type in names(specific_tc_info)) {
+    
+    for (pb_type in c("kde","bubble_ci", "delta_ball", "convex_hull")){
+      area_val <- specific_tc_info[[type]][[pb_type]][["area"]]
+      area_mat <- rbind(area_mat,
+                        data.frame(tc_name = tc,
+                                   sim_type = type,
+                                   cb_type = pb_type,
+                                   area = area_val))
+      
+    }
+  }
+}
+
+area_mat <- area_mat[-1,]
+area_mat <- make_mat_cleaner(area_mat)
+
+
+table_acc_perc_area <- area_mat %>% 
+  group_by(cb_type_table) %>%
+  dplyr::summarize(
+    area_median = format(round(median(area * 60 * 50),-2),
+                         big.mark=",",
+                         scientific=FALSE) )
+
+# using https://www.nhc.noaa.gov/gccalc.shtml
+# and checking the distance between 31N 37W and 32N 37W and 32N 37W and 32N 38W
+# to get 60 * 50 nm^2 for 1 lat/long square (around the area we are looking at)
+
+
+table_final_ap <- table_acc_perc_pw %>% 
+  left_join(table_acc_perc_un,
+            by = c("cb_type_table" = "cb_type_table")) %>%
+  left_join(table_acc_perc_area,
+            by = c("cb_type_table" = "cb_type_table")) %>% t
+
+table_final_ap_colnames <- table_final_ap[1,]
+table_final_ap_rownames <- rownames(table_final_ap)
+
+table_final_ap <- table_final_ap[-1,]
+colnames(table_final_ap) <- table_final_ap_colnames
+table_final_ap <- cbind(table_final_ap_rownames[-1], table_final_ap)
+colnames(table_final_ap)[1] <- table_final_ap_rownames[1]
+rownames(table_final_ap) = NULL
+table_final_ap[,1] <- c("Median \\textit{Pointwise} Accuracy",
+                "Median \\textit{Uniform} Accuracy",
+                "Median Area ($nm^2$)")
+table_final_ap <- table_final_ap %>% data.frame() %>% rename(" " = "cb_type_table",
+                                             "Kernel Density Estimate"= "Kernel.Density.Estimate",
+                                             "Delta Ball" = "Delta.Ball",
+                                             "Convex Hull" = "Convex.Hull")
+
+table_final_ap <- table_final_ap[,c(1,3,2,5,4)]
+
+
+xtable_ap <- table_final_ap %>% 
+  xtable(align = c("rR{2in}L{.75in}L{1.1in}L{.9in}L{.75in}"),
+         digits = 2,
+         caption = paste("Accuracy and precision of PBs created from 309",
+                         "different starting points, with PBs analyzed across",
+                         "all 4 types of simulated curves. Median pointwise",
+                         "and uniform accuracy as defined in Appendix",
+                         "\\ref{sec:validity_and_effiency} obtained for",
+                         "each PB attempting to capture 100 newly simulated",
+                         "curves from the same distribution that defined",
+                         "the PB. Median area recorded in",
+                         "square nautical miles."),
+         label = "tab:median_prop_captured_and_size_summary")
+
+print(xtable_ap, 
+      table.placement = "h!",
+      include.rownames = FALSE,
+      hline.after = c(-1, -1, 0, 3),
       sanitize.text.function = bold_somerows, 
       #^for some reason we need this - even though not used
-      file = paste0(table_path,"sim_time_compressed.tex"))
+      file = paste0(table_path,"sim_accuracy_compressed.tex"))
+
+
+
+
+
+
