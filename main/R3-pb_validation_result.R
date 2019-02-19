@@ -771,9 +771,9 @@ table_final_ap <- table_final_ap[,c(1,3,2,5,4)]
 xtable_ap <- table_final_ap %>% 
   xtable(align = c("rR{2in}L{.75in}L{1.1in}L{.9in}L{.75in}"),
          digits = 2,
-         caption = paste("Accuracy and precision of PBs created from 309",
+         caption = paste("Accuracy and precision of PBs created from 306",
                          "different starting points, with PBs analyzed across",
-                         "all 4 types of simulated curves. Median pointwise",
+                         "all four types of simulated curves. Median pointwise",
                          "and uniform accuracy as defined in Appendix",
                          "\\ref{sec:validity_and_effiency} obtained for",
                          "each PB attempting to capture 100 newly simulated",
