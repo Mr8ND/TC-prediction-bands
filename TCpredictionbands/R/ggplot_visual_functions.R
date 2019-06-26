@@ -233,8 +233,9 @@ ggvis_delta_ball_contour <- function(output_lines, base_graph = NULL, zoom = 4,
   ... <- unlist(dots)
 
   if (is.null(base_graph)) {
-    latrange <- range(output_lines$lat)
-    longrange <- range(output_lines$long)
+    # clean this up in the future...
+    latrange <- range(output_lines$long)
+    longrange <- range(output_lines$lat)
     
     ocean <- c(left = longrange[1], bottom = latrange[1],
                right = longrange[2], top = latrange[2])

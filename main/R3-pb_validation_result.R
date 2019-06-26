@@ -389,6 +389,60 @@ ggsave(plot = uniform_pb_assessment,
        file = paste0(image_path,"sim_unif_cb_boxplot.png"), device = "png",
        width = 10, height = 6.5, units = "in")
 
+# graphic for ICML workshop submission
+library(tikzDevice)
+
+uniform_pb_assessment_icml <- all_data_uniform_graph %>%
+  filter(sim_type_graph == "Autoregression & Logistic-based Lysis") %>% 
+  ggplot() +
+  geom_boxplot(aes(y = prop_captured_curves,
+                   fill = forcats::fct_relevel(cb_type_graph,
+                                               "Spherical",
+                                               "Kernel Density Estimate",
+                                               "Convex Hull",
+                                               "Delta Ball"),
+                   color = forcats::fct_relevel(cb_type_graph,
+                                                "Spherical",
+                                                "Kernel Density Estimate",
+                                                "Convex Hull",
+                                                "Delta Ball"),
+                   x = factor(num_curves)), alpha = .5,width = .7) +
+  geom_hline(yintercept = .9, linetype = "dashed") +
+  guides(fill = guide_legend(reverse = TRUE),
+         color = guide_legend(reverse = TRUE)) +
+  scale_y_continuous(breaks = c(0,.25,.5,.75,.9,1)) + 
+  labs(x = "Number of Curves Examined",
+       y = "Proportion of Curves Captured",
+       fill = "Prediction Band Type",
+       color = "Prediction Band Type",
+       title = "Average Uniform Containment per Curve")+#,
+       #subtitle = "Simulated Curves from Autoregression and Logistic-based Lysis models") +
+  scale_color_manual(values = as.vector(pb_color_vec[c("bubble_ci", "kde",
+                                                       "convex_hull", "delta_ball")])) +
+  scale_fill_manual(values = as.vector(pb_color_vec[c("bubble_ci", "kde",
+                                                      "convex_hull", "delta_ball")])) +
+  theme_minimal() + 
+  theme(strip.background = element_rect(fill = "grey90", color = NA),
+        plot.title = element_text(hjust = 0.5, size = rel(16/18)),
+        plot.subtitle = element_text(hjust = 0.5, size = rel(12/18)),
+        strip.text.x = element_text(size = rel(10/18)),
+        strip.text.y = element_text(size = rel(10/18)),
+        axis.title = element_text(size = rel(14/18)),
+        axis.text = element_text(size = rel(12/18)), 
+        legend.title = element_text(size = rel(12/18)),
+        legend.text = element_text(size = rel(10/18)),
+        plot.caption = element_text(size = rel(10/18)))
+
+
+tikz(file = paste0(image_path,"sim_unif_cb_boxplot_iclm_focus.tex"), 
+     width = 3.5, height = 2.5)
+print(uniform_pb_assessment_icml)
+dev.off()
+# ggsave(plot = uniform_pb_assessment_icml,
+#        file = paste0(image_path,"sim_unif_cb_boxplot_iclm_focus.png"), 
+#        device = "png", width = 10, height = 6.5, units = "in")
+
+
 # pointwise PB
 
 pointwise_pb_assessment <- all_data_pointwise_graph %>% ggplot() +

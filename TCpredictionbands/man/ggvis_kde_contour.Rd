@@ -5,7 +5,7 @@
 \title{Create ggplot of kde set of contour}
 \usage{
 ggvis_kde_contour(level_contour_list, base_graph = NULL, zoom = 4,
-  color = "pink", ...)
+  color = "pink", maptype = "toner-lite", ...)
 }
 \arguments{
 \item{level_contour_list}{list of data frame of level contours that can be 
@@ -32,6 +32,11 @@ sure to pass a \code{alpha} in to make the object (see
 \item{zoom}{map zoom for \code{\link[ggmap]{ggmap}}}
 
 \item{color}{color of band}
+
+\item{maptype}{map type, options include: terrain, terrain-background, 
+terrain-labels, terrain-lines, toner, toner-2010, toner-2011, 
+toner-background, toner-hybrid, toner-labels, toner-lines, toner-lite, 
+or watercolor.}
 
 \item{...}{interior \code{\link[ggplot2]{geom_path}} or 
 \code{\link{kde_from_tclist}} parameters.}

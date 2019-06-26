@@ -5,7 +5,7 @@
 \title{Visualize delta ball exterior centers (with ggplot)}
 \usage{
 ggvis_delta_ball_contour(output_lines, base_graph = NULL, zoom = 4,
-  color = "pink", ...)
+  color = "pink", maptype = "toner-lite", ...)
 }
 \arguments{
 \item{output_lines}{data frame of exterior lines (not ordered) of the form
@@ -18,6 +18,11 @@ element in the returned list from \code{\link{delta_structure}}.}
 \item{zoom}{map zoom for \code{\link[ggmap]{ggmap}}}
 
 \item{color}{color of band}
+
+\item{maptype}{map type, options include: terrain, terrain-background, 
+terrain-labels, terrain-lines, toner, toner-2010, toner-2011, 
+toner-background, toner-hybrid, toner-labels, toner-lines, toner-lite, 
+or watercolor.}
 
 \item{...}{interior \code{\link[ggplot2]{geom_path}} parameters or 
 also to pass \emph{only} the \code{alpha} input for the 
