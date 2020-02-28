@@ -10,6 +10,9 @@ cache:
 r_packages:
   - covr
 
+before_install: 
+  - cd project
+
 install:
   - R -e 'install.packages("devtools")'
 
