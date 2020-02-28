@@ -29,5 +29,5 @@ Imports:
     stats,
     stringr,
     purrr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: testthat

@@ -4,8 +4,12 @@
 \alias{thirteen_points_listable}
 \title{List of 13 point compressions}
 \usage{
-thirteen_points_listable(list_df, position = 5:6, longlat = TRUE,
-  verbose = TRUE)
+thirteen_points_listable(
+  list_df,
+  position = 5:6,
+  longlat = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{list_df}{list of dfs, where the longlat points are are in the 

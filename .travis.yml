@@ -1,0 +1,20 @@
+language: r
+repos:
+  CRAN: https://cloud.r-project.org
+
+warnings_are_errors: false
+cache: true
+
+
+r_packages:
+  - covr
+
+install:
+  - R -e 'install.packages("devtools")'
+
+script:
+  - R CMD build TCpredictionbands/
+  - R CMD check TCpredictionbands/*tar.gz
+
+after_sucess:
+  - R -e 'covr::codecov()'

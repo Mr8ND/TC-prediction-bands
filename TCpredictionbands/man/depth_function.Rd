@@ -2,7 +2,7 @@
 % Please edit documentation in R/depth_function.R
 \name{depth_function}
 \alias{depth_function}
-\title{Depth calculation}
+\title{Geenens & Nieto-Reyes functional distance-based depth}
 \usage{
 depth_function(dist_matrix)
 }
@@ -14,5 +14,25 @@ depth vector length n with depth values associated with indices in
 dist_matrix
 }
 \description{
-calculates a depth vector using a distance matrix
+Calculates a global distance-based depth vector using a distance matrix.
+Specifically we use Geenens & Nieto-Reyes's global distance-based depth
+defined as:
+}
+\details{
+\eqn{DD(x, \hat{P}) = 1/(n choose 2) * sum_{i!=j} I(d(X_1, X_2) > max(d(X_1,x),
+d(X_2,x)))}
+
+
+This function (renamed as \code{distance_depth_function}) is shared with
+\pkg{timeternR} on github:
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
+}
+\examples{
+dist_mat <- matrix(c(0,   1, 1.5,
+                     1,   0, 2,
+                     1.5, 2, 0   ),
+                   nrow = 3,
+                   byrow = TRUE)
+
+dd_vec <- depth_function(dist_mat) # c(1,0,0)
 }

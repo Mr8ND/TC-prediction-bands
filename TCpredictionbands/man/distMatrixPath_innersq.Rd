@@ -4,8 +4,12 @@
 \alias{distMatrixPath_innersq}
 \title{Calculates the distance matrix Delta between n paths}
 \usage{
-distMatrixPath_innersq(path_mat_list, output_length = "nautical mile",
-  longlat = TRUE, verbose = TRUE)
+distMatrixPath_innersq(
+  path_mat_list,
+  output_length = "nautical mile",
+  longlat = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{path_mat_list}{list of paths (matricies/ dataframes)}

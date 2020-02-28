@@ -1,7 +1,5 @@
 context("Delta Ball Functions")
 
-suppressWarnings(library(TCpredictionbands))
-
 
 #' get_delta function ------------------------------------------------
 
@@ -19,6 +17,58 @@ test_that("Delta is equal to 1", {
   expect_equal(delta_out_temp$mm_delta, 1)
 })
 
+
+test_that("get_delta basic tests", {
+  # static
+  data <- data.frame(x = c(0,1), y = c(0,1))
+  dist_mat <- matrix(c(0,sqrt(2),
+                       sqrt(2),0), byrow = T, nrow = 2)
+  gd_out1 <- get_delta(data)
+  gd_out2 <- get_delta(dist_mat = dist_mat)
+  
+  testthat::expect_equivalent(gd_out1,gd_out2)
+  testthat::expect_equivalent(gd_out1, list("dist_mat" = dist_mat,
+                                            "mm_delta" = sqrt(2)))
+  # static 2
+  data2 <- data.frame(x = c(0, 1, 1, 0), y = c(0, 0, 1, 1))
+  dist_mat2 <- matrix(c(0,1,sqrt(2),1,
+                        1,0,1,sqrt(2),
+                        sqrt(2),1,0,1,
+                        1,sqrt(2),1,0), byrow = T, nrow = 4)
+  gd_out3 <- get_delta(data2)
+  gd_out4 <- get_delta(dist_mat = dist_mat2)
+  
+  testthat::expect_equivalent(gd_out3, gd_out4)
+  testthat::expect_equivalent(gd_out3, list("dist_mat" = dist_mat2,
+                                            "mm_delta" = 1))
+  # error
+  testthat::expect_error(get_delta())
+})
+
+
+#' depth_function ----------------------------------------------------
+test_that("basic test for depth_function", {
+  dist_mat <- matrix(c(0,   1, 1.5,
+                       1,   0, 2,
+                       1.5, 2, 0   ),
+                     nrow = 3,
+                     byrow = TRUE)
+  
+  dd_vec <- depth_function(dist_mat)
+  
+  testthat::expect_equal(dd_vec, c(1,0,0))
+  
+  dist_mat_not_sym <- matrix(c(0,   1, 0,
+                               1,   0, 2,
+                               1.5, 2, 0   ))
+  dist_mat_not_pos <- matrix(c(0,   -1, 1.5,
+                               -1,   0, 2,
+                               1.5, 2, 0   ))
+  
+  testthat::expect_error(depth_function(dist_mat_not_sym))
+  testthat::expect_error(depth_function(dist_mat_not_pos))
+  
+})
 
 #' get_box_points function -------------------------------------------
 

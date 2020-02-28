@@ -5,8 +5,13 @@
 \title{Estimating the CI around a given path and a given level with symmetrical 
 radius}
 \usage{
-bubbleCI(dflist, center_idx, alpha = 0.1, position = 1:2,
-  output_length = "nautical mile")
+bubbleCI(
+  dflist,
+  center_idx,
+  alpha = 0.1,
+  position = 1:2,
+  output_length = "nautical mile"
+)
 }
 \arguments{
 \item{dflist}{List of simulated TCs}

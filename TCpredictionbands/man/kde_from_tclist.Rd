@@ -4,8 +4,13 @@
 \alias{kde_from_tclist}
 \title{Contour and area from TC list}
 \usage{
-kde_from_tclist(dflist, alpha, h_band = NULL, position = 1:2,
-  grid_size = rep(1000, 2))
+kde_from_tclist(
+  dflist,
+  alpha,
+  h_band = NULL,
+  position = 1:2,
+  grid_size = rep(1000, 2)
+)
 }
 \arguments{
 \item{dflist}{list of TC dataframes}

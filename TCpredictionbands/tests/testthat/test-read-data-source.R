@@ -1,7 +1,5 @@
 context("Read Data Source")
 
-suppressWarnings(library(TCpredictionbands))
-
 #' convert_lat ---------------------------------------------------
 
 df_temp_n <- data.frame(rep("10N", 100))

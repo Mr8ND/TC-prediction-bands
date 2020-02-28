@@ -4,8 +4,13 @@
 \alias{calculate_invec_per_method}
 \title{Prediction Band Inclusion on Simulated TCs}
 \usage{
-calculate_invec_per_method(hur_out_obj, sim_hur_list, position = 1:2,
-  unit_measure = "nautical mile", verbose = FALSE)
+calculate_invec_per_method(
+  hur_out_obj,
+  sim_hur_list,
+  position = 1:2,
+  unit_measure = "nautical mile",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{hur_out_obj}{Object with the prediction bands for each of the method. Assumed to be 

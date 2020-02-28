@@ -4,9 +4,16 @@
 \alias{ggvis_bubble_data}
 \title{Plot lines for Spherical PB}
 \usage{
-ggvis_bubble_data(bubble_plot_data, base_graph = NULL, centers = FALSE,
-  connect = TRUE, color = "pink", linewidth = 1, zoom = 4,
-  maptype = "toner-lite", ...)
+ggvis_bubble_data(
+  bubble_plot_data,
+  base_graph = NULL,
+  centers = FALSE,
+  connect = TRUE,
+  color = "pink",
+  linewidth = 1,
+  zoom = 4,
+  ...
+)
 }
 \arguments{
 \item{bubble_plot_data}{list of center points, positive and negative 
@@ -28,11 +35,6 @@ must include a \code{alpha} in \code{...} parameters.}}
 \item{linewidth}{width of line}
 
 \item{zoom}{map zoom for \code{\link[ggmap]{ggmap}}}
-
-\item{maptype}{map type, options include: terrain, terrain-background, 
-terrain-labels, terrain-lines, toner, toner-2010, toner-2011, 
-toner-background, toner-hybrid, toner-labels, toner-lines, toner-lite, 
-or watercolor.}
 
 \item{...}{Interior \code{\link[ggplot2]{geom_path}} or the 
 \code{bubble_ci_from_tclist} parameters \emph{(Note: at this time,

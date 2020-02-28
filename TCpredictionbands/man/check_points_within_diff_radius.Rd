@@ -5,8 +5,13 @@
 \title{Checks if points are within at least 1 ball from the bubble CI (different 
 radii)}
 \usage{
-check_points_within_diff_radius(tc_bubble_structure, df_points,
-  position = 1:2, unit_measure = "nautical mile", verbose = TRUE)
+check_points_within_diff_radius(
+  tc_bubble_structure,
+  df_points,
+  position = 1:2,
+  unit_measure = "nautical mile",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{tc_bubble_structure}{Bubble CI list with centers, radius, positive 

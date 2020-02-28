@@ -1,6 +1,5 @@
 context("KDE functions")
 
-suppressWarnings(library(TCpredictionbands))
 suppressWarnings(library(ks))
 
 #' flatten_df function -------------------------------------------

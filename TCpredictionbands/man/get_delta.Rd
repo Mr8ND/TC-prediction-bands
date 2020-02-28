@@ -4,7 +4,7 @@
 \alias{get_delta}
 \title{Find delta for covering}
 \usage{
-get_delta(data, dist_mat = NULL)
+get_delta(data = NULL, dist_mat = NULL)
 }
 \arguments{
 \item{data}{continuous data frame of individual points (in each row)}
@@ -20,4 +20,8 @@ get_delta(data, dist_mat = NULL)
 \description{
 Find the minimum distance (delta) such that all points are 
 within delta of at least one other point.
+}
+\details{
+This function is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }

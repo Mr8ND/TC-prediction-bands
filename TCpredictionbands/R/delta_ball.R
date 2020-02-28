@@ -2,6 +2,10 @@
 #' 
 #' @description Find the minimum distance (delta) such that all points are 
 #' within delta of at least one other point.
+#' 
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param data continuous data frame of individual points (in each row)
 #' @param dist_mat distance matrix, calculated otherwise via euclidean distance
@@ -12,15 +16,17 @@
 #' \item{mm_delta}{the minimum distance (delta)}
 #' }
 #' @export
-get_delta <- function(data, dist_mat = NULL){
-
-  if (is.null(dist_mat)) {
-      dist_mat <- as.matrix(stats::dist(data))
+get_delta <- function(data = NULL, dist_mat = NULL){
+  if (is.null(dist_mat) & is.null(data)) {
+    stop("need to provide either data or dist_mat")
   }
-  diag(dist_mat) <- max(dist_mat)
-  mm_delta <- apply(dist_mat, MARGIN = 1, min ) %>% max
   
-  # correct diagonals:
+  if (is.null(dist_mat)) {
+    dist_mat <- as.matrix(stats::dist(data))
+  }
+  
+  diag(dist_mat) <- max(dist_mat)
+  mm_delta <- apply(dist_mat, MARGIN = 1, min) %>% max
   diag(dist_mat) <- 0
   return(list(dist_mat = dist_mat, mm_delta = mm_delta))
 }

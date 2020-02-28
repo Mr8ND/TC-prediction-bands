@@ -4,8 +4,7 @@
 \alias{ggvis_paths}
 \title{Visualize TC Paths (with \code{ggplot})}
 \usage{
-ggvis_paths(data_out, zoom = 4, base_graph = NULL, alpha = 0.01,
-  maptype = "toner-list", ...)
+ggvis_paths(data_out, zoom = 4, base_graph = NULL, alpha = 0.01, ...)
 }
 \arguments{
 \item{data_out}{data frame with correct path information same as outputted 
@@ -22,11 +21,6 @@ documentation for \code{\link{data_plot_paths_basic}} for details.}}
 (created from data_out otherwise)}
 
 \item{alpha}{opacity of curves}
-
-\item{maptype}{map type, options include: terrain, terrain-background, 
-terrain-labels, terrain-lines, toner, toner-2010, toner-2011, 
-toner-background, toner-hybrid, toner-labels, toner-lines, toner-lite, 
-or watercolor.}
 
 \item{...}{can pass \code{position} values if desirable}
 }

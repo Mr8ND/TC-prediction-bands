@@ -1,20 +1,37 @@
-#' Depth calculation
-#' 
-#' @description
-#' calculates a depth vector using a distance matrix
+#' Geenens & Nieto-Reyes functional distance-based depth
+#'
+#' Calculates a global distance-based depth vector using a distance matrix.
+#' Specifically we use Geenens & Nieto-Reyes's global distance-based depth
+#' defined as:
+#'
+#' \eqn{DD(x, \hat{P}) = 1/(n choose 2) * sum_{i!=j} I(d(X_1, X_2) > max(d(X_1,x),
+#' d(X_2,x)))}
+#'
+#' @details
+#' This function (renamed as \code{distance_depth_function}) is shared with
+#' \pkg{timeternR} on github:
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param dist_matrix  a n x n square positive symmetric matrix
 #'
 #' @return depth vector length n with depth values associated with indices in 
 #' dist_matrix
 #' @export
+#' 
+#' @examples 
+#' dist_mat <- matrix(c(0,   1, 1.5,
+#'                      1,   0, 2,
+#'                      1.5, 2, 0   ),
+#'                    nrow = 3,
+#'                    byrow = TRUE)
+#'
+#' dd_vec <- depth_function(dist_mat) # c(1,0,0)
 depth_function <- function(dist_matrix){
 
   if (nrow(dist_matrix) != ncol(dist_matrix) | 
      any(t(dist_matrix) != dist_matrix) | 
      any(dist_matrix < 0)) {
-    print("this is not a positive symmetric square matrix")
-    return(NA)
+    stop("your dist_mat is not a positive symmetric square matrix")
   }
   
   N <- nrow(dist_matrix)
@@ -41,7 +58,10 @@ depth_function <- function(dist_matrix){
       })
       }) %>% t
     
-    depth[obs_index] <- mean(sub_matrix > max_matrix)
+    depth[obs_index] <- mean((sub_matrix > max_matrix)[
+      row(sub_matrix)!=col(sub_matrix)
+      #^ignoring the diagonal values
+      ])
   }
   return(depth)
 }
@@ -88,6 +108,10 @@ selected_paths_to_df <- function(data_list, desired_index = NULL,
 
 
 #' Get deepest curves' points in a data frame
+#'
+#' @details This function (renamed as \code{ depth_curves_to_points.list}) is
+#' shared with \pkg{timeternR} on github:
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param data_list list of hurricanes
 #' @param alpha for prediction band (related to depth). Takes value in (0, 1.0), 

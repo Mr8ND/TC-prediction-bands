@@ -4,8 +4,13 @@
 \alias{color_function}
 \title{color function setup}
 \usage{
-color_function(weights_in, test_color_power = 1/3,
-  test_color_low = "white", test_color_high = "red", n_breaks = 10)
+color_function(
+  weights_in,
+  test_color_power = 1/3,
+  test_color_low = "white",
+  test_color_high = "red",
+  n_breaks = 10
+)
 }
 \arguments{
 \item{weights_in}{standardized probability weights (between 0 and 1)}

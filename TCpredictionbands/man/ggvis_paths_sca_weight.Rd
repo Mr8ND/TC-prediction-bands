@@ -4,9 +4,15 @@
 \alias{ggvis_paths_sca_weight}
 \title{Visualize the TC paths with weights colored}
 \usage{
-ggvis_paths_sca_weight(data_out, zoom = 4, test_color_power = 1/3,
-  test_color_low = "white", test_color_high = "red", n_breaks = 10,
-  base_graph = NULL)
+ggvis_paths_sca_weight(
+  data_out,
+  zoom = 4,
+  test_color_power = 1/3,
+  test_color_low = "white",
+  test_color_high = "red",
+  n_breaks = 10,
+  base_graph = NULL
+)
 }
 \arguments{
 \item{data_out}{data frame with correct path information same as outputed 

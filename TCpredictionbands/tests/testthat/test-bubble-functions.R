@@ -1,11 +1,22 @@
 context("Bubble Functions")
 
-library(TCpredictionbands)
-
 #' rearrange_dflist_bubble function  ---------------------------------------
 
-internal_data <- TCpredictionbands:::internal_data
-sample_sim <- internal_data[["sample_sim"]]
+internal_data <- try(TCpredictionbands:::internal_data,silent = T)
+
+if (inherits(internal_data, "try-error")) {
+  sample_sim <- TCpredictionbands::sample_sim
+  sample_tc <- TCpredictionbands::sample_tc
+  sample_tc_name <- TCpredictionbands::sample_tc_name
+  sample_output_pipeline <- TCpredictionbands::sample_output_pipeline
+} else {
+  sample_sim <- internal_data[["sample_sim"]]
+  sample_tc <- internal_data[["sample_tc"]]
+  sample_tc_name <- internal_data[["sample_tc_name"]]
+  sample_output_pipeline <- internal_data[["sample_output_pipeline"]]
+  
+}
+
 center_idx <- 100
 sample_dflist_bubble <- TCpredictionbands:::rearrange_dflist_bubble(
                           sample_sim, center_idx)

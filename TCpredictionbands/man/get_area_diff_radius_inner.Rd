@@ -5,9 +5,15 @@
 \title{Inner function to get approximate area/ proportion of observations in for 
 pointwise bubble CB}
 \usage{
-get_area_diff_radius_inner(tc_bubble_structure, query, size = 1,
-  position = 1:2, alpha = 0.05, unit_measure = "nautical mile",
-  verbose = TRUE)
+get_area_diff_radius_inner(
+  tc_bubble_structure,
+  query,
+  size = 1,
+  position = 1:2,
+  alpha = 0.05,
+  unit_measure = "nautical mile",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{tc_bubble_structure}{Bubble CI list with centers, radius, positive 
