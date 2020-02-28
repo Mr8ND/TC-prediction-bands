@@ -6,16 +6,13 @@ warnings_are_errors: false
 cache:
   packages: true
 
-
-r_packages:
-  - covr
-
 before_install: 
   - cd TCpredictionbands
 
 install:
   - R -e 'install.packages("devtools")'
-
+  - R -e 'devtools::install_deps(dep = T, upgrade = "never")'
+  - R -e 'install.packages("covr")'
 script:
   - R CMD build .
   - R CMD check *tar.gz
