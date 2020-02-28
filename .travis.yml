@@ -11,14 +11,14 @@ r_packages:
   - covr
 
 before_install: 
-  - cd project
+  - cd TCpredictionbands
 
 install:
   - R -e 'install.packages("devtools")'
 
 script:
-  - R CMD build TCpredictionbands/
-  - R CMD check TCpredictionbands/*tar.gz
+  - R CMD build .
+  - R CMD check *tar.gz
 
 after_sucess:
-  - R -e 'covr::codecov(path = "TCpredictionbands/")'
+  - R -e 'covr::codecov()'
