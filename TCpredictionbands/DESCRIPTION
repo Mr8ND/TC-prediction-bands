@@ -6,7 +6,7 @@ Authors@R: c(
     person("Robin", "Dunn", email = "robind@stat.cmu.edu", role = c("aut")),
     person("Nic", "Dalmasso", email = "ndalmass@stat.cmu.edu", role = c("aut", "cre")))
 Description: What the package does (one paragraph).
-Depends: R (>= 3.4.3)
+Depends: R (>= 3.4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -30,4 +30,6 @@ Imports:
     stringr,
     purrr
 RoxygenNote: 7.0.2
-Suggests: testthat
+Suggests: 
+    devtools,
+    testthat
