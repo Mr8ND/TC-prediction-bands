@@ -4,7 +4,7 @@
 \alias{steps_along_2d_line}
 \title{Create n equidistance points}
 \usage{
-steps_along_2d_line(line, n_steps = 1000)
+steps_along_2d_line(line, n_steps = 100)
 }
 \arguments{
 \item{line}{2 x 2 matrix of edge points of line}
@@ -12,7 +12,7 @@ steps_along_2d_line(line, n_steps = 1000)
 \item{n_steps}{integer number of steps (n)}
 }
 \value{
-n x 2 matrix with points on path
+(n + 1) x 2 matrix with points on path
 }
 \description{
 Inner Function to create n equidistant points along a line

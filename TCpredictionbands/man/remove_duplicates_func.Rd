@@ -8,7 +8,7 @@ remove_duplicates_func(data_raw)
 }
 \arguments{
 \item{data_raw}{data points of observations 
-expected lat, long column names}
+expected lat, long column names in the first 2 positions}
 }
 \value{
 data without duplicates

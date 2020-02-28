@@ -218,7 +218,7 @@ remove_delta_off_line <- function(line, delta){
 #' @param line 2 x 2 matrix of edge points of line
 #' @param n_steps integer number of steps (n)
 #'
-#' @return n x 2 matrix with points on path
+#' @return (n + 1) x 2 matrix with points on path
 steps_along_2d_line <- function(line, n_steps = 100){
   # (inner function) finds equidistance points along a line
   len   <- stats::dist(line)

@@ -4,7 +4,7 @@
 \alias{delta_ball_wrapper}
 \title{Run delta ball analysis}
 \usage{
-delta_ball_wrapper(data_raw, n_steps = 1000, remove_duplicates = F)
+delta_ball_wrapper(data_raw, n_steps = 100, remove_duplicates = F)
 }
 \arguments{
 \item{data_raw}{data frame with center points of balls}

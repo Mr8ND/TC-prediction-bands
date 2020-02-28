@@ -1,7 +1,7 @@
 context("Delta Ball Functions")
 
 
-#' get_delta function ------------------------------------------------
+# get_delta function ------------------------------------------------
 
 df_temp <- data.frame(cbind(c(0, 1, 1, 0), c(0, 0, 1, 1)))
 # square (0,0), (1,0), (1,1), (0,1) - area should be 1
@@ -46,7 +46,7 @@ test_that("get_delta basic tests", {
 })
 
 
-#' depth_function ----------------------------------------------------
+# depth_function ----------------------------------------------------
 test_that("basic test for depth_function", {
   dist_mat <- matrix(c(0,   1, 1.5,
                        1,   0, 2,
@@ -70,7 +70,7 @@ test_that("basic test for depth_function", {
   
 })
 
-#' get_box_points function -------------------------------------------
+# get_box_points function -------------------------------------------
 
 box_point_temp <- TCpredictionbands::get_box_points(df_temp, n=200)
 test_that("Dimension is correct and size is correct", {
@@ -87,7 +87,7 @@ test_that("Dimension is correct and size is correct", {
 })
 
 
-#' remove_duplicates_func --------------------------------------------
+# remove_duplicates_func --------------------------------------------
 df_temp_dup <- data.frame(cbind(rep(1, 100), rep(5, 100)))
 names(df_temp_dup) <- c("lat", "long")
 
@@ -100,7 +100,7 @@ test_that("Dimension and values are correct", {
 })
 
 
-#' remove_delta_off_line_tests ----------------------------------------
+# remove_delta_off_line_tests ----------------------------------------
 
 line <- data.frame(x = c(0,1),
                    y = c(0,0)) %>%
@@ -128,6 +128,32 @@ expected_out <- data.frame(x = c(.25,.75),
                            y = c(.25,.75)) %>%
   as.matrix()
 
-test_that("remove_delta_off_line tests - basic in both dimensions", {
+test_that("steps_along_2d_line tests - basic in both dimensions", {
 testthat::expect_equal(out, expected_out)
 })
+
+
+# remove_delta_off_line tests ----------------------------------------
+
+#straight line
+my_mat <- data.frame(x = c(1,20), y = c(1,20)) %>% 
+  as.matrix()
+test_that("basic tests for steps_along_2d_line - 45 degree line",{
+  for (num_splits in sample(5:25,size = 5)){
+    my_df_compression <- steps_along_2d_line(my_mat, n_steps = num_splits)
+    
+    testthat::expect_equal(nrow(my_df_compression), num_splits + 1)
+    
+    testthat::expect_equal(diff(my_df_compression[,1]),
+                           rep(19/(num_splits), num_splits))
+    
+    testthat::expect_equal(my_df_compression[,1], my_df_compression[,2])
+  }
+})
+
+# default n_steps
+test_that(paste("basic tests for steps_along_2d_line - 45 degree line,",
+                "default num steps"),{
+  testthat::expect_equal(dim(steps_along_2d_line(my_mat)), c(101,2))
+})
+
