@@ -3,7 +3,8 @@ repos:
   CRAN: https://cloud.r-project.org
 
 warnings_are_errors: false
-cache: true
+cache:
+  packages: true
 
 
 r_packages:
