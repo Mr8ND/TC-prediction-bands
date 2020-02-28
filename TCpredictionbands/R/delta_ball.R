@@ -278,7 +278,8 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
     if (stats::dist(l) > delta * 2) {
       l_inner <- remove_delta_off_line(l, delta)
       points_along <- steps_along_2d_line(l_inner,n_steps)
-      neighbor <- RANN::nn2(data = data_raw, query = points_along,
+      neighbor <- RANN::nn2(data = as.data.frame(data_raw), 
+                            query = points_along,
                       k = 1, treetype = "kd")
       if (!all(neighbor$nn.dists < delta)) {
         removed_mat[(2*idx - 1):(2*idx),] <- l

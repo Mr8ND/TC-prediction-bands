@@ -117,6 +117,7 @@ test_that("remove_delta_off_line tests - basic in just x", {
   testthat::expect_equal(out, expected_out)
 })
 
+
 line <- data.frame(x = c(0,1),
                    y = c(0,1)) %>%
   as.matrix()
@@ -157,3 +158,64 @@ test_that(paste("basic tests for steps_along_2d_line - 45 degree line,",
   testthat::expect_equal(dim(steps_along_2d_line(my_mat)), c(101,2))
 })
 
+
+# get_lines tests ----------------------------------------------------
+
+test_that("get_lines test", {
+  # basic example
+  data <- data.frame(x = c(0,1,1),
+                     y = c(1,0,1)) 
+  sp::coordinates(data) <- names(data)[1:2]
+  dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,
+                                                   tolerance = 0)
+  
+  expected_full_df_template <- data.frame(x = c(0,1,0,1,1,1),
+                                          y = c(1,1,1,0,0,1),
+                                          idx = rep(1:3, each = 2))
+  
+  ## distance between = .25 (remove all lines)
+  which_lines_none <- get_lines(dtri_data_edges, data, delta = .25)
+  
+  ### lines_mat should be all NAs
+  testthat::expect_true(which_lines_none$lines_mat %>% 
+                          dplyr::select(- .data$idx) %>% is.na %>%
+                          all)
+  ### removed_mat should be all of data
+  testthat::expect_true(!(which_lines_none$removed_mat %>% 
+                            dplyr::select(- .data$idx) %>% is.na %>%
+                            all))
+  testthat::expect_equal(which_lines_none$removed_mat,
+                         expected_full_df_template)
+  
+  
+  ## distance between = 1/2 (removes 1 line)
+  which_lines_part <- get_lines(dtri_data_edges, data, delta = .5)
+  
+  ### lines_mat have 1 set NA
+  expected_lines_mat <- expected_full_df_template
+  expected_lines_mat[3:4, c("x", "y")] <- NA
+  testthat::expect_equal(which_lines_part$lines_mat,
+                         expected_lines_mat)
+  
+  ### removed_mat should only contain the (0,1)-(1,0) line
+  expected_lines_mat <- expected_full_df_template
+  expected_lines_mat[c(1:2, 5:6), c("x", "y")] <- NA
+  
+  testthat::expect_equal(which_lines_part$removed_mat,
+                         expected_lines_mat)
+  
+  # distance between = sqrt(2)/2 (remove 0 lines)
+  which_lines_all <- get_lines(dtri_data_edges, data, delta = sqrt(2)/2)
+  
+  ### lines_mat should be all of data
+  testthat::expect_true(!(which_lines_all$lines_mat %>% 
+                            dplyr::select(- .data$idx) %>% is.na %>%
+                            all))
+  testthat::expect_equal(which_lines_all$lines_mat,
+                         expected_full_df_template)
+  ### removed_mat should be NAs
+  testthat::expect_true(which_lines_all$removed_mat %>% 
+                          dplyr::select(- .data$idx) %>% is.na %>%
+                          all)
+  
+})
