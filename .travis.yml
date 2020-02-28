@@ -11,7 +11,7 @@ before_install:
 
 install:
   - R -e 'install.packages("devtools")'
-  - R -e 'devtools::install_deps(dep = T, upgrade = "never")'
+  - R -e 'devtools::install_deps(dep = T)'
   - R -e 'install.packages("covr")'
 script:
   - R CMD build .

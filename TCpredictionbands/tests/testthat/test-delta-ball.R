@@ -99,3 +99,35 @@ test_that("Dimension and values are correct", {
   expect_equal(dup_removed_df[1,2], 5)
 })
 
+
+#' remove_delta_off_line_tests ----------------------------------------
+
+line <- data.frame(x = c(0,1),
+                   y = c(0,0)) %>%
+  as.matrix()
+
+delta = 1/4
+
+out <- remove_delta_off_line(line, delta)
+expected_out <- data.frame(x = c(.25,.75),
+                           y = c(0,0)) %>%
+  as.matrix()
+
+test_that("remove_delta_off_line tests - basic in just x", {
+  testthat::expect_equal(out, expected_out)
+})
+
+line <- data.frame(x = c(0,1),
+                   y = c(0,1)) %>%
+  as.matrix()
+
+delta = sqrt(2)/4
+
+out <- remove_delta_off_line(line, delta)
+expected_out <- data.frame(x = c(.25,.75),
+                           y = c(.25,.75)) %>%
+  as.matrix()
+
+test_that("remove_delta_off_line tests - basic in both dimensions", {
+testthat::expect_equal(out, expected_out)
+})

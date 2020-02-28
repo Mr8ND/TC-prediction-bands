@@ -219,7 +219,7 @@ remove_delta_off_line <- function(line, delta){
 #' @param n_steps integer number of steps (n)
 #'
 #' @return n x 2 matrix with points on path
-steps_along_2d_line <- function(line, n_steps = 1000){
+steps_along_2d_line <- function(line, n_steps = 100){
   # (inner function) finds equidistance points along a line
   len   <- stats::dist(line)
   diffs <- diff(line)
@@ -308,7 +308,7 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
 #' algorithms)
 #'
 #' @param data_raw data points of observations 
-#' expected lat, long column names
+#' expected lat, long column names in the first 2 positions
 #'
 #' @return data without duplicates
 remove_duplicates_func <- function(data_raw){
@@ -342,7 +342,7 @@ remove_duplicates_func <- function(data_raw){
 #'
 #' @return data frame of exterior lines (not ordered)
 #' @export
-delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
+delta_ball_wrapper <- function(data_raw, n_steps = 100, remove_duplicates = F){
   
   if (remove_duplicates) {
     data_raw <- remove_duplicates_func(data_raw)
@@ -361,7 +361,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   # create correct edges 
   dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,tolerance = 0)
   
-  lines_info <- get_lines(dtri_data_edges, data_raw, delta, n_steps = 100)
+  lines_info <- get_lines(dtri_data_edges, data_raw, delta, n_steps = n_steps)
   
   desired_lines <- lines_info$lines_mat
   keep <- desired_lines %>% apply(MARGIN = 1, 
