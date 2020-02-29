@@ -15,5 +15,9 @@ remove_delta_off_line(line, delta)
 2 x 2 matrix of edges that are shrunk
 }
 \description{
-Inner function to remove delta length from both sides of a line
+inner function to remove delta length from both sides of a line
+}
+\details{
+This function is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }

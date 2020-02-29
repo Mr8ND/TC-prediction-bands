@@ -29,3 +29,7 @@ with the union of balls.)}
 Figure out which edges in the delaunay diagram are within the 
 union of balls
 }
+\details{
+This function is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
+}

@@ -15,3 +15,7 @@ a matrix (n x 3) with strings of locations of 3 points in triangle
 \description{
 Makes triangle matrix for points in matrix
 }
+\details{
+This function is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
+}

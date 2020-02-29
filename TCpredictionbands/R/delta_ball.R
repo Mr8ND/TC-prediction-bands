@@ -123,6 +123,11 @@ get_area <- function(data, delta, n = 10000, alpha = .05){
 #' 
 #' @description Makes triangle matrix for points in matrix 
 #'
+#'@details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#' 
+#'
 #' @param dtri_data_tri sp object with triangles (n triangles)
 #'
 #' @return a matrix (n x 3) with strings of locations of 3 points in triangle 
@@ -147,14 +152,18 @@ get_tri_matrix <- function(dtri_data_tri){
 #' @description Remove triangles from tuple matrix that have 1 or more edge that
 #' needs to be removed
 #'
-#' TODO: this function needs to be cleaned up
-#'
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#' 
 #' @param tuples_of_tri data frame with tuples of triangle edges and 
 #' triangle index
 #' @param removed_mat edges to be removed
 #'
 #' @return data frame with tuples of triangle not removed
 remove_incomplete_tri <- function(tuples_of_tri, removed_mat){
+  
+  first <- second <- x <- y <- idx <- NULL
   
   # removes triangles for tuples data frame that have an edge removed
   removed_mat <- removed_mat[apply(removed_mat, 1,
@@ -169,11 +178,11 @@ remove_incomplete_tri <- function(tuples_of_tri, removed_mat){
   }
   
   removed_values_dat <- removed_mat %>%
-    dplyr::group_by(.data$idx) %>%
+    dplyr::group_by(idx) %>%
     dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
                      second = paste0("(",x[2],",", y[2],")"),
-                     combo = paste0(.data$first,"~",.data$second),
-                     combo2 = paste0(.data$second,"~",.data$first))
+                     combo = paste0(first,"~",second),
+                     combo2 = paste0(second,"~",first))
   
   removed_values_single <- c(removed_values_dat$combo,
                              removed_values_dat$combo2)
@@ -189,8 +198,12 @@ remove_incomplete_tri <- function(tuples_of_tri, removed_mat){
 
 #' Shorten line by delta on both sides
 #' 
-#' @description Inner function to remove delta length from both sides of a line
+#' @description inner function to remove delta length from both sides of a line
 #'
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#' 
 #' @param line 2 x 2 matrix of edge points of line
 #' @param delta numeric delta to be subtracted
 #'
@@ -248,6 +261,10 @@ steps_along_2d_line <- function(line, n_steps = 100){
 #' 
 #' @description Figure out which edges in the delaunay diagram are within the 
 #' union of balls
+#'
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param delaunay_tri_data sp data of delaunay triangles lines
 #'   (sp::SpatialLines)
@@ -348,6 +365,10 @@ remove_duplicates_func <- function(data_raw){
 #'   and return a set of lines that create a "boundary" of shorts. Intuition
 #'   from "Computing Polygonal Surfaces from Unions of Balls" by Tam and
 #'   Heidrich was used in this function.
+#'
+#'#' @details
+#' This function (renamed as \code{inner_delta_ball_wrapper}) is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param data_raw data frame with center points of balls
 #' @param n_steps number of equidistance points along the line, past delta on

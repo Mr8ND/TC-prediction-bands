@@ -28,6 +28,10 @@ Run delta-ball analysis to obtain an outline points for
   and return a set of lines that create a "boundary" of shorts. Intuition
   from "Computing Polygonal Surfaces from Unions of Balls" by Tam and
   Heidrich was used in this function.
+
+#' @details
+This function (renamed as \code{inner_delta_ball_wrapper}) is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }
 \details{
 \strong{See comment at bottom of function: this function I think does the 

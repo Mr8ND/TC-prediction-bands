@@ -18,6 +18,8 @@ data frame with tuples of triangle not removed
 \description{
 Remove triangles from tuple matrix that have 1 or more edge that
 needs to be removed
-
-TODO: this function needs to be cleaned up
+}
+\details{
+This function is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }
