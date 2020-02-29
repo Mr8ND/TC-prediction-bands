@@ -246,7 +246,8 @@ steps_along_2d_line <- function(line, n_steps = 100){
 #' @description Figure out which edges in the delaunay diagram are within the 
 #' union of balls
 #'
-#' @param delaunay_tri_data sp data of delaunay triangles
+#' @param delaunay_tri_data sp data of delaunay triangles lines
+#'   (sp::SpatialLines)
 #' @param data_raw data frame with center points of balls 
 #' @param delta fixed radius of all the balls 
 #' @param n_steps number of equidistance points along the line, past delta 

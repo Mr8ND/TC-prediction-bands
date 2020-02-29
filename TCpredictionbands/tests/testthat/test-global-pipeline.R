@@ -8,20 +8,11 @@ true_curve_conversion_function <- function(df){
   return(output_df)
 }
 
-internal_data <- try(TCpredictionbands:::internal_data,silent = T)
+sample_sim <- TCpredictionbands::sample_sim
+sample_tc <- TCpredictionbands::sample_tc
+sample_tc_name <- TCpredictionbands::sample_tc_name
+sample_output_pipeline <- TCpredictionbands::sample_output_pipeline
 
-if (inherits(internal_data, "try-error")) {
-  sample_sim <- TCpredictionbands::sample_sim
-  sample_tc <- TCpredictionbands::sample_tc
-  sample_tc_name <- TCpredictionbands::sample_tc_name
-  sample_output_pipeline <- TCpredictionbands::sample_output_pipeline
-} else {
-  sample_sim <- internal_data[["sample_sim"]]
-  sample_tc <- internal_data[["sample_tc"]]
-  sample_tc_name <- internal_data[["sample_tc_name"]]
-  sample_output_pipeline <- internal_data[["sample_output_pipeline"]]
-  
-}
 # for now:
 names(sample_output_pipeline) <- "AL032009"
 

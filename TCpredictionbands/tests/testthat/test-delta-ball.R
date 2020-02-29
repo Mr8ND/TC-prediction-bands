@@ -219,3 +219,41 @@ test_that("get_lines test", {
                           all)
   
 })
+
+
+# get_tri_matrix tests -----------------------------------------------
+
+test_that("test get_tri_matrix - basic examples", {
+  # basic example, single triangle
+  data <- data.frame(x = c(0,1,1),
+                     y = c(1,0,1))
+  sp::coordinates(data) <- names(data)[1:2]
+  dtri_data_tri <- rgeos::gDelaunayTriangulation(data, onlyEdges = F,
+                                                 tolerance = 0)
+  
+  tri_strings <- get_tri_matrix(dtri_data_tri)
+  
+  testthat::expect_true(setequal(tri_strings[1,], 
+                                 c("(0,1)", "(1,0)", "(1,1)")))
+  
+  # basic example, 2 triangles
+  data <- data.frame(x = c(0,0,1,1),
+                     y = c(0,1,0,1))
+  sp::coordinates(data) <- names(data)[1:2]
+  dtri_data_tri <- rgeos::gDelaunayTriangulation(data, onlyEdges = F,
+                                                 tolerance = 0)
+  
+  tri_strings <- get_tri_matrix(dtri_data_tri)
+  
+  one_order <- rep(F,2)
+  other_order <- rep(F,2)
+  
+  tri_list <- list(c("(0,1)", "(1,0)", "(1,1)"),
+                   c("(0,1)", "(1,0)", "(0,0)"))
+  
+  for (i in 1:2){
+    one_order[i] <- setequal(tri_strings[i,], tri_list[[i]])
+    other_order[i] <- setequal(tri_strings[i,], tri_list[[3-i]])
+  }
+  testthat::expect_true(all(one_order) | all(other_order))
+})

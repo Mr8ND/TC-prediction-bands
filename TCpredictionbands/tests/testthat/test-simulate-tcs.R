@@ -262,14 +262,8 @@ for (auto_ind in tf) {
 }
 
 # Obtaining the stored simulations
-internal_data <- try(TCpredictionbands:::internal_data,silent = T)
+stored_test_sims <- TCpredictionbands::test_sims
 
-if (inherits(internal_data, "try-error")) {
-  stored_test_sims <- TCpredictionbands::test_sims
-  } else {
-  stored_test_sims <- internal_data[["test_sims"]]
-  
-}
 
 
 
