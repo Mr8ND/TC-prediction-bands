@@ -134,7 +134,7 @@ testthat::expect_equal(out, expected_out)
 })
 
 
-# remove_delta_off_line tests ----------------------------------------
+# steps_along_2d_line tests ----------------------------------------
 
 #straight line
 my_mat <- data.frame(x = c(1,20), y = c(1,20)) %>% 
@@ -256,4 +256,213 @@ test_that("test get_tri_matrix - basic examples", {
     other_order[i] <- setequal(tri_strings[i,], tri_list[[3-i]])
   }
   testthat::expect_true(all(one_order) | all(other_order))
+})
+
+
+# remove_incomplete_tri tests ----------------------------------------
+test_that("remove_incomplete_tri", {
+  n_steps = 100
+  ### ----------------------
+  # basic example, 2 triangles - all triangles lost
+  data <- data.frame(x = c(0,0,1,1),
+                     y = c(0,1,0,1))
+  sp::coordinates(data) <- names(data)[1:2]
+  # interior lines lost (aka between (0,1)-(1,0))
+  # -> all triangles are lost
+  delta <- 1/2
+  
+  dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,
+                                                   tolerance = 0)
+  
+  lines_info <- get_lines(dtri_data_edges,
+                          data,
+                          delta,
+                          n_steps = n_steps)
+  desired_lines <- lines_info$lines_mat
+  keep <- desired_lines %>% apply(MARGIN = 1,
+                                  function(row) sum(is.na(row)) == 0)
+  desired_lines <- desired_lines[keep,]
+  
+  removed_mat <- lines_info$removed_mat
+  
+  # string representation of nodes and edges
+  nodes <- paste0("(",desired_lines$x, ",", desired_lines$y, ")")
+  edge_mat <- matrix(c(nodes[seq(from = 1,to = length(nodes),by = 2)],
+                       nodes[seq(from = 2,to = length(nodes),by = 2)]),
+                     ncol = 2) %>%
+    data.frame() %>%
+    dplyr::mutate(X1 = as.character(X1),
+                  X2 = as.character(X2),
+                  id = desired_lines$idx[seq(from = 1,to = length(nodes),by = 2)])
+  
+  # get DT triangles
+  dtri_data_tri <- rgeos::gDelaunayTriangulation(data, tolerance = 0)
+  tri_matrix <- get_tri_matrix(dtri_data_tri)
+  
+  tuples_of_tri <- data.frame(rbind(tri_matrix[,c(1,2)],
+                                    tri_matrix[,c(1,3)],
+                                    tri_matrix[,c(2,3)],
+                                    # both directions
+                                    tri_matrix[,c(2,1)],
+                                    tri_matrix[,c(3,1)],
+                                    tri_matrix[,c(3,2)]),
+                              stringsAsFactors = F
+  ) %>%
+    dplyr::mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
+  
+  tuples_of_tri <- remove_incomplete_tri(tuples_of_tri = tuples_of_tri,
+                                         removed_mat = removed_mat)
+  
+  # tests
+  testthat::expect_equal(length(unique(tuples_of_tri$X1)), 0)
+  testthat::expect_equal(dim(tuples_of_tri), c(0, 4))
+  testthat::expect_equal(length(unique(tuples_of_tri$idx_tri)), 0)
+  
+  ### ----------------------
+  # basic example, 2 triangles - 0 triangles lost
+  data <- data.frame(x = c(0,0,1,1),
+                     y = c(0,1,0,1))
+  sp::coordinates(data) <- names(data)[1:2]
+  # interior lines lost (aka between (0,1)-(1,0))
+  # -> all triangles are lost
+  delta <- sqrt(2)/2
+  
+  dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,
+                                                   tolerance = 0)
+  
+  lines_info <- get_lines(dtri_data_edges,
+                          data,
+                          delta,
+                          n_steps = n_steps)
+  desired_lines <- lines_info$lines_mat
+  keep <- desired_lines %>% apply(MARGIN = 1,
+                                  function(row) sum(is.na(row)) == 0)
+  desired_lines <- desired_lines[keep,]
+  
+  removed_mat <- lines_info$removed_mat
+  
+  # string representation of nodes and edges
+  nodes <- paste0("(",desired_lines$x, ",", desired_lines$y, ")")
+  edge_mat <- matrix(c(nodes[seq(from = 1,to = length(nodes),by = 2)],
+                       nodes[seq(from = 2,to = length(nodes),by = 2)]),
+                     ncol = 2) %>%
+    data.frame() %>%
+    dplyr::mutate(X1 = as.character(X1),
+                  X2 = as.character(X2),
+                  id = desired_lines$idx[seq(from = 1,to = length(nodes),by = 2)])
+  
+  # get DT triangles
+  dtri_data_tri <- rgeos::gDelaunayTriangulation(data, tolerance = 0)
+  tri_matrix <- get_tri_matrix(dtri_data_tri)
+  
+  tuples_of_tri <- data.frame(rbind(tri_matrix[,c(1,2)],
+                                    tri_matrix[,c(1,3)],
+                                    tri_matrix[,c(2,3)],
+                                    # both directions
+                                    tri_matrix[,c(2,1)],
+                                    tri_matrix[,c(3,1)],
+                                    tri_matrix[,c(3,2)]),
+                              stringsAsFactors = F
+  ) %>%
+    dplyr::mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
+  
+  tuples_of_tri <- remove_incomplete_tri(tuples_of_tri = tuples_of_tri,
+                                         removed_mat = removed_mat)
+  
+  testthat::expect_equal(length(unique(tuples_of_tri$X1)), 4)
+  testthat::expect_equal(dim(tuples_of_tri),c(12, 4))
+  testthat::expect_equal(length(unique(tuples_of_tri$idx_tri)), 2)
+  
+  
+  
+  ### ----------------------
+  # basic example, 2 triangles - 1 triangles lost
+  data <- data.frame(x = c(0,0,1,2),
+                     y = c(0,1,0,2))
+  sp::coordinates(data) <- names(data)[1:2]
+  # interior lines lost (aka between (0,1)-(1,0))
+  # -> all triangles are lost
+  delta <- sqrt(2)/2
+  
+  dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,
+                                                   tolerance = 0)
+  
+  lines_info <- get_lines(dtri_data_edges,
+                          data,
+                          delta,
+                          n_steps = n_steps)
+  desired_lines <- lines_info$lines_mat
+  keep <- desired_lines %>% apply(MARGIN = 1,
+                                  function(row) sum(is.na(row)) == 0)
+  desired_lines <- desired_lines[keep,]
+  
+  removed_mat <- lines_info$removed_mat
+  
+  # string representation of nodes and edges
+  nodes <- paste0("(",desired_lines$x, ",", desired_lines$y, ")")
+  edge_mat <- matrix(c(nodes[seq(from = 1,to = length(nodes),by = 2)],
+                       nodes[seq(from = 2,to = length(nodes),by = 2)]),
+                     ncol = 2) %>%
+    data.frame() %>%
+    dplyr::mutate(X1 = as.character(X1),
+                  X2 = as.character(X2),
+                  id = desired_lines$idx[seq(from = 1,to = length(nodes),by = 2)])
+  
+  # get DT triangles
+  dtri_data_tri <- rgeos::gDelaunayTriangulation(data, tolerance = 0)
+  tri_matrix <- get_tri_matrix(dtri_data_tri)
+  
+  tuples_of_tri <- data.frame(rbind(tri_matrix[,c(1,2)],
+                                    tri_matrix[,c(1,3)],
+                                    tri_matrix[,c(2,3)],
+                                    # both directions
+                                    tri_matrix[,c(2,1)],
+                                    tri_matrix[,c(3,1)],
+                                    tri_matrix[,c(3,2)]),
+                              stringsAsFactors = F
+  ) %>%
+    dplyr::mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
+  
+  tuples_of_tri <- remove_incomplete_tri(tuples_of_tri = tuples_of_tri,
+                                         removed_mat = removed_mat)
+  
+  testthat::expect_equal(length(unique(tuples_of_tri$X1)), 3)
+  testthat::expect_equal(dim(tuples_of_tri), c(6, 4))
+  testthat::expect_equal(length(unique(tuples_of_tri$idx_tri)), 1)
+  
+  
+})
+
+# delta_ball_wrapper -----------------------------------------------------
+test_that("test delta_ball_wrapper - basic", {
+  #square - no center ----------------
+  data <- data.frame(x = c(0,0,1,1),
+                     y = c(0,1,0,1))
+  
+  out_delta_ball <- delta_ball_wrapper(data)
+  # just looking for outer square (no inner lines)
+  
+  testthat::expect_equal(dim(out_delta_ball), c(8,3)) #4 lines
+  
+  # by construction the sums of pairs = 1 or 3, not 2
+  sums_pairs <- out_delta_ball[,c("long","lat")] %>% split(out_delta_ball$idx) %>%
+    sapply(sum)
+  
+  testthat::expect_true(all(sums_pairs != 2)) #no lines across the center
+  
+  # single triangle - no diag -------------
+  data <- data.frame(x = c(0,0,1),
+                     y = c(0,1,1))
+  
+  out_delta_ball <- delta_ball_wrapper(data)
+  # just looking for outer square (no inner lines)
+  
+  testthat::expect_equal(dim(out_delta_ball), c(4,3)) #2 lines
+  
+  # by construction the sums of pairs = 1 or 3, not 2
+  sums_pairs <- out_delta_ball[,c("long","lat")] %>% split(out_delta_ball$idx) %>%
+    sapply(sum)
+  
+  testthat::expect_true(all(sums_pairs != 2)) #no lines across the center
+  
 })

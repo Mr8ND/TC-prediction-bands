@@ -154,25 +154,28 @@ get_tri_matrix <- function(dtri_data_tri){
 #' @param removed_mat edges to be removed
 #'
 #' @return data frame with tuples of triangle not removed
-remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
-
-  # Hack to make R CMD check not fail
-  x <- y <- first <- second <- idx <- NULL
-
-  # removes triangles for tuples data frame that have an edge removed 
-  removed_mat <- removed_mat[apply(removed_mat, 1, 
+remove_incomplete_tri <- function(tuples_of_tri, removed_mat){
+  
+  # removes triangles for tuples data frame that have an edge removed
+  removed_mat <- removed_mat[apply(removed_mat, 1,
                                    function(row) sum(is.na(row)) == 0), ]
   
-  tuples_of_tri$combo <- apply(tuples_of_tri,1, 
+  tuples_of_tri$combo <- apply(tuples_of_tri,1,
                                function(row) paste0(row[1],"~",row[2]))
   
-  removed_values_dat <- removed_mat %>%
-    dplyr::group_by(idx) %>% dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
-                                second = paste0("(",x[2],",", y[2],")"),
-                                combo = paste0(first,"~",second),
-                                combo2 = paste0(second,"~",first))
+  # if you nothing to remove:
+  if (dim(removed_mat)[1] == 0){
+    return(tuples_of_tri)
+  }
   
-  removed_values_single <- c(removed_values_dat$combo, 
+  removed_values_dat <- removed_mat %>%
+    dplyr::group_by(.data$idx) %>%
+    dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
+                     second = paste0("(",x[2],",", y[2],")"),
+                     combo = paste0(.data$first,"~",.data$second),
+                     combo2 = paste0(.data$second,"~",.data$first))
+  
+  removed_values_single <- c(removed_values_dat$combo,
                              removed_values_dat$combo2)
   
   remove_tri <- tuples_of_tri$idx_tri[(
@@ -331,15 +334,24 @@ remove_duplicates_func <- function(data_raw){
 #' Run delta ball analysis 
 #' 
 #' \strong{See comment at bottom of function: this function I think does the 
-#' incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}}
+#' incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}.
+#' I didn't effect this with the tests - not actually sure what this means
+#' anymore}
 #' 
-#' @description Run delta ball analysis and get outline of points. Runs all 
-#' analyses to get dataframe with regular lines. Part of the approach in 
-#' "Computing Polygonal Surfaces from Unions of Balls" by Tam and Heidrich.
-#' 
-#' @param data_raw data frame with center points of balls 
-#' @param n_steps number of equidistance points along the line, past delta 
-#' on both sides, that will be checked to approximate all points along the line
+#' @description Run delta-ball analysis to obtain an outline points for
+#'   delta-ball covering where points are in 2d space. We first find the minimum
+#'   delta such that all balls centered at each point in the data set is
+#'   touching at least 1 other ball (see \code{\link{get_delta}} for more
+#'   information). This function then creates a geometric objects that trying to
+#'   represent the covering of all these delta balls. Specifically we use
+#'   geometric properties to find the points on the "outside" of this covering
+#'   and return a set of lines that create a "boundary" of shorts. Intuition
+#'   from "Computing Polygonal Surfaces from Unions of Balls" by Tam and
+#'   Heidrich was used in this function.
+#'
+#' @param data_raw data frame with center points of balls
+#' @param n_steps number of equidistance points along the line, past delta on
+#'   both sides, that will be checked to approximate all points along the line
 #' @param remove_duplicates boolean if need to remove duplicates in data_raw
 #'
 #' @return data frame of exterior lines (not ordered)
@@ -356,11 +368,11 @@ delta_ball_wrapper <- function(data_raw, n_steps = 100, remove_duplicates = F){
   data <- data_raw[,1:2]
   sp::coordinates(data) <- names(data_raw)[1:2]
     
-  # get delta value
+  # get delta value --------------------
   d <- get_delta(data_raw)
   delta <- d$mm_delta/2
   
-  # create correct edges 
+  # create correct edges --------------------
   dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,tolerance = 0)
   
   lines_info <- get_lines(dtri_data_edges, data_raw, delta, n_steps = n_steps)
@@ -372,7 +384,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 100, remove_duplicates = F){
   
   removed_mat <- lines_info$removed_mat
   
-  # string representation of nodes and edges 
+  # string representation of nodes and edges --------------------
   nodes <- paste0("(",desired_lines$x, ",", desired_lines$y, ")")
   edge_mat <- matrix(c(nodes[seq(from = 1,to = length(nodes),by = 2)],
                        nodes[seq(from = 2,to = length(nodes),by = 2)]),
@@ -382,7 +394,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 100, remove_duplicates = F){
            X2 = as.character(X2),
            id = desired_lines$idx[seq(from = 1,to = length(nodes),by = 2)])
   
-  # get DT triangles
+  # get DT triangles --------------------
   dtri_data_tri <- rgeos::gDelaunayTriangulation(data,tolerance = 0)
   tri_matrix <- get_tri_matrix(dtri_data_tri)
   
@@ -398,17 +410,17 @@ delta_ball_wrapper <- function(data_raw, n_steps = 100, remove_duplicates = F){
     dplyr::mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
   
   
-  tuples_of_tri <- remove_lines_from_tri(tuples_of_tri = tuples_of_tri,
+  tuples_of_tri <- remove_incomplete_tri(tuples_of_tri = tuples_of_tri,
                                          removed_mat = removed_mat)
   
-  # what type of edge are you?
+  # what type of edge are you? --------------------
   
   num_tri <- edge_mat %>% dplyr::left_join(tuples_of_tri,
                                     by = c("X1" = "X1", "X2" = "X2"))  %>%
     dplyr::group_by(id) %>% dplyr::summarise(idx_tri = paste0(idx_tri,collapse = ","),
                                X1 = unique(X1),
                                X2 = unique(X2),
-                               count = n())
+                               count = dplyr::n())
   
   # merging & getting regular lines --------------------
   

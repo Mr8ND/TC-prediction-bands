@@ -7,7 +7,8 @@
 get_lines(delaunay_tri_data, data_raw, delta, n_steps = 100)
 }
 \arguments{
-\item{delaunay_tri_data}{sp data of delaunay triangles}
+\item{delaunay_tri_data}{sp data of delaunay triangles lines
+(sp::SpatialLines)}
 
 \item{data_raw}{data frame with center points of balls}
 
