@@ -24,6 +24,9 @@ KDE object fitted to the dfmat dataframe.
 \description{
 This function fits a kernel density estimator to a TC dataframe, in which 
 each point of the dataframe is considered to be a TC observation.
+
+This function is shared with \pkg{timeternR} on github:
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }
 \examples{
 \dontrun{

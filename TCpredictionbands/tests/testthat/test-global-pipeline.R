@@ -51,6 +51,7 @@ output_pipeline[[1]][["Auto_NoDeathRegs"]][["time"]] <- NULL
 # but it's erroring this code - so we've just dropped
 output_pipeline[[1]][["Auto_NoDeathRegs"]][["depth_vector"]] <- NULL
 sample_output_pipeline[[1]][["Auto_NoDeathRegs"]][["depth_vector"]] <- NULL
+
 test_that("Checking the pipeline results have not changed", {
   expect_identical(output_pipeline, sample_output_pipeline)
 })

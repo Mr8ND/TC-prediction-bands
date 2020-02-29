@@ -2,26 +2,33 @@
 % Please edit documentation in R/kde_functions.R
 \name{extract_countour}
 \alias{extract_countour}
-\title{Selection of specific countour level from KDE object}
+\title{Selection of specific contour level from KDE object}
 \usage{
 extract_countour(kde_obj, alpha)
 }
 \arguments{
 \item{kde_obj}{kde object}
 
-\item{alpha}{contour level which needs to be extracted. Integer from 1 
-to 99.}
+\item{alpha}{contour level which needs to be extracted. Scalar in the sequence
+from .01 to .99 by .01. A value of .05 gives a contour level 
+  associated with the cumulative prob of 95% (and 95% confidence interval) -
+  i.e. a 1 - alpha confidence contour.}
 }
 \value{
-List of countours at (100-level) for the kde object - there is a
+List of contours at (100-level) for the kde object - there is a
 contour for each disconnected contour that forms the (100-level) contour
 level.
 }
 \description{
 This function extracts a specific level of contour from a kde object.
+
+This function only works for some levels that the kde object calculated 
+originally (associated with the constraints in the \code{alpha} parameter).
 }
 \details{
-Only works for some levels that the kde object calculated originally.
+This function (renamed as \code{extract_contour}) is shared with
+\pkg{timeternR} on github:
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }
 \examples{
 \dontrun{

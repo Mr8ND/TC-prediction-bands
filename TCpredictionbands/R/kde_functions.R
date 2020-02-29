@@ -37,6 +37,9 @@ flatten_tc_list = function(dflist) {
 #' This function fits a kernel density estimator to a TC dataframe, in which 
 #' each point of the dataframe is considered to be a TC observation.
 #'
+#' This function is shared with \pkg{timeternR} on github:
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#' 
 #' @param dfmat TC dataframe
 #' @param h_band optional argument for the bandwidth of the kde object. If NULL,
 #' the optimal band would be selected through the \code{\link[ks]{kde}} 
@@ -123,19 +126,25 @@ predict_kde_object = function(kde_obj, predict_mat, alpha = NULL,
 }
 
 
-#' Selection of specific countour level from KDE object
+#' Selection of specific contour level from KDE object
 #' 
 #' @description 
 #' This function extracts a specific level of contour from a kde object.
 #' 
-#' @details
-#' Only works for some levels that the kde object calculated originally.
+#' This function only works for some levels that the kde object calculated 
+#' originally (associated with the constraints in the \code{alpha} parameter).
+#' 
+#' @details This function (renamed as \code{extract_contour}) is shared with
+#' \pkg{timeternR} on github:
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param kde_obj kde object
-#' @param alpha contour level which needs to be extracted. Integer from 1 
-#' to 99.
+#' @param alpha contour level which needs to be extracted. Scalar in the sequence
+#' from .01 to .99 by .01. A value of .05 gives a contour level 
+#'   associated with the cumulative prob of 95% (and 95% confidence interval) -
+#'   i.e. a 1 - alpha confidence contour. 
 #
-#' @return List of countours at (100-level) for the kde object - there is a
+#' @return List of contours at (100-level) for the kde object - there is a
 #' contour for each disconnected contour that forms the (100-level) contour
 #' level.
 #' 
@@ -157,6 +166,8 @@ extract_countour <- function(kde_obj, alpha) {
   cont <- with(kde_obj, contourLines(x = eval.points[[1]],y = eval.points[[2]],
                                   z = estimate,levels = cont[cont_level])) 
                                                         # ^needs to be 1-\alpha
+                               # this note is requesting an correction / update
+                               # sadly this propagates through all kde code
   return(cont)
 }
 
@@ -273,6 +284,11 @@ points_in_contour_list <- function(cont_list, predict_mat, position = 1:2){
 #' 
 #' @description
 #' This function calculates contour points and area from list of generated TC.
+#'
+#'#' @details
+#' This function (renamed as \code{kde_from_list}) is shared with
+#' \pkg{timeternR} on github:
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param dflist list of TC dataframes
 #' @param alpha contour level, an integer from 1 to 99. For example, a
