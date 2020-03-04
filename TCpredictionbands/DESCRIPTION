@@ -1,6 +1,6 @@
 Package: TCpredictionbands
 Title: Tropical Cyclone Simulation-based Credible Bands
-Version: 0.1
+Version: 0.0.2
 Authors@R: c(
     person("Benjamin", "LeRoy", email = "bpleroy@stat.cmu.edu", role = c("aut")),
     person("Robin", "Dunn", email = "robind@stat.cmu.edu", role = c("aut")),
