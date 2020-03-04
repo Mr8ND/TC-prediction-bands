@@ -16,7 +16,7 @@ sample_output_pipeline <- TCpredictionbands::sample_output_pipeline
 # for now:
 names(sample_output_pipeline) <- "AL032009"
 
-n_sim_curve_total <- length(sample_sim)
+n_sim_curve_total <- 20#length(sample_sim)
 alpha <- 0.1
 alpha_ci <- .05
 desired_curves_types <- c("Auto_NoDeathRegs")
