@@ -4,8 +4,7 @@
 \alias{fit_kde_object}
 \title{Fit kernel density estimator object}
 \usage{
-fit_kde_object(dfmat, h_band = NULL, position = 1:2,
-  grid_size = rep(1000, 2))
+fit_kde_object(dfmat, h_band = NULL, position = 1:2, grid_size = rep(1000, 2))
 }
 \arguments{
 \item{dfmat}{TC dataframe}
@@ -25,6 +24,9 @@ KDE object fitted to the dfmat dataframe.
 \description{
 This function fits a kernel density estimator to a TC dataframe, in which 
 each point of the dataframe is considered to be a TC observation.
+
+This function is shared with \pkg{timeternR} on github:
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }
 \examples{
 \dontrun{

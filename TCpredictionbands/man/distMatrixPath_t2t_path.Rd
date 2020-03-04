@@ -4,8 +4,13 @@
 \alias{distMatrixPath_t2t_path}
 \title{Create path distance matrix}
 \usage{
-distMatrixPath_t2t_path(path_mat_list_train, path_mat_list_test,
-  output_length = "nautical mile", longlat = TRUE, verbose = FALSE)
+distMatrixPath_t2t_path(
+  path_mat_list_train,
+  path_mat_list_test,
+  output_length = "nautical mile",
+  longlat = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{path_mat_list_train}{list of paths of training curves (n objects)}

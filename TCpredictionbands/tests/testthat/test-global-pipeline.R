@@ -1,7 +1,5 @@
 context("Global PB test")
 
-suppressWarnings(library(TCpredictionbands))
-
 #' Loading all the data --------------------------------------
 
 true_curve_conversion_function <- function(df){
@@ -10,15 +8,15 @@ true_curve_conversion_function <- function(df){
   return(output_df)
 }
 
-internal_data <- TCpredictionbands:::internal_data
-sample_sim <- internal_data[["sample_sim"]]
-sample_tc <- internal_data[["sample_tc"]]
-sample_tc_name <- internal_data[["sample_tc_name"]]
-sample_output_pipeline <- internal_data[["sample_output_pipeline"]]
+sample_sim <- TCpredictionbands::sample_sim
+sample_tc <- TCpredictionbands::sample_tc
+sample_tc_name <- TCpredictionbands::sample_tc_name
+sample_output_pipeline <- TCpredictionbands::sample_output_pipeline
+
 # for now:
 names(sample_output_pipeline) <- "AL032009"
 
-n_sim_curve_total <- length(sample_sim)
+n_sim_curve_total <- 20#length(sample_sim)
 alpha <- 0.1
 alpha_ci <- .05
 desired_curves_types <- c("Auto_NoDeathRegs")
@@ -49,7 +47,7 @@ output_pipeline[[1]][["Auto_NoDeathRegs"]][["delta_ball"]][["area_ci"]] <- NULL
 output_pipeline[[1]][["Auto_NoDeathRegs"]][["convex_hull"]][["area"]] <- NULL
 output_pipeline[[1]][["Auto_NoDeathRegs"]][["time"]] <- NULL
 
-
 test_that("Checking the pipeline results have not changed", {
-  expect_identical(output_pipeline, sample_output_pipeline)
+  expect_equal_to_reference(output_pipeline, update = FALSE, 
+                            file = "../test_data/output_pipeline.Rdata")
 })

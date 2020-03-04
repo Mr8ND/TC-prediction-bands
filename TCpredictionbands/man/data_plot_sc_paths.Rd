@@ -4,9 +4,12 @@
 \alias{data_plot_sc_paths}
 \title{Compresses data from list (to be plotted in ggplot)}
 \usage{
-data_plot_sc_paths(test_list, sca_output = list(test_p_estimate = rep(1,
-  length(test_list)), test_weight = rep(1/length(test_list),
-  length(test_list))), position = 1:2)
+data_plot_sc_paths(
+  test_list,
+  sca_output = list(test_p_estimate = rep(1, length(test_list)), test_weight =
+    rep(1/length(test_list), length(test_list))),
+  position = 1:2
+)
 }
 \arguments{
 \item{test_list}{list of \eqn{s} paths to analysis (each a df)}

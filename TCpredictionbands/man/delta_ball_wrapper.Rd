@@ -4,13 +4,13 @@
 \alias{delta_ball_wrapper}
 \title{Run delta ball analysis}
 \usage{
-delta_ball_wrapper(data_raw, n_steps = 1000, remove_duplicates = F)
+delta_ball_wrapper(data_raw, n_steps = 100, remove_duplicates = F)
 }
 \arguments{
 \item{data_raw}{data frame with center points of balls}
 
-\item{n_steps}{number of equidistance points along the line, past delta 
-on both sides, that will be checked to approximate all points along the line}
+\item{n_steps}{number of equidistance points along the line, past delta on
+both sides, that will be checked to approximate all points along the line}
 
 \item{remove_duplicates}{boolean if need to remove duplicates in data_raw}
 }
@@ -18,11 +18,24 @@ on both sides, that will be checked to approximate all points along the line}
 data frame of exterior lines (not ordered)
 }
 \description{
-Run delta ball analysis and get outline of points. Runs all 
-analyses to get dataframe with regular lines. Part of the approach in 
-"Computing Polygonal Surfaces from Unions of Balls" by Tam and Heidrich.
+Run delta-ball analysis to obtain an outline points for
+  delta-ball covering where points are in 2d space. We first find the minimum
+  delta such that all balls centered at each point in the data set is
+  touching at least 1 other ball (see \code{\link{get_delta}} for more
+  information). This function then creates a geometric objects that trying to
+  represent the covering of all these delta balls. Specifically we use
+  geometric properties to find the points on the "outside" of this covering
+  and return a set of lines that create a "boundary" of shorts. Intuition
+  from "Computing Polygonal Surfaces from Unions of Balls" by Tam and
+  Heidrich was used in this function.
+
+#' @details
+This function (renamed as \code{inner_delta_ball_wrapper}) is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }
 \details{
 \strong{See comment at bottom of function: this function I think does the 
-incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}}
+incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}.
+I didn't effect this with the tests - not actually sure what this means
+anymore}
 }

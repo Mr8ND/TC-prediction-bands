@@ -4,8 +4,13 @@
 \alias{kde_from_tclist}
 \title{Contour and area from TC list}
 \usage{
-kde_from_tclist(dflist, alpha, h_band = NULL, position = 1:2,
-  grid_size = rep(1000, 2))
+kde_from_tclist(
+  dflist,
+  alpha,
+  h_band = NULL,
+  position = 1:2,
+  grid_size = rep(1000, 2)
+)
 }
 \arguments{
 \item{dflist}{list of TC dataframes}
@@ -29,4 +34,9 @@ evaluation of kde object. Can be reduced to speed-up computation.}
 }
 \description{
 This function calculates contour points and area from list of generated TC.
+
+#' @details
+This function (renamed as \code{kde_from_list}) is shared with
+\pkg{timeternR} on github:
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }

@@ -5,8 +5,12 @@
 \title{Creates a CI bubble of 1-alpha level with a series of longitude-latitude 
 points}
 \usage{
-create_CI_bubble_step_track(df_points_step_track, center_idx,
-  alpha = 0.1, output_length = "nautical mile")
+create_CI_bubble_step_track(
+  df_points_step_track,
+  center_idx,
+  alpha = 0.1,
+  output_length = "nautical mile"
+)
 }
 \arguments{
 \item{df_points_step_track}{Dataframe of points - these corresponds to all 

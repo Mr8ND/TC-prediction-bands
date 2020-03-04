@@ -4,8 +4,12 @@
 \alias{distAlongP}
 \title{Distance/bearing between points along path}
 \usage{
-distAlongP(data_df, output_length = "nautical mile", longlat = TRUE,
-  verbose = FALSE)
+distAlongP(
+  data_df,
+  output_length = "nautical mile",
+  longlat = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data_df}{(n x 2) data.frame, each row is a pair of values (lat, lon) 

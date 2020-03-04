@@ -4,9 +4,16 @@
 \alias{loocv_wrapper}
 \title{LOOCV error rate}
 \usage{
-loocv_wrapper(path_mat_list, Dmat, K = 7, t = 1,
-  output_length = "nautical mile", longlat = TRUE, project_size = 4,
-  verbose = TRUE)
+loocv_wrapper(
+  path_mat_list,
+  Dmat,
+  K = 7,
+  t = 1,
+  output_length = "nautical mile",
+  longlat = TRUE,
+  project_size = 4,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{path_mat_list}{list of paths to train on}

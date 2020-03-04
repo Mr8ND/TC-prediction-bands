@@ -4,8 +4,7 @@
 \alias{training_structure_estimating_p}
 \title{Creates structure for SCA algorithm from training data}
 \usage{
-training_structure_estimating_p(D_train, K = 4, t = 1, dim = 5,
-  plot_n = 0)
+training_structure_estimating_p(D_train, K = 4, t = 1, dim = 5, plot_n = 0)
 }
 \arguments{
 \item{D_train}{Distance Matrix for training points}

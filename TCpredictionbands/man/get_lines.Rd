@@ -7,7 +7,8 @@
 get_lines(delaunay_tri_data, data_raw, delta, n_steps = 100)
 }
 \arguments{
-\item{delaunay_tri_data}{sp data of delaunay triangles}
+\item{delaunay_tri_data}{sp data of delaunay triangles lines
+(sp::SpatialLines)}
 
 \item{data_raw}{data frame with center points of balls}
 
@@ -27,4 +28,8 @@ with the union of balls.)}
 \description{
 Figure out which edges in the delaunay diagram are within the 
 union of balls
+}
+\details{
+This function is shared with \pkg{timeternR} on github: 
+\href{https://github.com/skgallagher/timeternR}{timeternR}.
 }

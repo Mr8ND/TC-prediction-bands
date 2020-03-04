@@ -1,7 +1,5 @@
 context("Path Functions")
 
-library(TCpredictionbands)
-
 #' swap2DfCols function ---------------------------------
 
 df_temp <- data.frame(cbind(rep(1, 100), rep(5, 100)))

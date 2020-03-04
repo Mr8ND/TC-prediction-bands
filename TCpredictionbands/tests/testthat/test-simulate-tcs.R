@@ -2,8 +2,6 @@
 
 context("TC Simulation test")
 
-library(TCpredictionbands)
-
 # Training TC names ----------------
 train_names <- 
   c("AL041951", "AL051951", "AL061951", "AL091951", "AL021951", "AL071951",
@@ -264,8 +262,9 @@ for (auto_ind in tf) {
 }
 
 # Obtaining the stored simulations
-internal_data <- TCpredictionbands:::internal_data
-stored_test_sims <- internal_data[["test_sims"]]
+stored_test_sims <- TCpredictionbands::test_sims
+
+
 
 
 # Test that new test_sims and stored_test_sims are the same

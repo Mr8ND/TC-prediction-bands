@@ -4,9 +4,16 @@
 \alias{convex_hull_structure}
 \title{Convex Hull creation}
 \usage{
-convex_hull_structure(data_list, alpha, dist_mat = NULL,
-  data_deep_points = NULL, depth_vector = NULL, position = 1:2,
-  verbose = FALSE, ...)
+convex_hull_structure(
+  data_list,
+  alpha,
+  dist_mat = NULL,
+  data_deep_points = NULL,
+  depth_vector = NULL,
+  position = 1:2,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data_list}{list of hurricanes}

@@ -4,8 +4,14 @@
 \alias{bubble_ci_from_tclist}
 \title{Creating bubble CI out of TC simulated lists}
 \usage{
-bubble_ci_from_tclist(dflist, center_idx, alpha = 0.1, position = 1:2,
-  alpha_ci = 0.05, unit_measure = "nautical mile")
+bubble_ci_from_tclist(
+  dflist,
+  center_idx,
+  alpha = 0.1,
+  position = 1:2,
+  alpha_ci = 0.05,
+  unit_measure = "nautical mile"
+)
 }
 \arguments{
 \item{dflist}{List of simulated TCs}

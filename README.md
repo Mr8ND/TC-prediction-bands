@@ -1,5 +1,12 @@
 # TC-prediction-bands
 
+**The below badges are associated with [`benjaminleroy`](https://github.com/benjaminleroy)'s fork of the project: ([TC-prediction-bands](https://github.com/benjaminleroy/TC-prediction-bands)).**
+
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.com/benjaminleroy/TC-prediction-bands.svg?branch=master)](https://travis-ci.com/benjaminleroy/TC-prediction-bands)
+[![codecov](https://codecov.io/gh/benjaminleroy/TC-prediction-bands/branch/master/graph/badge.svg)](https://codecov.io/gh/benjaminleroy/TC-prediction-bands)
+<!-- badges: end -->
+
 This repository stores the documentation for new approaches to predicting
 prediction bands for full paths of tropical cyclones (TCs) using just a few initial
 points. We leverage extensions on regression models to generate curves,

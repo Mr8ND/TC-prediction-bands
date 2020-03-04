@@ -4,8 +4,13 @@
 \alias{ggvis_bubble_data_centers_inner}
 \title{Inner Plot centers for bubble data}
 \usage{
-ggvis_bubble_data_centers_inner(bubble_plot_data, base_graph = NULL,
-  color = "pink", zoom = 4, maptype = "toner-lite", ...)
+ggvis_bubble_data_centers_inner(
+  bubble_plot_data,
+  base_graph = NULL,
+  color = "pink",
+  zoom = 4,
+  ...
+)
 }
 \arguments{
 \item{bubble_plot_data}{list of center points, lower and upper tangential 
@@ -16,11 +21,6 @@ points (each a n x 2 data frame)}
 \item{color}{color of points}
 
 \item{zoom}{map zoom for ggmap}
-
-\item{maptype}{map type, options include: terrain, terrain-background, 
-terrain-labels, terrain-lines, toner, toner-2010, toner-2011, 
-toner-background, toner-hybrid, toner-labels, toner-lines, toner-lite, 
-or watercolor.}
 
 \item{...}{Interior ggpath parameters}
 }

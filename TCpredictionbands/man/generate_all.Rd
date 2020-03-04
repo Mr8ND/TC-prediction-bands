@@ -4,8 +4,14 @@
 \alias{generate_all}
 \title{Generate all simulated TC paths}
 \usage{
-generate_all(train = NA, test = NA, remove_length_2 = T,
-  number_paths = 350, replicate = T, verbose = T)
+generate_all(
+  train = NA,
+  test = NA,
+  remove_length_2 = T,
+  number_paths = 350,
+  replicate = T,
+  verbose = T
+)
 }
 \arguments{
 \item{train}{List of train TCs on which to train simulations}

@@ -4,8 +4,13 @@
 \alias{distBetweenP}
 \title{Distance between points}
 \usage{
-distBetweenP(data_df_p1, data_df_p2, output_length = "nautical mile",
-  longlat = TRUE, verbose = FALSE)
+distBetweenP(
+  data_df_p1,
+  data_df_p2,
+  output_length = "nautical mile",
+  longlat = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data_df_p1}{(n x 2) data.frame, each row is a pair of values (lat, long) 

@@ -1,7 +1,5 @@
 context("Regression Functions")
 
-suppressWarnings(library(TCpredictionbands))
-
 #' shift function ---------------------------------------------------
 
 vec_temp_1 <- c(0,1,2,3,4)

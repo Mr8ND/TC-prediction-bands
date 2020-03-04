@@ -5,8 +5,13 @@
 \title{Inner Function to apply SCA projection of a set of simulated curves and 
 captures the associated probability values in the lower dimensional space}
 \usage{
-inner_sca_projection(test_data, train_list_13_point, train_info,
-  position = 1:2, verbose = TRUE)
+inner_sca_projection(
+  test_data,
+  train_list_13_point,
+  train_info,
+  position = 1:2,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{test_data}{list of paths of test curves}

@@ -4,9 +4,16 @@
 \alias{prediction_interval_single_tc}
 \title{Extract prediction intervals of 4 methods from a single test TC}
 \usage{
-prediction_interval_single_tc(dflist, test_true_path, alpha,
-  position = 1:2, verbose = FALSE, kde_grid_size = rep(1000, 2),
-  alpha_ci = 0.05, unit_measure = "nautical mile")
+prediction_interval_single_tc(
+  dflist,
+  test_true_path,
+  alpha,
+  position = 1:2,
+  verbose = FALSE,
+  kde_grid_size = rep(1000, 2),
+  alpha_ci = 0.05,
+  unit_measure = "nautical mile"
+)
 }
 \arguments{
 \item{dflist}{List of simulated TCs}

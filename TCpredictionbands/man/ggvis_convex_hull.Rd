@@ -4,8 +4,13 @@
 \alias{ggvis_convex_hull}
 \title{Visualize delta ball exterior centers (with \code{ggplot})}
 \usage{
-ggvis_convex_hull(output_lines, base_graph = NULL, zoom = 4,
-  color = "pink", maptype = "toner-lite", ...)
+ggvis_convex_hull(
+  output_lines,
+  base_graph = NULL,
+  zoom = 4,
+  color = "pink",
+  ...
+)
 }
 \arguments{
 \item{output_lines}{data frame of exterior lines, should be ordered 
@@ -27,11 +32,6 @@ like that required in \code{\link{convex_hull_structure}}.}}
 \item{zoom}{map zoom for \code{\link[ggmap]{ggmap}}}
 
 \item{color}{color of band}
-
-\item{maptype}{map type, options include: terrain, terrain-background, 
-terrain-labels, terrain-lines, toner, toner-2010, toner-2011, 
-toner-background, toner-hybrid, toner-labels, toner-lines, toner-lite, 
-or watercolor.}
 
 \item{...}{interior \code{\link[ggplot2]{geom_path}} or the 
 \code{convex_hull_structure} parameters \emph{(Note: at this time,

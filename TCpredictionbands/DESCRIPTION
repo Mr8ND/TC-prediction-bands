@@ -1,12 +1,12 @@
 Package: TCpredictionbands
 Title: Tropical Cyclone Simulation-based Credible Bands
-Version: 0.1
+Version: 0.0.2
 Authors@R: c(
     person("Benjamin", "LeRoy", email = "bpleroy@stat.cmu.edu", role = c("aut")),
     person("Robin", "Dunn", email = "robind@stat.cmu.edu", role = c("aut")),
     person("Nic", "Dalmasso", email = "ndalmass@stat.cmu.edu", role = c("aut", "cre")))
 Description: What the package does (one paragraph).
-Depends: R (>= 3.4.3)
+Depends: R (>= 3.4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -29,5 +29,7 @@ Imports:
     stats,
     stringr,
     purrr
-RoxygenNote: 6.1.1
-Suggests: testthat
+RoxygenNote: 7.0.2
+Suggests: 
+    devtools,
+    testthat

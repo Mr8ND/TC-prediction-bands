@@ -4,8 +4,16 @@
 \alias{spectral_cluster_process}
 \title{Spectral Clustering Process}
 \usage{
-spectral_cluster_process(test_list, train_df, D_train, K = 4, t = 1,
-  dim = 5, kdensity = 10, position = 1:2)
+spectral_cluster_process(
+  test_list,
+  train_df,
+  D_train,
+  K = 4,
+  t = 1,
+  dim = 5,
+  kdensity = 10,
+  position = 1:2
+)
 }
 \arguments{
 \item{test_list}{list of paths to analysis (each a df)}

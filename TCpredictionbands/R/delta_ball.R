@@ -2,6 +2,10 @@
 #' 
 #' @description Find the minimum distance (delta) such that all points are 
 #' within delta of at least one other point.
+#' 
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
 #'
 #' @param data continuous data frame of individual points (in each row)
 #' @param dist_mat distance matrix, calculated otherwise via euclidean distance
@@ -12,15 +16,17 @@
 #' \item{mm_delta}{the minimum distance (delta)}
 #' }
 #' @export
-get_delta <- function(data, dist_mat = NULL){
-
-  if (is.null(dist_mat)) {
-      dist_mat <- as.matrix(stats::dist(data))
+get_delta <- function(data = NULL, dist_mat = NULL){
+  if (is.null(dist_mat) & is.null(data)) {
+    stop("need to provide either data or dist_mat")
   }
-  diag(dist_mat) <- max(dist_mat)
-  mm_delta <- apply(dist_mat, MARGIN = 1, min ) %>% max
   
-  # correct diagonals:
+  if (is.null(dist_mat)) {
+    dist_mat <- as.matrix(stats::dist(data))
+  }
+  
+  diag(dist_mat) <- max(dist_mat)
+  mm_delta <- apply(dist_mat, MARGIN = 1, min) %>% max
   diag(dist_mat) <- 0
   return(list(dist_mat = dist_mat, mm_delta = mm_delta))
 }
@@ -117,6 +123,11 @@ get_area <- function(data, delta, n = 10000, alpha = .05){
 #' 
 #' @description Makes triangle matrix for points in matrix 
 #'
+#'@details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#' 
+#'
 #' @param dtri_data_tri sp object with triangles (n triangles)
 #'
 #' @return a matrix (n x 3) with strings of locations of 3 points in triangle 
@@ -141,32 +152,39 @@ get_tri_matrix <- function(dtri_data_tri){
 #' @description Remove triangles from tuple matrix that have 1 or more edge that
 #' needs to be removed
 #'
-#' TODO: this function needs to be cleaned up
-#'
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#' 
 #' @param tuples_of_tri data frame with tuples of triangle edges and 
 #' triangle index
 #' @param removed_mat edges to be removed
 #'
 #' @return data frame with tuples of triangle not removed
-remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
-
-  # Hack to make R CMD check not fail
-  x <- y <- first <- second <- idx <- NULL
-
-  # removes triangles for tuples data frame that have an edge removed 
-  removed_mat <- removed_mat[apply(removed_mat, 1, 
+remove_incomplete_tri <- function(tuples_of_tri, removed_mat){
+  
+  first <- second <- x <- y <- idx <- NULL
+  
+  # removes triangles for tuples data frame that have an edge removed
+  removed_mat <- removed_mat[apply(removed_mat, 1,
                                    function(row) sum(is.na(row)) == 0), ]
   
-  tuples_of_tri$combo <- apply(tuples_of_tri,1, 
+  tuples_of_tri$combo <- apply(tuples_of_tri,1,
                                function(row) paste0(row[1],"~",row[2]))
   
-  removed_values_dat <- removed_mat %>%
-    dplyr::group_by(idx) %>% dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
-                                second = paste0("(",x[2],",", y[2],")"),
-                                combo = paste0(first,"~",second),
-                                combo2 = paste0(second,"~",first))
+  # if you nothing to remove:
+  if (dim(removed_mat)[1] == 0){
+    return(tuples_of_tri)
+  }
   
-  removed_values_single <- c(removed_values_dat$combo, 
+  removed_values_dat <- removed_mat %>%
+    dplyr::group_by(idx) %>%
+    dplyr::summarize(first = paste0("(",x[1],",", y[1],")"),
+                     second = paste0("(",x[2],",", y[2],")"),
+                     combo = paste0(first,"~",second),
+                     combo2 = paste0(second,"~",first))
+  
+  removed_values_single <- c(removed_values_dat$combo,
                              removed_values_dat$combo2)
   
   remove_tri <- tuples_of_tri$idx_tri[(
@@ -180,8 +198,12 @@ remove_lines_from_tri <- function(tuples_of_tri, removed_mat){
 
 #' Shorten line by delta on both sides
 #' 
-#' @description Inner function to remove delta length from both sides of a line
+#' @description inner function to remove delta length from both sides of a line
 #'
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#' 
 #' @param line 2 x 2 matrix of edge points of line
 #' @param delta numeric delta to be subtracted
 #'
@@ -212,8 +234,8 @@ remove_delta_off_line <- function(line, delta){
 #' @param line 2 x 2 matrix of edge points of line
 #' @param n_steps integer number of steps (n)
 #'
-#' @return n x 2 matrix with points on path
-steps_along_2d_line <- function(line, n_steps = 1000){
+#' @return (n + 1) x 2 matrix with points on path
+steps_along_2d_line <- function(line, n_steps = 100){
   # (inner function) finds equidistance points along a line
   len   <- stats::dist(line)
   diffs <- diff(line)
@@ -240,7 +262,12 @@ steps_along_2d_line <- function(line, n_steps = 1000){
 #' @description Figure out which edges in the delaunay diagram are within the 
 #' union of balls
 #'
-#' @param delaunay_tri_data sp data of delaunay triangles
+#' @details
+#' This function is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#'
+#' @param delaunay_tri_data sp data of delaunay triangles lines
+#'   (sp::SpatialLines)
 #' @param data_raw data frame with center points of balls 
 #' @param delta fixed radius of all the balls 
 #' @param n_steps number of equidistance points along the line, past delta 
@@ -272,7 +299,8 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
     if (stats::dist(l) > delta * 2) {
       l_inner <- remove_delta_off_line(l, delta)
       points_along <- steps_along_2d_line(l_inner,n_steps)
-      neighbor <- RANN::nn2(data = data_raw, query = points_along,
+      neighbor <- RANN::nn2(data = as.data.frame(data_raw), 
+                            query = points_along,
                       k = 1, treetype = "kd")
       if (!all(neighbor$nn.dists < delta)) {
         removed_mat[(2*idx - 1):(2*idx),] <- l
@@ -302,7 +330,7 @@ get_lines <- function(delaunay_tri_data, data_raw, delta, n_steps = 100){
 #' algorithms)
 #'
 #' @param data_raw data points of observations 
-#' expected lat, long column names
+#' expected lat, long column names in the first 2 positions
 #'
 #' @return data without duplicates
 remove_duplicates_func <- function(data_raw){
@@ -323,20 +351,33 @@ remove_duplicates_func <- function(data_raw){
 #' Run delta ball analysis 
 #' 
 #' \strong{See comment at bottom of function: this function I think does the 
-#' incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}}
+#' incorrect alignment - effects all the way to \code{ggvis_delta_ball_contour}.
+#' I didn't effect this with the tests - not actually sure what this means
+#' anymore}
 #' 
-#' @description Run delta ball analysis and get outline of points. Runs all 
-#' analyses to get dataframe with regular lines. Part of the approach in 
-#' "Computing Polygonal Surfaces from Unions of Balls" by Tam and Heidrich.
-#' 
-#' @param data_raw data frame with center points of balls 
-#' @param n_steps number of equidistance points along the line, past delta 
-#' on both sides, that will be checked to approximate all points along the line
+#' @description Run delta-ball analysis to obtain an outline points for
+#'   delta-ball covering where points are in 2d space. We first find the minimum
+#'   delta such that all balls centered at each point in the data set is
+#'   touching at least 1 other ball (see \code{\link{get_delta}} for more
+#'   information). This function then creates a geometric objects that trying to
+#'   represent the covering of all these delta balls. Specifically we use
+#'   geometric properties to find the points on the "outside" of this covering
+#'   and return a set of lines that create a "boundary" of shorts. Intuition
+#'   from "Computing Polygonal Surfaces from Unions of Balls" by Tam and
+#'   Heidrich was used in this function.
+#'
+#'#' @details
+#' This function (renamed as \code{inner_delta_ball_wrapper}) is shared with \pkg{timeternR} on github: 
+#' \href{https://github.com/skgallagher/timeternR}{timeternR}.
+#'
+#' @param data_raw data frame with center points of balls
+#' @param n_steps number of equidistance points along the line, past delta on
+#'   both sides, that will be checked to approximate all points along the line
 #' @param remove_duplicates boolean if need to remove duplicates in data_raw
 #'
 #' @return data frame of exterior lines (not ordered)
 #' @export
-delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
+delta_ball_wrapper <- function(data_raw, n_steps = 100, remove_duplicates = F){
   
   if (remove_duplicates) {
     data_raw <- remove_duplicates_func(data_raw)
@@ -348,14 +389,14 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   data <- data_raw[,1:2]
   sp::coordinates(data) <- names(data_raw)[1:2]
     
-  # get delta value
+  # get delta value --------------------
   d <- get_delta(data_raw)
   delta <- d$mm_delta/2
   
-  # create correct edges 
+  # create correct edges --------------------
   dtri_data_edges <- rgeos::gDelaunayTriangulation(data, onlyEdges = T,tolerance = 0)
   
-  lines_info <- get_lines(dtri_data_edges, data_raw, delta, n_steps = 100)
+  lines_info <- get_lines(dtri_data_edges, data_raw, delta, n_steps = n_steps)
   
   desired_lines <- lines_info$lines_mat
   keep <- desired_lines %>% apply(MARGIN = 1, 
@@ -364,7 +405,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
   
   removed_mat <- lines_info$removed_mat
   
-  # string representation of nodes and edges 
+  # string representation of nodes and edges --------------------
   nodes <- paste0("(",desired_lines$x, ",", desired_lines$y, ")")
   edge_mat <- matrix(c(nodes[seq(from = 1,to = length(nodes),by = 2)],
                        nodes[seq(from = 2,to = length(nodes),by = 2)]),
@@ -374,7 +415,7 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
            X2 = as.character(X2),
            id = desired_lines$idx[seq(from = 1,to = length(nodes),by = 2)])
   
-  # get DT triangles
+  # get DT triangles --------------------
   dtri_data_tri <- rgeos::gDelaunayTriangulation(data,tolerance = 0)
   tri_matrix <- get_tri_matrix(dtri_data_tri)
   
@@ -390,17 +431,17 @@ delta_ball_wrapper <- function(data_raw, n_steps = 1000, remove_duplicates = F){
     dplyr::mutate(idx_tri = rep(1:nrow(tri_matrix),times = 6))
   
   
-  tuples_of_tri <- remove_lines_from_tri(tuples_of_tri = tuples_of_tri,
+  tuples_of_tri <- remove_incomplete_tri(tuples_of_tri = tuples_of_tri,
                                          removed_mat = removed_mat)
   
-  # what type of edge are you?
+  # what type of edge are you? --------------------
   
   num_tri <- edge_mat %>% dplyr::left_join(tuples_of_tri,
                                     by = c("X1" = "X1", "X2" = "X2"))  %>%
     dplyr::group_by(id) %>% dplyr::summarise(idx_tri = paste0(idx_tri,collapse = ","),
                                X1 = unique(X1),
                                X2 = unique(X2),
-                               count = n())
+                               count = dplyr::n())
   
   # merging & getting regular lines --------------------
   

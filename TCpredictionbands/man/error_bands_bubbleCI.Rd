@@ -4,8 +4,11 @@
 \alias{error_bands_bubbleCI}
 \title{Estimating uncertainty of bubble CI}
 \usage{
-error_bands_bubbleCI(bubble_steps_CI, position = 1:2,
-  unit_measure = "nautical mile")
+error_bands_bubbleCI(
+  bubble_steps_CI,
+  position = 1:2,
+  unit_measure = "nautical mile"
+)
 }
 \arguments{
 \item{bubble_steps_CI}{list of dataframes, with each dataframe representing 
