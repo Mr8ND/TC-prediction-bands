@@ -1,0 +1,15 @@
+citHeader("To cite TCpredictionbands in publications use:")
+
+citEntry(
+  entry    = "InProceedings",
+  title    = "A Flexible Pipeline for Prediction of Tropical Cyclone Paths",
+  author   = "Dalmasso, Niccol{\`o} and Dunn, Robin and LeRoy, Benjamin and Schafer, Chad",
+  year     = 2019,
+  maintitle = "Workshop on Climate Change: How can AI Help?",
+  booktitle = "Proceedings of the 36th International Conference on Machine Learning,
+               {ICML} 2019, 9-15 June 2019, Long Beach, California, {USA}",
+  url      = "https://arxiv.org/abs/1906.08832",
+  textVersion = paste(
+
+  )
+)
