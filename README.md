@@ -27,7 +27,7 @@ http://www.aoml.noaa.gov/hrd/hurdat/Data_Storm.html).
 
     1.2. [Special Script Guidelines](#12-special-script-guidelines)
 
-2. [`TCpredictionbands` package](#2-tcpredictionbands-package)
+2. [`TCpredictionbands` package & citation](#2-tcpredictionbands-package) 
 3. [Comments](#3-comments)
 4. [Contributors](#4-contributors)
 
@@ -188,6 +188,11 @@ To install the latest version please do
 library(devtools)
 devtools::install_github(repo = 'Mr8ND/TC-prediction-bands/TCpredictionbands')
 library(TCpredictionbands)
+```
+
+To cite use:
+```r
+citation("TCpredictionbands")
 ```
 
 ## 3 Comments
